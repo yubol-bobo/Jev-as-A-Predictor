@@ -31,7 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 ITEMS = ROOT / "data" / "items"
 PREDS = ROOT / "results" / "predictions"
-EXTERNAL = Path("/local/yliy_seqpred")  # node-local scratch for raw downloads and checkpoints
+EXTERNAL = ROOT / "data" / "external"  # raw downloads (gitignored)
 
 QID = "next"
 MAX_OPTIONS = 255
