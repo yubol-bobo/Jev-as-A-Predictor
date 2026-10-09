@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+data/external/
+results/cache/
+results/checkpoints/
+*.pt
+*.ckpt
+slurm-*.out
+logs/
