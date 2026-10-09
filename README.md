@@ -11,7 +11,8 @@ System One 决策模型能否作为序列预测器？比较不训练与 finetune
 | Date | Step | Status |
 |---|---|---|
 | 2026-10-09 | Design agreed | ✅ |
-| | 1. Data (5 tasks) + SASRec / RE-GCN / recurrency baselines | 🔄 in progress |
+| 2026-10-09 | 1a. Shared item format, metrics, SASRec (CE) + driver; SASRec sanity check passed | ✅ |
+| | 1b. Data (5 tasks) + SASRec / RE-GCN / recurrency baselines | 🔄 building (ML-1M, Beauty, Foursquare NYC, BPIC12, ICEWS14) |
 | | 2. Untrained evaluation (JEV, pplx-decider, Clef, Kev) | ⏳ |
 | | 3. Finetuning grid (45 runs) + matched-N SASRec | ⏳ |
 | | 4. Analysis | ⏳ |
