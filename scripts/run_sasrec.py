@@ -11,6 +11,15 @@ Inputs (written by scripts/build_<task>.py):
 Full-data mode trains on every training sequence (loss at every position); --train-n trains
 only on the first N train items as (history, target) pairs. Early stopping and the softmax
 temperature both use the dev items. Predictions go to results/predictions/<task>/<system>/.
+
+--prefix-examples H (full-data mode, for prefix tasks such as bpic12): expand every training
+sequence into all its prefixes, each cropped to the last H tokens, with the loss on the next
+token only. Needed when the end of a training sequence is itself a target (bpic12's [END]):
+with left padding the last real token always sits at the last position, so whole-sequence
+training lets the position embeddings encode the distance to the case end, and at evaluation
+(history always ends at the last position) the model then predicts [END] for most prefixes.
+In leave-one-out recommendation this is harmless (the item after the training sequence really
+is the dev target), so it stays off by default.
 """
 
 import argparse
@@ -44,6 +53,8 @@ def main():
     ap.add_argument("--threads", type=int, default=12)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--prefix-examples", type=int, default=None, metavar="H",
+                    help="full-data mode: train on every prefix (last H tokens) -> next token")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
 
@@ -54,6 +65,9 @@ def main():
         with gzip.open(base / "train_sequences.jsonl.gz", "rt") as f:
             examples = [(json.loads(l), 1) for l in f]
         examples = [e for e in examples if len(e[0]) >= 2]
+        if a.prefix_examples:
+            H = a.prefix_examples
+            examples = [(seq[max(0, j - H):j + 1], min(j, H)) for seq, _ in examples for j in range(1, len(seq))]
     else:
         tr = I.load_items(a.task, "train", n=a.train_n)
         assert len(tr) == a.train_n, f"only {len(tr)} train items"

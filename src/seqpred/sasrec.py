@@ -30,6 +30,13 @@ class SASRec(nn.Module):
                                            norm_first=True, activation="relu")
         self.encoder = nn.TransformerEncoder(layer, blocks, enable_nested_tensor=False)
         self.norm = nn.LayerNorm(hidden)
+        # Small init (as in RecBole): nn.Embedding's default N(0, 1), times sqrt(hidden) and tied to
+        # the output layer, gives initial logits with std ~ sqrt(hidden) (initial CE ~56 vs ln(n) ~8)
+        # and training never recovers well.
+        nn.init.normal_(self.item_emb.weight, std=0.02)
+        nn.init.normal_(self.pos_emb.weight, std=0.02)
+        with torch.no_grad():
+            self.item_emb.weight[0].zero_()
 
     def forward(self, seqs):  # seqs: [B, L] left-padded
         L = seqs.size(1)

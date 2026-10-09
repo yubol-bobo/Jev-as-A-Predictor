@@ -1,0 +1,43 @@
+{
+ "checkins": 147938,
+ "users": 1083,
+ "venues": 5135,
+ "categories": 208,
+ "seq_len": {
+  "count": 1083.0,
+  "mean": 136.6,
+  "std": 161.2,
+  "min": 17.0,
+  "25%": 67.0,
+  "50%": 93.0,
+  "75%": 142.0,
+  "max": 2515.0
+ },
+ "train_seq_tokens": 145772,
+ "multi_category_venues": 142,
+ "train_users_covered": 1083,
+ "test": {
+  "n": 1083,
+  "state_chars_mean": 954.4,
+  "state_chars_max": 1398,
+  "hist_len_mean": 19.99,
+  "gold_previously_visited": 0.6962,
+  "gold_in_shown_history": 0.5965
+ },
+ "dev": {
+  "n": 300,
+  "state_chars_mean": 950.1,
+  "state_chars_max": 1398,
+  "hist_len_mean": 19.98,
+  "gold_previously_visited": 0.67,
+  "gold_in_shown_history": 0.5767
+ },
+ "train": {
+  "n": 10000,
+  "state_chars_mean": 859.1,
+  "state_chars_max": 1468,
+  "hist_len_mean": 17.97,
+  "gold_previously_visited": 0.6677,
+  "gold_in_shown_history": 0.603
+ }
+}
