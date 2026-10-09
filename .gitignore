@@ -1,9 +1,0 @@
-.env
-__pycache__/
-*.pyc
-data/external/
-results/cache/
-*.pt
-*.ckpt
-slurm-*.out
-results/*/item_metrics.jsonl
