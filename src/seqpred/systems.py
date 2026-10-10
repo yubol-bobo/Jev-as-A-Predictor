@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import time
+import uuid
 from pathlib import Path
 
 import requests
@@ -85,7 +86,7 @@ class HTTPSystemOne:
                "status": "ok" if resp.status_code == 200 and "answers" in body else "error", "response": body}
         if rec["status"] == "ok":
             path.parent.mkdir(parents=True, exist_ok=True)
-            tmp = path.with_suffix(f".tmp{os.getpid()}")
+            tmp = path.with_suffix(f".tmp{uuid.uuid4().hex}")  # unique: identical requests may race
             tmp.write_text(json.dumps(rec, ensure_ascii=False))
             tmp.replace(path)
         return {**rec, "cached": False}

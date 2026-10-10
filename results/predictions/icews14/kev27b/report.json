@@ -1,0 +1,33 @@
+{
+ "task": "icews14",
+ "system": "kev27b",
+ "model": "kev-latest",
+ "dev": {
+  "n": 300,
+  "missing": 0,
+  "hr1": 0.7767,
+  "hr5": 0.9567,
+  "ndcg10": 0.8862,
+  "mrr": 0.8545,
+  "nll": 0.9699,
+  "ece": 0.23522884518779705,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 35.1,
+  "median_latency_s": 0.9463940570130944
+ },
+ "test": {
+  "n": 1000,
+  "missing": 0,
+  "hr1": 0.768,
+  "hr5": 0.958,
+  "ndcg10": 0.8814,
+  "mrr": 0.8487,
+  "nll": 0.9583,
+  "ece": 0.21303790713324058,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 99.5,
+  "median_latency_s": 0.775743180885911
+ }
+}

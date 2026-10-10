@@ -1,0 +1,33 @@
+{
+ "task": "fsq_nyc",
+ "system": "kev27b",
+ "model": "kev-latest",
+ "dev": {
+  "n": 300,
+  "missing": 0,
+  "hr1": 0.6283,
+  "hr5": 0.8467,
+  "ndcg10": 0.7683,
+  "mrr": 0.7227,
+  "nll": 1.6264,
+  "ece": 0.29176381742655566,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 37.6,
+  "median_latency_s": 0.9419231279753149
+ },
+ "test": {
+  "n": 1083,
+  "missing": 0,
+  "hr1": 0.6556,
+  "hr5": 0.837,
+  "ndcg10": 0.7796,
+  "mrr": 0.7393,
+  "nll": 1.5719,
+  "ece": 0.3055774463425393,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 129.9,
+  "median_latency_s": 0.9388191578909755
+ }
+}

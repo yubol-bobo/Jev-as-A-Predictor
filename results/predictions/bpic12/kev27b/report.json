@@ -1,0 +1,33 @@
+{
+ "task": "bpic12",
+ "system": "kev27b",
+ "model": "kev-latest",
+ "dev": {
+  "n": 300,
+  "missing": 0,
+  "hr1": 0.2833,
+  "hr5": 0.5,
+  "ndcg10": 0.4599,
+  "mrr": 0.4124,
+  "nll": 2.7434,
+  "ece": 0.11318792142369014,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 13.1,
+  "median_latency_s": 0.41512294532731175
+ },
+ "test": {
+  "n": 1000,
+  "missing": 0,
+  "hr1": 0.2615,
+  "hr5": 0.4895,
+  "ndcg10": 0.4393,
+  "mrr": 0.3931,
+  "nll": 2.825,
+  "ece": 0.10211955873377893,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 38.6,
+  "median_latency_s": 0.3806561892852187
+ }
+}
