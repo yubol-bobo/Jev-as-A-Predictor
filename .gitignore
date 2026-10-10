@@ -8,5 +8,5 @@ results/checkpoints/
 *.ckpt
 slurm-*.out
 logs/
-# train.jsonl files (19–51 MB each) are rebuilt by scripts/build_<task>.py; how to version them is pending the user's decision
+# train.jsonl files (19–51 MB each) stay local (user decision 2026-10-09); rebuild with scripts/build_<task>.py
 data/items/*/train.jsonl
