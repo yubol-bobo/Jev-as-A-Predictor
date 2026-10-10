@@ -1,0 +1,33 @@
+{
+ "task": "fsq_nyc",
+ "system": "pplx_decider",
+ "model": "autojev-qwen3.8-27b",
+ "dev": {
+  "n": 300,
+  "missing": 0,
+  "hr1": 0.6333,
+  "hr5": 0.8247,
+  "ndcg10": 0.7688,
+  "mrr": 0.7199,
+  "nll": 1.3304,
+  "ece": 0.13006014439149063,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 57.4,
+  "median_latency_s": 0.16719737695530057
+ },
+ "test": {
+  "n": 1083,
+  "missing": 0,
+  "hr1": 0.6768,
+  "hr5": 0.8429,
+  "ndcg10": 0.7913,
+  "mrr": 0.7536,
+  "nll": 1.2594,
+  "ece": 0.13586870715886382,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 210.4,
+  "median_latency_s": 0.16730393329635262
+ }
+}

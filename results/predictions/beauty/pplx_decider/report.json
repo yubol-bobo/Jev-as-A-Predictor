@@ -1,0 +1,33 @@
+{
+ "task": "beauty",
+ "system": "pplx_decider",
+ "model": "autojev-qwen3.8-27b",
+ "dev": {
+  "n": 300,
+  "missing": 0,
+  "hr1": 0.3667,
+  "hr5": 0.6728,
+  "ndcg10": 0.5746,
+  "mrr": 0.5052,
+  "nll": 2.2571,
+  "ece": 0.06413572995508218,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 59.8,
+  "median_latency_s": 0.12948385626077652
+ },
+ "test": {
+  "n": 1000,
+  "missing": 0,
+  "hr1": 0.359,
+  "hr5": 0.6667,
+  "ndcg10": 0.5625,
+  "mrr": 0.498,
+  "nll": 2.2574,
+  "ece": 0.047940489374737896,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 167.1,
+  "median_latency_s": 0.1306286952458322
+ }
+}

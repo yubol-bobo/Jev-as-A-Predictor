@@ -1,0 +1,33 @@
+{
+ "task": "bpic12",
+ "system": "pplx_decider",
+ "model": "autojev-qwen3.8-27b",
+ "dev": {
+  "n": 300,
+  "missing": 0,
+  "hr1": 0.2917,
+  "hr5": 0.5933,
+  "ndcg10": 0.4953,
+  "mrr": 0.4258,
+  "nll": 2.7085,
+  "ece": 0.12314096657471861,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 24.5,
+  "median_latency_s": 0.07700187619775534
+ },
+ "test": {
+  "n": 1000,
+  "missing": 0,
+  "hr1": 0.271,
+  "hr5": 0.5653,
+  "ndcg10": 0.4652,
+  "mrr": 0.4038,
+  "nll": 2.8034,
+  "ece": 0.12838743398297903,
+  "gold_zero": 0.0,
+  "errors": 0,
+  "wall_s": 71.0,
+  "median_latency_s": 0.07524587400257587
+ }
+}
