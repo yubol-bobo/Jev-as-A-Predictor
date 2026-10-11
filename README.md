@@ -12,9 +12,9 @@ System One 决策模型能否作为序列预测器？比较不训练与 finetune
 |---|---|---|
 | 2026-10-09 | Design agreed | ✅ |
 | 2026-10-09 | 1a. Shared item format, metrics, SASRec (CE) + driver; SASRec sanity check passed | ✅ |
-| 2026-10-09 | 1b. Data frozen for 5 tasks (dev 300 / test 1,000 [NYC: all 1,083 users] / train 10,000) + baselines | ✅ dev/test committed; train files pending versioning decision |
-| | 2. Untrained evaluation (JEV, pplx-decider, Clef, Kev) | ⏳ |
-| | 3. Finetuning grid (45 runs) + matched-N SASRec | ⏳ |
+| 2026-10-09 | 1b. Data frozen for 5 tasks (dev 300 / test 1,000 [NYC: all 1,083 users] / train 10,000) + baselines | ✅ dev/test committed; train files kept local |
+| 2026-10-10 | 2. Untrained evaluation (JEV, pplx-decider, Clef, Kev): 4 × 6,583 requests, 0 errors | ✅ [results/summary_test.md](results/summary_test.md) |
+| | 3. Finetuning grid (45 runs) + matched-N SASRec — LoRA for all three (see design §5); local smoke run first | 🔄 preparing |
 | | 4. Analysis | ⏳ |
 
 ## Step 1 baselines (test, 20 candidates; BPIC12: 24) / 对照组结果
@@ -34,3 +34,15 @@ System One 决策模型能否作为序列预测器？比较不训练与 finetune
 | bpic12 | sasrec | 0.746 | 0.889 | 0.852 | 0.761 | 0.039 |
 
 Data cards: `results/data_cards/<task>.md`. BPIC12 SASRec uses `--prefix-examples 20`.
+
+## Step 2: untrained System One models (test HR@1) / 不训练结果
+
+| task | JEV | Kev-27B | pplx-decider | Clef | best baseline |
+|---|---|---|---|---|---|
+| ml1m | 0.408 | 0.419 | 0.454 | 0.423 | 0.686 (sasrec) |
+| beauty | 0.361 | 0.346 | 0.359 | 0.341 | 0.386 (sasrec) |
+| fsq_nyc | 0.670 | 0.656 | 0.677 | 0.639 | 0.711 (sasrec) |
+| icews14 | 0.841 | 0.768 | 0.776 | 0.804 | 0.832 (regcn) |
+| bpic12 | 0.232 | 0.262 | 0.271 | 0.269 | 0.746 (sasrec) |
+
+Full tables with CIs, NDCG@10, MRR, NLL, ECE: [results/summary_test.md](results/summary_test.md).

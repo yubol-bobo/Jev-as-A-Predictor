@@ -54,6 +54,19 @@ ICEWS14 uses **RE-GCN** and a **recurrency** heuristic (Gastinger et al., 2024) 
   decision head, cross-entropy on the gold option, same hyperparameters / steps / data; temperature
   fitted on dev. Kev uses its released trainer; training code for pplx-decider and Clef is written to
   match their released inference code and aligned with Kev's loss and LoRA settings.
+- **Why LoRA for all three (agreed 2026-10-10)** although the released models were built differently
+  (Kev-27B v2: full-weight fine-tune averaged with a LoRA v1; pplx-decider v1.1: full fine-tune with
+  noncausal full attention; Clef: undisclosed post-training): their original recipe defines the
+  *starting point*, which is what we compare; one shared adaptation method keeps differences
+  attributable to the starting point; full 27B finetuning does not fit on one H100.
+- **Model-specific parts kept native:** pplx-decider trains with its noncausal full-attention mode;
+  each model keeps its own head (Kev pointer head, pplx readout, Clef joint schema head); LoRA targets
+  are the same modules in all three (same Qwen3.8-27B architecture: attention, MLP and DeltaNet
+  projections). If Kev's trainer cannot `--init_from` the full-weight v2 checkpoint, Kev uses the same
+  self-written trainer as the other two.
+- **Defaults:** start from each released checkpoint, lr 2e-5, effective batch 8, 2 epochs.
+- **Execution:** first a local smoke run on one GPU, reported to the user; the full grid runs after the
+  user secures more GPUs.
 - **Learning curve:** N ∈ {0 (untrained), 500, 2,000, 10,000} training examples, built from training
   data only in the same format as the test items (fresh negatives).
 - **Scale:** full grid — 3 models × 5 tasks × 3 sizes = **45 finetuning runs**.
