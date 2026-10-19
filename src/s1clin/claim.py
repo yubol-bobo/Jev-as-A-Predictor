@@ -125,7 +125,9 @@ def route(spec: str, key: str) -> str:
     pool = parse_pool(spec)
     if len(pool) > 1:
         loads = {url: _load(url) for url, _ in pool}
-        if all(v is not None for v in loads.values()):
+        if any(v is None for v in loads.values()) and any(v is not None for v in loads.values()):
+            pool = [(u, w) for u, w in pool if loads[u] is not None]  # a replica that is down gets no new items
+        if all(loads[u] is not None for u, _ in pool):
             with _lock:
                 now = time.time()
                 for url, _ in pool:
