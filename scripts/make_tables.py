@@ -311,6 +311,63 @@ def main():
     if ce:
         for k, v in ce.items():
             nums += macro("CE" + k, v)
+    # the fixed exam: every System One decider on the LLM's own logged states and candidates (pb_exam.py)
+    DEC = {"clef": ("Clef-27B", "Clef"), "pplx12": ("pplx-decider-v1.2", "Pplx"), "d3": ("d3", "Dthree"),
+           "linne": ("linne-oak-1.0", "Linne"), "amos": ("amos-1-large", "Amos"), "decider31b": ("decider-31b", "Mapika")}
+    ex = load("pb_exam.json")
+    if ex and ex.get("deciders"):
+        k, b = ex["key"], ex["baselines"]
+        nums += macro("EXquestions", ex["questions"]) + macro("EXtasks", ex["tasks"]) + macro("EXcommon", ex["answered_by_all"])
+        nums += macro("EXkeyed", k["keyed_questions"]) + macro("EXreqn", k["required_available"])
+        nums += macro("EXnonen", k["none_required"])
+        nums += macro("EXaccFirst", pct(b["first_sample"]["order_accuracy"], 0))
+        nums += macro("EXaccRandom", pct(b["random"]["order_accuracy"], 0))
+        nums += macro("EXreqFirst", pct(b["first_sample"]["orders_when_required_available"], 0))
+        rows = [f"Random & {pct(b['random']['order_accuracy'], 0)} & -- & -- & -- & -- & -- \\\\",
+                f"\\llm{{}} (own sample) & {pct(b['first_sample']['order_accuracy'], 0)} & "
+                f"{pct(b['first_sample']['orders_when_required_available'], 0)} & "
+                f"{pct(b['first_sample']['orders_when_none_required'], 0)} & 100 & -- & -- \\\\",
+                f"\\llm{{}} (most sampled) & {pct(b['majority']['order_accuracy'], 0)} & -- & -- & -- & -- & -- \\\\",
+                "\\midrule"]
+        for d in [d for d in DEC if d in ex["deciders"]]:
+            v, (label, tag) = ex["deciders"][d], DEC[d]
+            kinds = v["picked_kind"]
+            rows.append(f"{label} & {pct(v['order_accuracy'], 0)} & {pct(v['orders_when_required_available'], 0)} & "
+                        f"{pct(v['orders_when_none_required'], 0)} & {pct(v['agrees_with_first_sample'], 0)} & "
+                        f"{pct(kinds.get('act'), 0)} & {pct(kinds.get('document'), 0)} \\\\")
+            for key, short in (("order_accuracy", "acc"), ("orders_when_required_available", "req"),
+                               ("orders_when_none_required", "none"), ("agrees_with_first_sample", "agree")):
+                nums += macro(f"EX{short}{tag}", pct(v[key], 0))
+        (G / "tab_exam.tex").write_text(
+            "\\begin{tabular}{@{}lrrrrrr@{}}\\toprule\n"
+            "& \\multicolumn{3}{c}{Order steps (answer key)} & \\multicolumn{3}{c}{All questions} \\\\\n"
+            "\\cmidrule(lr){2-4}\\cmidrule(l){5-7}\n"
+            "Decider & Right & \\shortstack{Orders,\\\\required} & \\shortstack{Orders,\\\\none req.} & "
+            "\\shortstack{Agrees\\\\w/ LLM} & Act & Note \\\\\n\\midrule\n" + "\n".join(rows) +
+            "\n\\bottomrule\\end{tabular}\n")
+    else:
+        (G / "tab_exam.tex").write_text("(pending)\n")
+    # online runs with other deciders in Clef's seat (each pair on its own common tasks)
+    rows = []
+    for d, (label, tag) in DEC.items():
+        if d == "clef":
+            sel, tool = pairs.get("clef_k5_vs_llm"), pairs.get("s1_tool_vs_llm_tool")
+        else:
+            q = (pb.get("deciders") or {}).get(d) or {}
+            sel, tool = q.get("select_vs_llm"), q.get("tool_vs_llm_tool")
+        if not (sel or tool):
+            continue
+        cell = lambda q: (f"{q['paired_tasks']} & {ci(q['checkpoint_diff_ci'])}" if q else "-- & --")  # noqa: E731
+        rows.append(f"{label} & {cell(sel)} & {cell(tool)} \\\\")
+        for q, arm in ((sel, "Sel"), (tool, "Tool")):
+            if q:
+                nums += macro(f"ON{arm}{tag}n", q["paired_tasks"]) + macro(f"ON{arm}{tag}cp", ci(q["checkpoint_diff_ci"]))
+    (G / "tab_deciders_online.tex").write_text(
+        "\\begin{tabular}{@{}lrrrr@{}}\\toprule\n"
+        "& \\multicolumn{2}{c}{\\sel{} vs \\llm} & \\multicolumn{2}{c}{\\tool{} vs \\textsc{LLM-Tool}} \\\\\n"
+        "\\cmidrule(lr){2-3}\\cmidrule(l){4-5}\n"
+        "Decider & Tasks & $\\Delta$ checkpoints & Tasks & $\\Delta$ checkpoints \\\\\n\\midrule\n"
+        + "\n".join(rows) + "\n\\bottomrule\\end{tabular}\n")
     (G / "numbers.tex").write_text(nums)
     print("wrote", sorted(p.name for p in G.iterdir()))
 

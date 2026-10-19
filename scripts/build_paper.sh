@@ -8,6 +8,7 @@ cd "$REPO"
 (cd scripts && ../.venv/bin/python pb_analyze.py --out ../results/pb_analysis.json > /dev/null)
 .venv/bin/python scripts/pb_offline_orders.py build --slug clef_k5/run1 > /dev/null && \
   .venv/bin/python scripts/pb_offline_orders.py report --slug clef_k5/run1 --out results/pb_offline_orders_clef_online.json > /dev/null
+.venv/bin/python scripts/pb_exam.py report > /dev/null 2>&1  # the fixed exam (all deciders, identical requests)
 .venv/bin/python scripts/make_tables.py > /dev/null
 $FIGPY paper/figures/src/data_figs.py > /dev/null
 [ -f paper/figures/fig1_overview.pdf ] || $FIGPY paper/figures/src/fig1_overview.py > /dev/null
