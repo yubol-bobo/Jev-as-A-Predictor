@@ -22,3 +22,4 @@ third_party/clinenv/*
 !third_party/clinenv/NOT_INCLUDED.md
 # agent output files with patient content must never land here
 output/
+paper/figures/*_preview.png
