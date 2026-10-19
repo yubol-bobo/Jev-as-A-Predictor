@@ -1,48 +1,48 @@
 {
  "exam": "llm_log_k5/run1",
- "questions": 98,
- "tasks": 9,
- "answered_by_all": 98,
+ "questions": 128,
+ "tasks": 11,
+ "answered_by_all": 128,
  "deciders": {
   "pplx12": {
-   "answered": 98,
+   "answered": 128,
    "order_accuracy": 1.0,
    "orders_when_required_available": 1.0,
-   "orders_when_none_required": 0.8333,
-   "agrees_with_first_sample": 0.3367,
-   "agrees_with_majority": 0.3469,
+   "orders_when_none_required": 0.8889,
+   "agrees_with_first_sample": 0.2812,
+   "agrees_with_majority": 0.2969,
    "picked_kind": {
-    "retrieve": 0.602,
-    "act": 0.2143,
-    "document": 0.102,
-    "finish": 0.0816
+    "retrieve": 0.5859,
+    "act": 0.2578,
+    "document": 0.0859,
+    "finish": 0.0703
    },
-   "mean_max_p": 0.4713
+   "mean_max_p": 0.4918
   }
  },
  "agreement": {},
  "baselines": {
   "first_sample": {
-   "order_accuracy": 0.7778,
-   "orders_when_required_available": 0.8333,
-   "orders_when_none_required": 0.6667
+   "order_accuracy": 0.5294,
+   "orders_when_required_available": 0.5,
+   "orders_when_none_required": 0.4444
   },
   "majority": {
-   "order_accuracy": 0.7778
+   "order_accuracy": 0.5294
   },
   "random": {
-   "order_accuracy": 0.4889
+   "order_accuracy": 0.4471
   }
  },
  "key": {
-  "keyed_questions": 9,
-  "required_available": 6,
-  "none_required": 6
+  "keyed_questions": 17,
+  "required_available": 14,
+  "none_required": 9
  },
  "offered_kind": {
-  "retrieve": 307,
-  "act": 77,
-  "document": 43,
-  "finish": 37
+  "retrieve": 403,
+  "act": 111,
+  "document": 50,
+  "finish": 43
  }
 }
