@@ -193,3 +193,14 @@ stay the same.
   with Clef in the same arm, on the tasks each pair has in common.
 - **Capacity:** about 18 decider-arm tasks share the Qwen replicas with the llm_tool control (4 workers,
   `scripts/restart_llm_tool.sh`). LLM runs 2–3 are paused.
+
+### 7a. The fixed exam: primary comparison of the deciders (user, 2026-10-19 18:30)
+
+All deciders take the same exam. The LLM runs PhysicianBench first (arm `llm_log`, run 1). It executes its own first
+sample and logs, at every step, its 5 candidate turns and the full history. Each step with at least two distinct
+candidates is a question. Every decider (Clef and the five others) answers every question from byte-identical
+requests: the same state, the same options, and the same option letters, seeded by the question id. Order steps have
+an answer key from the task's graders; the other steps give agreement. Code: `scripts/run_exam.sh` (the LLM run),
+`scripts/pb_exam.py` (build / select / report), `scripts/exam_deciders.sh` (keeps the exam current and lets each
+loaded decider answer it). The online runs per decider (section 7) are secondary. They measure what the decider does
+to whole-task success, where the options differ between runs because the proposals are sampled anew.
