@@ -262,21 +262,21 @@
  },
  "pairs": {
   "s1_tool_vs_llm_tool": {
-   "paired_tasks": 73,
-   "pass@1_s1_tool": 0.0822,
-   "pass@1_llm_tool": 0.3425,
-   "checkpoint_s1_tool": 0.4478,
-   "checkpoint_llm_tool": 0.8207,
+   "paired_tasks": 75,
+   "pass@1_s1_tool": 0.08,
+   "pass@1_llm_tool": 0.3467,
+   "checkpoint_s1_tool": 0.4473,
+   "checkpoint_llm_tool": 0.8216,
    "pass@1_diff_ci": [
-    -0.2603,
-    -0.3699,
-    -0.1507
+    -0.2667,
+    -0.3867,
+    -0.16
    ],
-   "mcnemar_p": 0.0001,
+   "mcnemar_p": 0.0,
    "checkpoint_diff_ci": [
-    -0.3729,
-    -0.4552,
-    -0.2896
+    -0.3744,
+    -0.4557,
+    -0.2936
    ],
    "by_type_diff_ci": {
     "Action Execution": [
@@ -285,169 +285,169 @@
      -0.1087
     ],
     "Clinical Reasoning": [
-     -0.3927,
-     -0.4913,
-     -0.2957
+     -0.3929,
+     -0.488,
+     -0.2967
     ],
     "Data Retrieval": [
-     -0.411,
-     -0.5342,
-     -0.2877
+     -0.4133,
+     -0.5333,
+     -0.2933
     ],
     "Documentation": [
-     -0.3611,
-     -0.4722,
-     -0.25
+     -0.3649,
+     -0.4865,
+     -0.2432
     ]
    },
    "tools": {
     "s1_tool": {
-     "calls": 26.3,
-     "retrieve": 15.3,
-     "act": 2.3,
-     "document": 8.7
+     "calls": 26.8,
+     "retrieve": 15.2,
+     "act": 2.2,
+     "document": 9.4
     },
     "llm_tool": {
      "calls": 36.4,
-     "retrieve": 31.2,
+     "retrieve": 31.1,
      "act": 3.5,
      "document": 1.8
     }
    },
    "decisions": {
     "s1_tool": {
-     "steps": 1515,
-     "steps_per_task": 20.8,
+     "steps": 1597,
+     "steps_per_task": 21.3,
      "tool_share": {
-      "write_file": 0.42,
-      "fhir_observation_search_labs": 0.181,
-      "fhir_document_reference_search_clinical_notes": 0.102,
-      "fhir_service_request_create": 0.072,
-      "fhir_patient_search_demographics": 0.051,
-      "fhir_condition_search_problems": 0.045,
-      "FINISH": 0.041,
-      "fhir_medication_request_search_orders": 0.034,
+      "write_file": 0.439,
+      "fhir_observation_search_labs": 0.177,
+      "fhir_document_reference_search_clinical_notes": 0.098,
+      "fhir_service_request_create": 0.068,
+      "fhir_patient_search_demographics": 0.05,
+      "fhir_condition_search_problems": 0.043,
+      "FINISH": 0.039,
+      "fhir_medication_request_search_orders": 0.033,
       "fhir_medication_request_create": 0.017,
-      "fhir_observation_search_social_history": 0.011,
-      "fhir_appointment_create": 0.009,
+      "fhir_observation_search_social_history": 0.01,
+      "fhir_appointment_create": 0.008,
       "fhir_service_request_search": 0.007,
       "fhir_observation_search_vitals": 0.005,
       "fhir_procedure_search_orders": 0.003,
-      "fhir_communication_create_message": 0.001
+      "fhir_communication_create_message": 0.002
      },
-     "mean_max_p": 0.449,
-     "regenerated_share": 0.53,
-     "steps_with_dropped_calls": 0.145,
+     "mean_max_p": 0.45,
+     "regenerated_share": 0.543,
+     "steps_with_dropped_calls": 0.142,
      "decider_errors": 0
     },
     "llm_tool": {
-     "steps": 1791,
-     "steps_per_task": 24.5,
+     "steps": 1845,
+     "steps_per_task": 24.6,
      "tool_share": {
-      "fhir_observation_search_labs": 0.315,
-      "fhir_document_reference_search_clinical_notes": 0.194,
-      "fhir_condition_search_problems": 0.089,
-      "write_file": 0.073,
-      "fhir_medication_request_search_orders": 0.065,
+      "fhir_observation_search_labs": 0.319,
+      "fhir_document_reference_search_clinical_notes": 0.193,
+      "fhir_condition_search_problems": 0.087,
+      "write_file": 0.072,
+      "fhir_medication_request_search_orders": 0.064,
       "fhir_patient_search_demographics": 0.047,
       "FINISH": 0.04,
-      "fhir_procedure_search_orders": 0.035,
+      "fhir_procedure_search_orders": 0.036,
       "fhir_service_request_create": 0.035,
-      "fhir_service_request_search": 0.032,
+      "fhir_service_request_search": 0.033,
       "fhir_medication_request_create": 0.021,
       "fhir_appointment_create": 0.018,
       "fhir_observation_search_vitals": 0.014,
-      "fhir_observation_search_social_history": 0.013,
+      "fhir_observation_search_social_history": 0.014,
       "fhir_communication_create_message": 0.007,
       "read_file": 0.002,
       "grep_files": 0.001
      },
      "mean_max_p": 0.0,
      "regenerated_share": 0.0,
-     "steps_with_dropped_calls": 0.296,
+     "steps_with_dropped_calls": 0.297,
      "decider_errors": 0
     }
    }
   },
   "llm_tool_vs_llm": {
-   "paired_tasks": 73,
-   "pass@1_llm_tool": 0.3425,
-   "pass@1_llm": 0.411,
-   "checkpoint_llm_tool": 0.8207,
-   "checkpoint_llm": 0.805,
+   "paired_tasks": 75,
+   "pass@1_llm_tool": 0.3467,
+   "pass@1_llm": 0.4267,
+   "checkpoint_llm_tool": 0.8216,
+   "checkpoint_llm": 0.8102,
    "pass@1_diff_ci": [
-    -0.0685,
-    -0.2055,
-    0.0685
+    -0.08,
+    -0.2133,
+    0.0533
    ],
-   "mcnemar_p": 0.4421,
+   "mcnemar_p": 0.3449,
    "checkpoint_diff_ci": [
-    0.0157,
-    -0.0325,
-    0.0648
+    0.0115,
+    -0.0361,
+    0.0612
    ],
    "by_type_diff_ci": {
     "Action Execution": [
      0.1322,
-     0.0236,
-     0.2482
+     0.0254,
+     0.2464
     ],
     "Clinical Reasoning": [
-     0.0247,
-     -0.029,
-     0.0836
+     0.0213,
+     -0.0307,
+     0.0807
     ],
     "Data Retrieval": [
-     -0.0068,
-     -0.0822,
-     0.0685
+     -0.0067,
+     -0.08,
+     0.06
     ],
     "Documentation": [
-     -0.0556,
-     -0.1806,
-     0.0694
+     -0.0676,
+     -0.1892,
+     0.0541
     ]
    },
    "tools": {
     "llm_tool": {
      "calls": 36.4,
-     "retrieve": 31.2,
+     "retrieve": 31.1,
      "act": 3.5,
      "document": 1.8
     },
     "llm": {
-     "calls": 37.0,
-     "retrieve": 32.2,
-     "act": 3.4,
+     "calls": 36.6,
+     "retrieve": 31.8,
+     "act": 3.3,
      "document": 1.5
     }
    },
    "decisions": {
     "llm_tool": {
-     "steps": 1791,
-     "steps_per_task": 24.5,
+     "steps": 1845,
+     "steps_per_task": 24.6,
      "tool_share": {
-      "fhir_observation_search_labs": 0.315,
-      "fhir_document_reference_search_clinical_notes": 0.194,
-      "fhir_condition_search_problems": 0.089,
-      "write_file": 0.073,
-      "fhir_medication_request_search_orders": 0.065,
+      "fhir_observation_search_labs": 0.319,
+      "fhir_document_reference_search_clinical_notes": 0.193,
+      "fhir_condition_search_problems": 0.087,
+      "write_file": 0.072,
+      "fhir_medication_request_search_orders": 0.064,
       "fhir_patient_search_demographics": 0.047,
       "FINISH": 0.04,
-      "fhir_procedure_search_orders": 0.035,
+      "fhir_procedure_search_orders": 0.036,
       "fhir_service_request_create": 0.035,
-      "fhir_service_request_search": 0.032,
+      "fhir_service_request_search": 0.033,
       "fhir_medication_request_create": 0.021,
       "fhir_appointment_create": 0.018,
       "fhir_observation_search_vitals": 0.014,
-      "fhir_observation_search_social_history": 0.013,
+      "fhir_observation_search_social_history": 0.014,
       "fhir_communication_create_message": 0.007,
       "read_file": 0.002,
       "grep_files": 0.001
      },
      "mean_max_p": 0.0,
      "regenerated_share": 0.0,
-     "steps_with_dropped_calls": 0.296,
+     "steps_with_dropped_calls": 0.297,
      "decider_errors": 0
     },
     "llm": null
@@ -467,8 +467,8 @@
    "mcnemar_p": 0.5235,
    "checkpoint_diff_ci": [
     -0.0111,
-    -0.0488,
-    0.0261
+    -0.0481,
+    0.0273
    ],
    "by_type_diff_ci": {
     "Action Execution": [
@@ -478,8 +478,8 @@
     ],
     "Clinical Reasoning": [
      -0.0125,
-     -0.0543,
-     0.0325
+     -0.0535,
+     0.0323
     ],
     "Data Retrieval": [
      0.0183,
@@ -489,7 +489,7 @@
     "Documentation": [
      -0.0505,
      -0.1414,
-     0.0404
+     0.0303
     ]
    },
    "tools": {
@@ -528,446 +528,446 @@
  "deciders": {
   "pplx12": {
    "select_vs_llm": {
-    "paired_tasks": 36,
-    "pass@1_clef_k5__pplx12": 0.5,
-    "pass@1_llm": 0.4722,
-    "checkpoint_clef_k5__pplx12": 0.8437,
-    "checkpoint_llm": 0.8747,
+    "paired_tasks": 40,
+    "pass@1_clef_k5__pplx12": 0.525,
+    "pass@1_llm": 0.45,
+    "checkpoint_clef_k5__pplx12": 0.8487,
+    "checkpoint_llm": 0.8515,
     "pass@1_diff_ci": [
-     0.0278,
-     -0.2222,
-     0.25
+     0.075,
+     -0.15,
+     0.3
     ],
-    "mcnemar_p": 1.0,
+    "mcnemar_p": 0.6636,
     "checkpoint_diff_ci": [
-     -0.031,
-     -0.1104,
-     0.0419
+     -0.0029,
+     -0.083,
+     0.0786
     ],
     "by_type_diff_ci": {
      "Action Execution": [
-      0.0729,
-      -0.0312,
-      0.2083
+      0.07,
+      -0.03,
+      0.2
      ],
      "Clinical Reasoning": [
-      -0.0685,
-      -0.1653,
-      0.0185
+      -0.0242,
+      -0.1275,
+      0.0788
      ],
      "Data Retrieval": [
-      0.0278,
-      -0.0556,
-      0.1111
+      0.025,
+      -0.05,
+      0.1
      ],
      "Documentation": [
-      -0.0556,
-      -0.25,
-      0.1389
+      -0.025,
+      -0.2,
+      0.15
      ]
     },
     "tools": {
      "clef_k5__pplx12": {
-      "calls": 27.4,
-      "retrieve": 22.5,
-      "act": 3.9,
+      "calls": 27.9,
+      "retrieve": 23.3,
+      "act": 3.6,
       "document": 1.0
      },
      "llm": {
-      "calls": 33.6,
-      "retrieve": 28.3,
-      "act": 3.6,
+      "calls": 35.0,
+      "retrieve": 29.9,
+      "act": 3.3,
       "document": 1.7
      }
     },
     "decisions": {
      "clef_k5__pplx12": {
-      "steps": 348,
-      "steps_per_task": 9.7,
-      "share_distinct_strings": 0.98,
-      "share_semantically_distinct": 0.874,
-      "mean_unique": 4.65,
-      "mean_max_p": 0.474,
+      "steps": 400,
+      "steps_per_task": 10.0,
+      "share_distinct_strings": 0.983,
+      "share_semantically_distinct": 0.882,
+      "mean_unique": 4.67,
+      "mean_max_p": 0.475,
       "mean_entropy_norm": 0.8,
-      "pick_is_first_sample": 0.249,
+      "pick_is_first_sample": 0.26,
       "decider_errors": 0,
-      "share_fit_shortened": 0.446,
+      "share_fit_shortened": 0.443,
       "share_fit_omitted": 0.0,
-      "mean_decide_s": 26.67
+      "mean_decide_s": 28.25
      },
      "llm": null
     }
    },
    "select_vs_clef": {
-    "paired_tasks": 36,
-    "pass@1_clef_k5__pplx12": 0.5,
-    "pass@1_clef_k5": 0.4167,
-    "checkpoint_clef_k5__pplx12": 0.8437,
-    "checkpoint_clef_k5": 0.8755,
+    "paired_tasks": 40,
+    "pass@1_clef_k5__pplx12": 0.525,
+    "pass@1_clef_k5": 0.425,
+    "checkpoint_clef_k5__pplx12": 0.8487,
+    "checkpoint_clef_k5": 0.8689,
     "pass@1_diff_ci": [
-     0.0833,
-     -0.0833,
-     0.25
+     0.1,
+     -0.075,
+     0.275
     ],
-    "mcnemar_p": 0.5488,
+    "mcnemar_p": 0.3877,
     "checkpoint_diff_ci": [
-     -0.0318,
-     -0.1063,
-     0.0364
+     -0.0203,
+     -0.0896,
+     0.0419
     ],
     "by_type_diff_ci": {
      "Action Execution": [
       0.0,
-      -0.125,
-      0.125
+      -0.12,
+      0.12
      ],
      "Clinical Reasoning": [
-      -0.0551,
-      -0.1528,
-      0.037
+      -0.0433,
+      -0.1346,
+      0.0404
      ],
      "Data Retrieval": [
-      -0.0417,
-      -0.1389,
-      0.0556
+      -0.0375,
+      -0.125,
+      0.05
      ],
      "Documentation": [
-      0.0278,
-      -0.1111,
-      0.1667
+      0.05,
+      -0.075,
+      0.2
      ]
     },
     "tools": {
      "clef_k5__pplx12": {
-      "calls": 27.4,
-      "retrieve": 22.5,
-      "act": 3.9,
+      "calls": 27.9,
+      "retrieve": 23.3,
+      "act": 3.6,
       "document": 1.0
      },
      "clef_k5": {
-      "calls": 24.9,
-      "retrieve": 20.5,
-      "act": 3.2,
-      "document": 1.2
+      "calls": 25.9,
+      "retrieve": 21.6,
+      "act": 3.1,
+      "document": 1.1
      }
     },
     "decisions": {
      "clef_k5__pplx12": {
-      "steps": 348,
-      "steps_per_task": 9.7,
-      "share_distinct_strings": 0.98,
-      "share_semantically_distinct": 0.874,
-      "mean_unique": 4.65,
-      "mean_max_p": 0.474,
+      "steps": 400,
+      "steps_per_task": 10.0,
+      "share_distinct_strings": 0.983,
+      "share_semantically_distinct": 0.882,
+      "mean_unique": 4.67,
+      "mean_max_p": 0.475,
       "mean_entropy_norm": 0.8,
-      "pick_is_first_sample": 0.249,
+      "pick_is_first_sample": 0.26,
       "decider_errors": 0,
-      "share_fit_shortened": 0.446,
+      "share_fit_shortened": 0.443,
       "share_fit_omitted": 0.0,
-      "mean_decide_s": 26.67
+      "mean_decide_s": 28.25
      },
      "clef_k5": {
-      "steps": 380,
-      "steps_per_task": 10.6,
-      "share_distinct_strings": 0.989,
-      "share_semantically_distinct": 0.879,
-      "mean_unique": 4.68,
-      "mean_max_p": 0.385,
+      "steps": 430,
+      "steps_per_task": 10.8,
+      "share_distinct_strings": 0.991,
+      "share_semantically_distinct": 0.884,
+      "mean_unique": 4.7,
+      "mean_max_p": 0.384,
       "mean_entropy_norm": 0.885,
-      "pick_is_first_sample": 0.218,
+      "pick_is_first_sample": 0.211,
       "decider_errors": 0,
-      "share_fit_shortened": 0.372,
+      "share_fit_shortened": 0.385,
       "share_fit_omitted": 0.0,
-      "mean_decide_s": 3.38
+      "mean_decide_s": 3.49
      }
     }
    },
    "tool_vs_llm_tool": {
-    "paired_tasks": 22,
-    "pass@1_s1_tool__pplx12": 0.1364,
-    "pass@1_llm_tool": 0.2727,
-    "checkpoint_s1_tool__pplx12": 0.5343,
-    "checkpoint_llm_tool": 0.8157,
+    "paired_tasks": 27,
+    "pass@1_s1_tool__pplx12": 0.1481,
+    "pass@1_llm_tool": 0.3704,
+    "checkpoint_s1_tool__pplx12": 0.5041,
+    "checkpoint_llm_tool": 0.8234,
     "pass@1_diff_ci": [
-     -0.1364,
-     -0.4091,
-     0.1364
+     -0.2222,
+     -0.4444,
+     0.0
     ],
-    "mcnemar_p": 0.5078,
+    "mcnemar_p": 0.146,
     "checkpoint_diff_ci": [
-     -0.2814,
-     -0.4192,
-     -0.1522
+     -0.3192,
+     -0.4695,
+     -0.1728
     ],
     "by_type_diff_ci": {
      "Action Execution": [
-      -0.1667,
-      -0.4,
-      0.05
+      -0.1944,
+      -0.4167,
+      0.0
      ],
      "Clinical Reasoning": [
-      -0.2962,
-      -0.4591,
-      -0.1477
+      -0.3432,
+      -0.5093,
+      -0.1852
      ],
      "Data Retrieval": [
-      -0.4091,
-      -0.5909,
-      -0.2273
+      -0.3889,
+      -0.5926,
+      -0.1852
      ],
      "Documentation": [
-      -0.2727,
-      -0.5455,
-      0.0
+      -0.2963,
+      -0.5556,
+      -0.037
      ]
     },
     "tools": {
      "s1_tool__pplx12": {
-      "calls": 22.9,
-      "retrieve": 14.3,
-      "act": 1.5,
-      "document": 7.2
+      "calls": 23.3,
+      "retrieve": 14.6,
+      "act": 1.2,
+      "document": 7.5
      },
      "llm_tool": {
-      "calls": 27.9,
-      "retrieve": 22.3,
-      "act": 3.9,
+      "calls": 27.1,
+      "retrieve": 22.0,
+      "act": 3.5,
       "document": 1.6
      }
     },
     "decisions": {
      "s1_tool__pplx12": {
-      "steps": 444,
+      "steps": 545,
       "steps_per_task": 20.2,
       "tool_share": {
-       "write_file": 0.358,
-       "fhir_document_reference_search_clinical_notes": 0.171,
-       "fhir_observation_search_labs": 0.162,
-       "fhir_patient_search_demographics": 0.056,
-       "fhir_medication_request_search_orders": 0.054,
-       "fhir_condition_search_problems": 0.047,
-       "fhir_service_request_create": 0.045,
-       "FINISH": 0.032,
-       "fhir_medication_request_create": 0.027,
-       "fhir_service_request_search": 0.018,
-       "fhir_observation_search_vitals": 0.014,
+       "write_file": 0.372,
+       "fhir_observation_search_labs": 0.174,
+       "fhir_document_reference_search_clinical_notes": 0.154,
+       "fhir_medication_request_search_orders": 0.059,
+       "fhir_patient_search_demographics": 0.057,
+       "fhir_condition_search_problems": 0.05,
+       "fhir_service_request_create": 0.037,
+       "FINISH": 0.029,
+       "fhir_medication_request_create": 0.024,
+       "fhir_service_request_search": 0.017,
+       "fhir_observation_search_vitals": 0.013,
        "fhir_observation_search_social_history": 0.007,
-       "fhir_procedure_search_orders": 0.007,
+       "fhir_procedure_search_orders": 0.006,
        "fhir_communication_create_message": 0.002
       },
-      "mean_max_p": 0.572,
-      "regenerated_share": 0.468,
-      "steps_with_dropped_calls": 0.169,
+      "mean_max_p": 0.562,
+      "regenerated_share": 0.488,
+      "steps_with_dropped_calls": 0.171,
       "decider_errors": 0
      },
      "llm_tool": {
-      "steps": 504,
-      "steps_per_task": 22.9,
+      "steps": 599,
+      "steps_per_task": 22.2,
       "tool_share": {
-       "fhir_document_reference_search_clinical_notes": 0.244,
-       "fhir_observation_search_labs": 0.212,
-       "fhir_condition_search_problems": 0.087,
-       "write_file": 0.071,
-       "fhir_medication_request_search_orders": 0.069,
+       "fhir_document_reference_search_clinical_notes": 0.239,
+       "fhir_observation_search_labs": 0.214,
+       "fhir_condition_search_problems": 0.097,
+       "write_file": 0.073,
+       "fhir_medication_request_search_orders": 0.067,
        "fhir_patient_search_demographics": 0.052,
-       "FINISH": 0.044,
-       "fhir_service_request_search": 0.042,
-       "fhir_service_request_create": 0.042,
-       "fhir_procedure_search_orders": 0.036,
-       "fhir_appointment_create": 0.036,
+       "FINISH": 0.045,
+       "fhir_service_request_create": 0.038,
+       "fhir_service_request_search": 0.037,
+       "fhir_appointment_create": 0.035,
+       "fhir_procedure_search_orders": 0.032,
        "fhir_medication_request_create": 0.028,
-       "fhir_observation_search_social_history": 0.016,
-       "fhir_observation_search_vitals": 0.014,
-       "fhir_communication_create_message": 0.008
+       "fhir_observation_search_vitals": 0.017,
+       "fhir_observation_search_social_history": 0.017,
+       "fhir_communication_create_message": 0.01
       },
       "mean_max_p": 0.0,
       "regenerated_share": 0.0,
-      "steps_with_dropped_calls": 0.312,
+      "steps_with_dropped_calls": 0.321,
       "decider_errors": 0
      }
     }
    },
    "tool_vs_clef": {
-    "paired_tasks": 22,
-    "pass@1_s1_tool__pplx12": 0.1364,
-    "pass@1_s1_tool": 0.0,
-    "checkpoint_s1_tool__pplx12": 0.5343,
-    "checkpoint_s1_tool": 0.3977,
+    "paired_tasks": 27,
+    "pass@1_s1_tool__pplx12": 0.1481,
+    "pass@1_s1_tool": 0.037,
+    "checkpoint_s1_tool__pplx12": 0.5041,
+    "checkpoint_s1_tool": 0.422,
     "pass@1_diff_ci": [
-     0.1364,
-     0.0,
-     0.2727
+     0.1111,
+     -0.037,
+     0.2963
     ],
-    "mcnemar_p": 0.25,
+    "mcnemar_p": 0.375,
     "checkpoint_diff_ci": [
-     0.1365,
-     -0.0105,
-     0.2909
+     0.0821,
+     -0.0827,
+     0.2396
     ],
     "by_type_diff_ci": {
      "Action Execution": [
-      0.2667,
-      0.05,
-      0.5167
+      0.2222,
+      0.0417,
+      0.4306
      ],
      "Clinical Reasoning": [
-      0.0962,
-      -0.1167,
-      0.3098
+      0.0321,
+      -0.1784,
+      0.2432
      ],
      "Data Retrieval": [
-      0.2727,
-      0.0909,
-      0.4545
+      0.2407,
+      0.0556,
+      0.4259
      ],
      "Documentation": [
-      0.0455,
-      -0.2273,
-      0.3182
+      0.0,
+      -0.2593,
+      0.2593
      ]
     },
     "tools": {
      "s1_tool__pplx12": {
-      "calls": 22.9,
-      "retrieve": 14.3,
-      "act": 1.5,
-      "document": 7.2
+      "calls": 23.3,
+      "retrieve": 14.6,
+      "act": 1.2,
+      "document": 7.5
      },
      "s1_tool": {
-      "calls": 19.7,
-      "retrieve": 10.0,
-      "act": 2.7,
-      "document": 7.0
+      "calls": 20.7,
+      "retrieve": 10.4,
+      "act": 2.3,
+      "document": 8.0
      }
     },
     "decisions": {
      "s1_tool__pplx12": {
-      "steps": 444,
+      "steps": 545,
       "steps_per_task": 20.2,
       "tool_share": {
-       "write_file": 0.358,
-       "fhir_document_reference_search_clinical_notes": 0.171,
-       "fhir_observation_search_labs": 0.162,
-       "fhir_patient_search_demographics": 0.056,
-       "fhir_medication_request_search_orders": 0.054,
-       "fhir_condition_search_problems": 0.047,
-       "fhir_service_request_create": 0.045,
-       "FINISH": 0.032,
-       "fhir_medication_request_create": 0.027,
-       "fhir_service_request_search": 0.018,
-       "fhir_observation_search_vitals": 0.014,
+       "write_file": 0.372,
+       "fhir_observation_search_labs": 0.174,
+       "fhir_document_reference_search_clinical_notes": 0.154,
+       "fhir_medication_request_search_orders": 0.059,
+       "fhir_patient_search_demographics": 0.057,
+       "fhir_condition_search_problems": 0.05,
+       "fhir_service_request_create": 0.037,
+       "FINISH": 0.029,
+       "fhir_medication_request_create": 0.024,
+       "fhir_service_request_search": 0.017,
+       "fhir_observation_search_vitals": 0.013,
        "fhir_observation_search_social_history": 0.007,
-       "fhir_procedure_search_orders": 0.007,
+       "fhir_procedure_search_orders": 0.006,
        "fhir_communication_create_message": 0.002
       },
-      "mean_max_p": 0.572,
-      "regenerated_share": 0.468,
-      "steps_with_dropped_calls": 0.169,
+      "mean_max_p": 0.562,
+      "regenerated_share": 0.488,
+      "steps_with_dropped_calls": 0.171,
       "decider_errors": 0
      },
      "s1_tool": {
-      "steps": 388,
-      "steps_per_task": 17.6,
+      "steps": 504,
+      "steps_per_task": 18.7,
       "tool_share": {
-       "write_file": 0.399,
-       "fhir_document_reference_search_clinical_notes": 0.126,
-       "fhir_observation_search_labs": 0.101,
-       "fhir_service_request_create": 0.088,
-       "fhir_patient_search_demographics": 0.062,
-       "FINISH": 0.049,
-       "fhir_condition_search_problems": 0.049,
-       "fhir_medication_request_search_orders": 0.046,
-       "fhir_medication_request_create": 0.036,
-       "fhir_appointment_create": 0.01,
+       "write_file": 0.429,
+       "fhir_observation_search_labs": 0.123,
+       "fhir_document_reference_search_clinical_notes": 0.117,
+       "fhir_service_request_create": 0.067,
+       "fhir_patient_search_demographics": 0.058,
+       "FINISH": 0.048,
+       "fhir_condition_search_problems": 0.048,
+       "fhir_medication_request_search_orders": 0.044,
+       "fhir_medication_request_create": 0.032,
        "fhir_observation_search_social_history": 0.01,
-       "fhir_service_request_search": 0.008,
-       "fhir_observation_search_vitals": 0.005,
-       "fhir_communication_create_message": 0.005,
-       "fhir_procedure_search_orders": 0.005
+       "fhir_appointment_create": 0.008,
+       "fhir_service_request_search": 0.006,
+       "fhir_observation_search_vitals": 0.004,
+       "fhir_communication_create_message": 0.004,
+       "fhir_procedure_search_orders": 0.004
       },
-      "mean_max_p": 0.452,
-      "regenerated_share": 0.523,
-      "steps_with_dropped_calls": 0.168,
+      "mean_max_p": 0.437,
+      "regenerated_share": 0.516,
+      "steps_with_dropped_calls": 0.169,
       "decider_errors": 0
      }
     }
    },
    "tool_vs_llm": {
-    "paired_tasks": 22,
-    "pass@1_s1_tool__pplx12": 0.1364,
-    "pass@1_llm": 0.4091,
-    "checkpoint_s1_tool__pplx12": 0.5343,
-    "checkpoint_llm": 0.8513,
+    "paired_tasks": 27,
+    "pass@1_s1_tool__pplx12": 0.1481,
+    "pass@1_llm": 0.3333,
+    "checkpoint_s1_tool__pplx12": 0.5041,
+    "checkpoint_llm": 0.8392,
     "pass@1_diff_ci": [
-     -0.2727,
-     -0.5,
-     -0.0455
+     -0.1852,
+     -0.4074,
+     0.0
     ],
-    "mcnemar_p": 0.0703,
+    "mcnemar_p": 0.1797,
     "checkpoint_diff_ci": [
-     -0.317,
-     -0.4657,
-     -0.1786
+     -0.335,
+     -0.4794,
+     -0.1928
     ],
     "by_type_diff_ci": {
      "Action Execution": [
-      -0.0833,
-      -0.2333,
+      -0.125,
+      -0.2917,
       0.0
      ],
      "Clinical Reasoning": [
-      -0.3182,
-      -0.5076,
-      -0.1439
+      -0.358,
+      -0.537,
+      -0.1852
      ],
      "Data Retrieval": [
-      -0.4091,
-      -0.6364,
-      -0.2273
+      -0.3704,
+      -0.5556,
+      -0.1852
      ],
      "Documentation": [
-      -0.4545,
-      -0.6818,
-      -0.2273
+      -0.4074,
+      -0.6296,
+      -0.1852
      ]
     },
     "tools": {
      "s1_tool__pplx12": {
-      "calls": 22.9,
-      "retrieve": 14.3,
-      "act": 1.5,
-      "document": 7.2
+      "calls": 23.3,
+      "retrieve": 14.6,
+      "act": 1.2,
+      "document": 7.5
      },
      "llm": {
-      "calls": 35.1,
-      "retrieve": 29.5,
-      "act": 3.9,
-      "document": 1.7
+      "calls": 35.3,
+      "retrieve": 30.3,
+      "act": 3.3,
+      "document": 1.6
      }
     },
     "decisions": {
      "s1_tool__pplx12": {
-      "steps": 444,
+      "steps": 545,
       "steps_per_task": 20.2,
       "tool_share": {
-       "write_file": 0.358,
-       "fhir_document_reference_search_clinical_notes": 0.171,
-       "fhir_observation_search_labs": 0.162,
-       "fhir_patient_search_demographics": 0.056,
-       "fhir_medication_request_search_orders": 0.054,
-       "fhir_condition_search_problems": 0.047,
-       "fhir_service_request_create": 0.045,
-       "FINISH": 0.032,
-       "fhir_medication_request_create": 0.027,
-       "fhir_service_request_search": 0.018,
-       "fhir_observation_search_vitals": 0.014,
+       "write_file": 0.372,
+       "fhir_observation_search_labs": 0.174,
+       "fhir_document_reference_search_clinical_notes": 0.154,
+       "fhir_medication_request_search_orders": 0.059,
+       "fhir_patient_search_demographics": 0.057,
+       "fhir_condition_search_problems": 0.05,
+       "fhir_service_request_create": 0.037,
+       "FINISH": 0.029,
+       "fhir_medication_request_create": 0.024,
+       "fhir_service_request_search": 0.017,
+       "fhir_observation_search_vitals": 0.013,
        "fhir_observation_search_social_history": 0.007,
-       "fhir_procedure_search_orders": 0.007,
+       "fhir_procedure_search_orders": 0.006,
        "fhir_communication_create_message": 0.002
       },
-      "mean_max_p": 0.572,
-      "regenerated_share": 0.468,
-      "steps_with_dropped_calls": 0.169,
+      "mean_max_p": 0.562,
+      "regenerated_share": 0.488,
+      "steps_with_dropped_calls": 0.171,
       "decider_errors": 0
      },
      "llm": null
@@ -1011,9 +1011,9 @@
   "s1_tool/run2": 0,
   "s1_tool/run3": 0,
   "llm_log_k5/run1": 6,
-  "llm_tool/run1": 73,
-  "clef_k5__pplx12/run1": 36,
-  "s1_tool__pplx12/run1": 22
+  "llm_tool/run1": 75,
+  "clef_k5__pplx12/run1": 40,
+  "s1_tool__pplx12/run1": 27
  },
  "run1_by_category": {
   "Diagnosis & Interpretation": {
