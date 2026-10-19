@@ -3,7 +3,8 @@
 #   results/pb_summary.json (PhysicianBench, all runs), results/clinenv_summary.json (ClinEnv, ours + authors')
 #   bash scripts/progress_commit.sh INTERVAL [once]     (stops when logs/commits.stop exists)
 # Job and run directories with patient data stay under /ocean/projects/cis260032p/yliy/data (outside the repo);
-# the pre-commit hook (.githooks) refuses anything data-like. There is no git remote; nothing is pushed.
+# the pre-commit hook (.githooks) refuses anything data-like. Each commit is then published to
+# github.com/yubol-bobo/Jev-as-A-Predictor by scripts/sync_to_jev.sh (tracked files only, without ClinEnv).
 set -uo pipefail
 INTERVAL=${1:-1200}; ONCE=${2:-}
 REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
@@ -21,6 +22,7 @@ while true; do
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -- results paper \
       && echo "$(date +%T) committed (pb $n_pb, ce $n_ce)"
   fi
+  bash scripts/sync_to_jev.sh || echo "$(date +%T) sync to GitHub failed"
   [ -n "$ONCE" ] && break
   [ -f logs/commits.stop ] && break
   sleep "$INTERVAL"

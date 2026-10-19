@@ -1,49 +1,61 @@
-# Jev-as-A-Predictor
+# Who Decides? System One models in the decision seat of clinical agents
 
-Are System One decision models (JEV, pplx-decider, Cloudflare Clef, Kev) good sequential predictors — untrained, and after finetuning?
+How does a System One decision model compare with an LLM when it makes the decisions inside real clinical agent
+loops? A System One model reads a state and a set of options, and returns a probability for each in one forward
+pass, without generating text.
 
-System One 决策模型能否作为序列预测器？比较不训练与 finetune 后的表现。
+System One 决策模型在真实临床智能体任务中做决策，与 LLM 相比表现如何？
 
-- Design / 设计: [docs/design.md](docs/design.md)
-- **Clinical agents / 临床智能体:** [S1-Clinical-Agents/](S1-Clinical-Agents/) — does a System One model (Clef-27B, and five other System One models) make better decisions than the LLM inside real clinical agent loops (PhysicianBench, ClinEnv)? Paper draft: [S1-Clinical-Agents/paper/main.pdf](S1-Clinical-Agents/paper/main.pdf). Synced from the working repository on every progress commit.
+- **Paper draft:** [paper/main.pdf](paper/main.pdf) (source `paper/main.tex`, figures `paper/figures/`)
+- **Design and running log:** [docs/full_experiment.md](docs/full_experiment.md)
+- **Environments:** [PhysicianBench](https://github.com/HealthRex/PhysicianBench) (100 consultation tasks against a
+  FHIR record of real de-identified patients) and [ClinEnv](https://github.com/ylin766/ClinEnv) (staged MIMIC-IV
+  admissions). Everything runs on local models only.
 
-## Progress / 进展
+## Setup
 
-| Date | Step | Status |
-|---|---|---|
-| 2026-10-09 | Design agreed | ✅ |
-| 2026-10-09 | 1a. Shared item format, metrics, SASRec (CE) + driver; SASRec sanity check passed | ✅ |
-| 2026-10-09 | 1b. Data frozen for 5 tasks (dev 300 / test 1,000 [NYC: all 1,083 users] / train 10,000) + baselines | ✅ dev/test committed; train files kept local |
-| 2026-10-10 | 2. Untrained evaluation (JEV, pplx-decider, Clef, Kev): 4 × 6,583 requests, 0 errors | ✅ [results/summary_test.md](results/summary_test.md) |
-| | 3. Finetuning grid (45 runs) + matched-N SASRec — LoRA for all three (see design §5); local smoke run first | 🔄 preparing |
-| | 4. Analysis | ⏳ |
+Everything except the decision maker is held fixed: the benchmarks' own agent loops, tools and graders, the
+hardware, and the backbone. The LLM is Qwen3.8-27B, and Clef-27B is post-trained from it.
 
-## Step 1 baselines (test, 20 candidates; BPIC12: 24) / 对照组结果
+| Arm | Who decides |
+|---|---|
+| LLM | Qwen3.8-27B, one sample per step (leaderboard setting) |
+| S1-Select | Qwen proposes K = 5 complete next turns, and a System One model picks one |
+| S1-Tool | a System One model picks the next tool (or finish); Qwen writes the call |
+| LLM-Tool | control for S1-Tool: the same one-tool-per-turn restriction, but Qwen picks the tool |
 
-| task | system | HR@1 | NDCG@10 | MRR | NLL | ECE |
-|---|---|---|---|---|---|---|
-| ml1m | popularity | 0.270 | 0.557 | 0.457 | 2.331 | 0.031 |
-| ml1m | sasrec | 0.686 | 0.834 | 0.790 | 1.087 | 0.037 |
-| beauty | popularity | 0.163 | 0.388 | 0.321 | 2.920 | 0.093 |
-| beauty | sasrec | 0.386 | 0.562 | 0.509 | 2.239 | 0.056 |
-| fsq_nyc | popularity | 0.167 | 0.385 | 0.316 | 2.834 | 0.062 |
-| fsq_nyc | sasrec | 0.711 | 0.823 | 0.786 | 1.017 | 0.066 |
-| icews14 | recurrency | 0.818 | 0.883 | 0.867 | 0.696 | 0.033 |
-| icews14 | regcn | 0.832 | 0.892 | 0.876 | 0.753 | 0.065 |
-| bpic12 | majority | 0.112 | 0.369 | 0.293 | 2.898 | 0.023 |
-| bpic12 | ngram | 0.738 | 0.884 | 0.847 | 0.791 | 0.033 |
-| bpic12 | sasrec | 0.746 | 0.889 | 0.852 | 0.761 | 0.039 |
+## Findings so far (PhysicianBench, run 1, Clef-27B as the System One model)
 
-Data cards: `results/data_cards/<task>.md`. BPIC12 SASRec uses `--prefix-examples 20`.
+- **Selecting among proposals, it matches the LLM:** 80.5% vs 81.3% of graded checkpoints, with no significant
+  difference in task success (38.1% vs 42.3%, p = 0.52), and with fewer tool calls.
+- **It acts when action is required:** when a required order is among the proposals, it places it in 100% of
+  those steps; the LLM's own sample does so in 38%.
+- **It should not steer alone:** choosing the tool, it writes the note again and again instead of gathering data,
+  and checkpoint success falls to 43.7%. The same restriction with the LLM choosing costs only 2.2 points.
+- **Selection is bounded by the proposer:** on MIMIC-IV, 80% of the LLM's five-sample candidate sets hold a single
+  clinical decision.
 
-## Step 2: untrained System One models (test HR@1) / 不训练结果
+## In progress
 
-| task | JEV | Kev-27B | pplx-decider | Clef | best baseline |
-|---|---|---|---|---|---|
-| ml1m | 0.408 | 0.419 | 0.454 | 0.423 | 0.686 (sasrec) |
-| beauty | 0.361 | 0.346 | 0.359 | 0.341 | 0.386 (sasrec) |
-| fsq_nyc | 0.670 | 0.656 | 0.677 | 0.639 | 0.711 (sasrec) |
-| icews14 | 0.841 | 0.768 | 0.776 | 0.804 | 0.832 (regcn) |
-| bpic12 | 0.232 | 0.262 | 0.271 | 0.269 | 0.746 (sasrec) |
+- **Other System One models in Clef's seat:** pplx-decider-v1.2, d3 v3.1.0, linne-oak-1-0, amos-1-large and
+  decider-31b, run in both System One arms ([docs §7](docs/full_experiment.md)).
+- LLM-Tool control to 100 tasks; PhysicianBench runs 2–3 (pass@3); the ClinEnv online arms.
 
-Full tables with CIs, NDCG@10, MRR, NLL, ECE: [results/summary_test.md](results/summary_test.md).
+## Layout
+
+| Path | What |
+|---|---|
+| `src/s1clin/` | arms, deciders, the job runners for both benchmarks, item claims and replica routing |
+| `scripts/` | serving (`vllm_qwen_up.sh`, `clef_server.py`, `s1_up.sh`, `s1_proxy.py`), run drivers, analysis (`pb_analyze.py`, `pb_offline_orders.py`, `offline_decisions.py`), tables and figures (`make_tables.py`, `build_paper.sh`) |
+| `results/` | aggregate results only |
+| `paper/` | the draft, generated tables and numbers, vector figures |
+| `third_party/physicianbench/` | vendored PhysicianBench (Apache-2.0), local changes marked `S1CLIN PATCH` |
+
+**Data policy.** Patient-level data (MIMIC-IV, the PhysicianBench record, trajectories, notes, decision logs) never
+enters this repository and is never sent to external services. Only aggregate metrics are committed.
+ClinEnv has no upstream license, so its vendored code is not included here (see
+`third_party/clinenv/NOT_INCLUDED.md`).
+
+This repository is published from the private working repository after each progress commit
+(`scripts/sync_to_jev.sh`). The earlier sequential-predictor study (abandoned) is kept at the tag
+`archive/seqpred-2026-10-19`.

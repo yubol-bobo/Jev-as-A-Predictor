@@ -1,12 +1,19 @@
+# Clinical data and anything derived from it never enters git (PhysioNet / Redivis DUAs).
+data/
+cases/
+results/raw/
+results/cache/
+logs/
+*.sif
+*.tar.gz
 .env
 __pycache__/
 *.pyc
-data/external/
-results/cache/
-results/checkpoints/
-*.pt
-*.ckpt
-slurm-*.out
-logs/
-# train.jsonl files (19–51 MB each) stay local (user decision 2026-10-09); rebuild with scripts/build_<task>.py
-data/items/*/train.jsonl
+.venv/
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/figures/preview_*.png
+paper/figures/fig1_overview_preview.png
