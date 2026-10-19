@@ -5,6 +5,7 @@ Are System One decision models (JEV, pplx-decider, Cloudflare Clef, Kev) good se
 System One 决策模型能否作为序列预测器？比较不训练与 finetune 后的表现。
 
 - Design / 设计: [docs/design.md](docs/design.md)
+- **Clinical agents / 临床智能体:** [S1-Clinical-Agents/](S1-Clinical-Agents/) — does a System One model (Clef-27B, and five other System One models) make better decisions than the LLM inside real clinical agent loops (PhysicianBench, ClinEnv)? Paper draft: [S1-Clinical-Agents/paper/main.pdf](S1-Clinical-Agents/paper/main.pdf). Synced from the working repository on every progress commit.
 
 ## Progress / 进展
 

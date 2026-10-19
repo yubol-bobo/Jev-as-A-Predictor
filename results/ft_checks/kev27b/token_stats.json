@@ -1,0 +1,82 @@
+{
+ "ml1m": {
+  "n": 10000,
+  "mean": 580.7,
+  "median": 595.0,
+  "p95": 633.0,
+  "max": 694,
+  "mean_first_500": 588.9,
+  "mean_first_2000": 585.5,
+  "argmax_ids": [
+   "ml1m-train-u3679-p195",
+   "ml1m-train-u705-p43",
+   "ml1m-train-u2491-p47",
+   "ml1m-train-u4538-p25",
+   "ml1m-train-u3683-p384"
+  ]
+ },
+ "beauty": {
+  "n": 10000,
+  "mean": 922.6,
+  "median": 881.0,
+  "p95": 1194.0,
+  "max": 1425,
+  "mean_first_500": 955.8,
+  "mean_first_2000": 953.7,
+  "argmax_ids": [
+   "beauty-train-uA3IQXED40ZZ2T2-p24",
+   "beauty-train-uA1Z3AV93ONK5VF-p21",
+   "beauty-train-uAN65KG18M4SDN-p23",
+   "beauty-train-uA11J1FHCK5U06J-p27",
+   "beauty-train-uA1W9OSF4ZWL94R-p30"
+  ]
+ },
+ "fsq_nyc": {
+  "n": 10000,
+  "mean": 1110.1,
+  "median": 1148.0,
+  "p95": 1196.0,
+  "max": 1318,
+  "mean_first_500": 1110.3,
+  "mean_first_2000": 1112.7,
+  "argmax_ids": [
+   "fsq_nyc-train-u1032-t27",
+   "fsq_nyc-train-u1032-t59",
+   "fsq_nyc-train-u807-t36",
+   "fsq_nyc-train-u1032-t39",
+   "fsq_nyc-train-u1032-t31"
+  ]
+ },
+ "icews14": {
+  "n": 10000,
+  "mean": 735.8,
+  "median": 806.0,
+  "p95": 1109.0,
+  "max": 1334,
+  "mean_first_500": 747.6,
+  "mean_first_2000": 743.6,
+  "argmax_ids": [
+   "icews14-train-70128",
+   "icews14-train-52865",
+   "icews14-train-39128",
+   "icews14-train-71092",
+   "icews14-train-38885"
+  ]
+ },
+ "bpic12": {
+  "n": 10000,
+  "mean": 346.9,
+  "median": 319.0,
+  "p95": 568.0,
+  "max": 602,
+  "mean_first_500": 343.6,
+  "mean_first_2000": 346.2,
+  "argmax_ids": [
+   "bpic12-train-c191767-k49",
+   "bpic12-train-c195678-k40",
+   "bpic12-train-c190842-k56",
+   "bpic12-train-c191797-k44",
+   "bpic12-train-c200082-k42"
+  ]
+ }
+}

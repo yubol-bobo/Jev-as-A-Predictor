@@ -1,0 +1,124 @@
+{
+  "@context": "https://schema.org/",
+  "@type": "Dataset",
+  "name": "PhysicianBench",
+  "description": "# Abstract\n\nPhysicianBench is a benchmark for evaluating large language model (LLM) agents on realistic clinical workflows. The benchmark comprises 100 long-horizon tasks adapted from real consultation cases between primary care physicians and specialists, with each task independently reviewed by a separate panel of physicians. Tasks are instantiated in an EHR environment with real patient records derived from STARR (Stanford Medicine Research Data Repository) and accessed through the same standard APIs used by commercial EHR vendors.\n\nThis dataset page hosts only the patient EHR data, distributed as a Docker image bundling a FHIR-compliant EHR server pre-loaded with the de-identified patient cohort. The benchmark task definitions, evaluation harness, and agent framework are released as open source on GitHub (https://github.com/HealthRex/PhysicianBench).\n\nAll patient data undergo additional privacy protection measures beyond standard de-identification. Access to the Docker image is provided through a controlled request-and-approval process; data usage is governed by the Stanford University Research Data Use Agreement.\n\nWebsite: https://healthrex.github.io/PhysicianBench/\n\n# Usage\n\nAfter download, load the image with:\n\n`gunzip -c physicianbench-fhir-v1.tar.gz | docker load`\n\n\n\nThe image will appear as `fhir-full:v1`and is consumed by the benchmark scripts at [https://github.com/HealthRex/PhysicianBench](%3Chttps://github.com/HealthRex/PhysicianBench%3E)\n\n",
+  "url": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9",
+  "sameAs": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9",
+  "keywords": [
+    "machine learning/artificial intelligence",
+    "file"
+  ],
+  "temporalCoverage": "2026-05-04T03:22:39.401Z/2026-05-04T03:23:05.793Z",
+  "dateCreated": "2026-04-16T13:44:04.844Z",
+  "dateModified": "2026-05-04T03:42:08.450Z",
+  "version": "1.0",
+  "isAccessibleForFree": false,
+  "identifier": "https://doi.org/10.57761/1s4z-j007",
+  "includedInDataCatalog": {
+    "@type": "DataCatalog",
+    "name": "Stanford AIMI Data Portal",
+    "url": "https://stanford.redivis.com/AIMI/datasets",
+    "isPartOf": {
+      "@context": "https://schema.org",
+      "@type": "DataCatalog",
+      "name": "Stanford University Data Farm",
+      "alternateName": "Stanford",
+      "description": "Stanford Data Farm, powered by Redivis, is Stanford's research data exploration tool for datasets, allowing for fast and highly efficient queries and extracts handled directly in the browser.",
+      "creator": {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Stanford University",
+        "alternateName": "Stanford",
+        "url": "https://stanford.redivis.com",
+        "sameAs": "https://stanford.redivis.com",
+        "identifier": "http://ror.org/00f54p054",
+        "description": "Stanford Data Farm, powered by Redivis, is Stanford's research data exploration tool for datasets, allowing for fast and highly efficient queries and extracts handled directly in the browser."
+      },
+      "url": "https://stanford.redivis.com/datasets",
+      "sameAs": "https://stanford.redivis.com/datasets"
+    }
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "Stanford AIMI",
+    "url": "https://stanford.redivis.com/AIMI",
+    "image": "https://rdvs.imgix.net/3e6cf078-32d3-45fc-9cff-345a408cdbca.png",
+    "logo": "https://rdvs.imgix.net/3e6cf078-32d3-45fc-9cff-345a408cdbca.png"
+  },
+  "hasPart": [
+    {
+      "@type": "Dataset",
+      "name": "physicianbench",
+      "description": "This is an auto-generated index table corresponding to a folder of files in this dataset with the same name. This table can be used to extract a subset of files based on their metadata, which can then be used for further analysis.\nYou can view the contents of specific files by navigating to the \"cells\" tab and clicking on an individual file_id.",
+      "url": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables/k2n9-247rt1npa?v=1.0",
+      "keywords": [
+        "file"
+      ],
+      "temporalCoverage": "2026-05-04T03:22:39.401Z/2026-05-04T03:23:05.793Z",
+      "creator": {
+        "@type": "Organization",
+        "name": "Stanford AIMI",
+        "url": "https://stanford.redivis.com/AIMI",
+        "image": "https://rdvs.imgix.net/3e6cf078-32d3-45fc-9cff-345a408cdbca.png",
+        "logo": "https://rdvs.imgix.net/3e6cf078-32d3-45fc-9cff-345a408cdbca.png"
+      }
+    }
+  ],
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "requiresSubscription": true,
+      "contentUrl": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/jsonl",
+      "requiresSubscription": true,
+      "contentUrl": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "avro",
+      "requiresSubscription": true,
+      "contentUrl": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "parquet",
+      "requiresSubscription": true,
+      "contentUrl": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "arrow",
+      "requiresSubscription": true,
+      "contentUrl": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "SAS",
+      "requiresSubscription": true,
+      "contentUrl": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "Stata",
+      "requiresSubscription": true,
+      "contentUrl": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "SPSS",
+      "requiresSubscription": true,
+      "contentUrl": "https://stanford.redivis.com/datasets/a0ek-0ad8tjsw9/tables"
+    }
+  ],
+  "provider": {
+    "@type": "Organization",
+    "name": "Redivis",
+    "url": "https://redivis.com",
+    "logo": "https://redivis.com/static/8.4.0/images/icon-square-large.png"
+  }
+}
