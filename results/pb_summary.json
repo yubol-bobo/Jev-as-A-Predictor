@@ -31,6 +31,17 @@
     "per_task_pass": {}
    }
   },
+  "clef_k5__pplx12": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
   "llm": {
    "run1": {
     "pass@1": 0.0,
@@ -139,6 +150,17 @@
     "mean_agent_wall_s": 0.0,
     "per_task_pass": {}
    }
+  },
+  "s1_tool__pplx12": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
   }
  },
  "progress": {
@@ -157,15 +179,20 @@
    "passed": 0,
    "checkpoint_pass": 0.0
   },
+  "clef_k5__pplx12/run1": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  },
   "llm/run1": {
    "finished": 100,
    "passed": 41,
    "checkpoint_pass": 0.812
   },
   "llm/run2": {
-   "finished": 0,
-   "passed": 0,
-   "checkpoint_pass": 0.0
+   "finished": 12,
+   "passed": 6,
+   "checkpoint_pass": 0.869
   },
   "llm/run3": {
    "finished": 0,
@@ -188,9 +215,9 @@
    "checkpoint_pass": 0.681
   },
   "llm_tool/run1": {
-   "finished": 36,
-   "passed": 15,
-   "checkpoint_pass": 0.845
+   "finished": 59,
+   "passed": 19,
+   "checkpoint_pass": 0.821
   },
   "s1_tool/run0": {
    "finished": 1,
@@ -198,9 +225,9 @@
    "checkpoint_pass": 0.0
   },
   "s1_tool/run1": {
-   "finished": 97,
+   "finished": 100,
    "passed": 7,
-   "checkpoint_pass": 0.435
+   "checkpoint_pass": 0.442
   },
   "s1_tool/run2": {
    "finished": 0,
@@ -211,6 +238,11 @@
    "finished": 0,
    "passed": 0,
    "checkpoint_pass": 0.0
+  },
+  "s1_tool__pplx12/run1": {
+   "finished": 3,
+   "passed": 0,
+   "checkpoint_pass": 0.696
   }
  }
 }
