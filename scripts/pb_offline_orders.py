@@ -7,7 +7,7 @@ give the required orders as name/code regexes. A candidate is *right* if it crea
 earlier in the trajectory (by the executed turns), using the graders' own matching rule (regex on the display text,
 or on the code). Items whose candidates include both right and other turns are where a decider can matter.
 
-Deciders: clef (state + options), clef_blind (options only), first (the executed sample), majority (most-sampled),
+Deciders: clef or any S1CLIN_DECIDER (state + options), <name>_blind (options only), first (the executed sample), majority (most-sampled),
 random (expected). Patient content stays under data/offline/pb_<slug>/; only aggregates go to results/.
 
   .venv/bin/python scripts/pb_offline_orders.py build|select|report [--slug llm_log_k5/run1]
@@ -129,6 +129,7 @@ def select(slug, workers):
     out = od / "selections.jsonl"
     done = {(x["id"], x["decider"]) for x in map(json.loads, out.read_text().splitlines())} if out.exists() else set()
     clef, lock, cache = ClefDecider(question=DECISION_QUESTION), __import__("threading").Lock(), {}
+    name = clef.name  # S1CLIN_DECIDER: clef (default) or another System One decider behind the same /decide API
 
     def state(it):
         if it["task"] not in cache:
@@ -139,7 +140,7 @@ def select(slug, workers):
         it, d = job
         seed = hashlib.sha256(it["id"].encode()).hexdigest()
         try:
-            msgs = state(it) if d == "clef" else [{"role": "user", "content": BLIND}]
+            msgs = [{"role": "user", "content": BLIND}] if d.endswith("_blind") else state(it)
             pick, dist, info = clef.choose(msgs, it["options"], seed)
         except Exception as e:
             pick, dist, info = None, None, {"error": repr(e)[:300]}
@@ -147,7 +148,7 @@ def select(slug, workers):
             f.write(json.dumps({"id": it["id"], "decider": d, "pick": pick, "distribution": dist,
                                 "info": {k: info.get(k) for k in ("error", "input_tokens") if k in info}}) + "\n")
 
-    jobs = [(it, d) for it in items for d in ("clef", "clef_blind")
+    jobs = [(it, d) for it in items for d in (name, f"{name}_blind")
             if len(it["options"]) > 1 and (it["id"], d) not in done]
     print(f"{len(jobs)} selections", flush=True)
     with ThreadPoolExecutor(workers) as ex:
@@ -174,7 +175,8 @@ def report(slug, path):
         for i in items:
             if i["online_distribution"]:
                 sel[(i["id"], "clef_online")] = {"pick": i["online_pick"], "distribution": i["online_distribution"]}
-    for d in ("clef", "clef_blind", "clef_online"):
+    deciders = sorted({d for _, d in sel})
+    for d in deciders:
         got = [(i, sel[(i["id"], d)]) for i in disc if (i["id"], d) in sel]
         if got:
             pos = [p for i, x in got for p, ok in zip(x["distribution"], i["right"]) if ok]
@@ -194,7 +196,7 @@ def report(slug, path):
         r = {"n": len(sub), "share_creating": round(sum(sum(i["creates"]) / len(i["creates"]) for i in sub)
                                                     / max(len(sub), 1), 4),
              "first": round(sum(i["creates"][0] for i in sub) / max(len(sub), 1), 4)}
-        for d in ("clef", "clef_blind", "clef_online"):
+        for d in deciders:
             got = [(i, sel[(i["id"], d)]) for i in sub if (i["id"], d) in sel]
             if got:
                 r[d] = round(sum(i["creates"][x["pick"]] for i, x in got) / len(got), 4)
