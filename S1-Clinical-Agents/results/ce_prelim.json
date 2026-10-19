@@ -1,0 +1,14 @@
+{
+ "SubmitSteps": 143,
+ "Cases": 24,
+ "DistinctRaw": "100",
+ "OneDecision": "80",
+ "TwoPlus": 29,
+ "RealChoice": 8,
+ "RealChoicePct": "6",
+ "ClefPickCorrect": "43",
+ "FirstCorrect": "42",
+ "ClefRealAcc": "75",
+ "RandRealAcc": "58",
+ "ClefRealAUROC": "0.84"
+}

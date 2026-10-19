@@ -1,0 +1,680 @@
+{
+ "all_cases": {
+  "cases": 3509,
+  "case_dirs_without_stages": 52,
+  "stages": 9297,
+  "decisions": 26043,
+  "stages_per_case": {
+   "n": 3509,
+   "mean": 2.65,
+   "p10": 1,
+   "median": 2,
+   "p90": 4
+  },
+  "cases_with_3plus_stages": 1748,
+  "cases_with_history_agent": 3509,
+  "age_field": {
+   "shifted_year_or_missing": 3509
+  },
+  "gender": {
+   "F": 1708,
+   "M": 1801
+  },
+  "gold_per_stage": {
+   "n": 9297,
+   "mean": 2.8,
+   "p10": 1,
+   "median": 1,
+   "p90": 7
+  },
+  "primary_dx_per_stage": {
+   "n": 9297,
+   "mean": 1.68,
+   "p10": 0,
+   "median": 0,
+   "p90": 7
+  },
+  "gold_type_share": {
+   "procedure": 0.069,
+   "diagnosis": 0.716,
+   "medication": 0.214
+  },
+  "medication_action_share": {
+   "stop": 0.075,
+   "start": 0.791,
+   "adjust": 0.095,
+   "switch": 0.039
+  },
+  "unscoreable_share": 0.0177,
+  "diagnosis_icd_version": {
+   "10": 1874,
+   "9": 16779,
+   "None": "<10"
+  },
+  "events_per_stage": {
+   "n": 9297,
+   "mean": 46.64,
+   "p10": 5,
+   "median": 35,
+   "p90": 104
+  },
+  "visible_events_per_stage": {
+   "n": 9297,
+   "mean": 93.57,
+   "p10": 18,
+   "median": 86,
+   "p90": 180
+  },
+  "stage_span_hours": {
+   "n": 9297,
+   "mean": 32.16,
+   "p10": 0.0,
+   "median": 16.7,
+   "p90": 60.2
+  },
+  "event_source_tables": {
+   "hosp_labevents_df": 224209,
+   "hosp_prescriptions_df": 80122,
+   "hosp_pharmacy_df": 74985,
+   "hosp_emar_detail_df": 37435,
+   "hosp_procedures_icd_df": 5963,
+   "hosp_microbiologyevents_df": 5630,
+   "radiology_note": 5218,
+   "ehr_chartevents_df": 67
+  },
+  "readview_sizes_per_stage": {
+   "hpi_chars": {
+    "n": 9297,
+    "mean": 1185.6,
+    "p10": 314,
+    "median": 1090,
+    "p90": 2156
+   },
+   "nurse_events": {
+    "n": 9297,
+    "mean": 46.17,
+    "p10": 12,
+    "median": 41,
+    "p90": 83
+   },
+   "lab_events": {
+    "n": 9297,
+    "mean": 45.48,
+    "p10": 0,
+    "median": 37,
+    "p90": 105
+   },
+   "history_chars": null
+  },
+  "top_diagnoses": [
+   [
+    "[4019] Unspecified essential hypertension",
+    859
+   ],
+   [
+    "[53081] Esophageal reflux",
+    510
+   ],
+   [
+    "[2724] Other and unspecified hyperlipidemia",
+    509
+   ],
+   [
+    "[25000] Diabetes mellitus without mention of complication, type II or unspecified type, not stated as uncontrolled",
+    479
+   ],
+   [
+    "[2449] Unspecified acquired hypothyroidism",
+    315
+   ],
+   [
+    "[41401] Coronary atherosclerosis of native coronary artery",
+    284
+   ],
+   [
+    "[V5867] Long-term (current) use of insulin",
+    284
+   ],
+   [
+    "[2859] Anemia, unspecified",
+    282
+   ],
+   [
+    "[5856] End stage renal disease",
+    259
+   ],
+   [
+    "[42731] Atrial fibrillation",
+    251
+   ],
+   [
+    "[311] Depressive disorder, not elsewhere classified",
+    243
+   ],
+   [
+    "[4280] Congestive heart failure, unspecified",
+    215
+   ],
+   [
+    "[5859] Chronic kidney disease, unspecified",
+    188
+   ],
+   [
+    "[V5861] Long-term (current) use of anticoagulants",
+    184
+   ],
+   [
+    "[2720] Pure hypercholesterolemia",
+    180
+   ]
+  ],
+  "top_dx_chapters": [
+   [
+    "ICD9:2xx",
+    3921
+   ],
+   [
+    "ICD9:4xx",
+    3426
+   ],
+   [
+    "ICD9:5xx",
+    2940
+   ],
+   [
+    "ICD9:Vxx",
+    1633
+   ],
+   [
+    "ICD9:7xx",
+    1544
+   ],
+   [
+    "ICD9:3xx",
+    1346
+   ],
+   [
+    "ICD9:1xx",
+    432
+   ],
+   [
+    "ICD9:9xx",
+    386
+   ],
+   [
+    "ICD9:0xx",
+    368
+   ],
+   [
+    "ICD9:6xx",
+    351
+   ],
+   [
+    "ICD9:Exx",
+    288
+   ],
+   [
+    "ICD10:I",
+    277
+   ],
+   [
+    "ICD10:E",
+    261
+   ],
+   [
+    "ICD10:Z",
+    255
+   ],
+   [
+    "ICD10:V",
+    227
+   ],
+   [
+    "ICD10:K",
+    187
+   ],
+   [
+    "ICD10:N",
+    115
+   ],
+   [
+    "ICD9:8xx",
+    100
+   ],
+   [
+    "ICD10:D",
+    96
+   ],
+   [
+    "ICD10:F",
+    68
+   ],
+   [
+    "ICD10:G",
+    58
+   ],
+   [
+    "ICD10:R",
+    57
+   ],
+   [
+    "ICD10:C",
+    56
+   ],
+   [
+    "ICD10:M",
+    56
+   ],
+   [
+    "ICD10:J",
+    51
+   ]
+  ],
+  "top_drugs": [
+   [
+    "hydromorphone (dilaudid)",
+    332
+   ],
+   [
+    "vancomycin",
+    256
+   ],
+   [
+    "",
+    183
+   ],
+   [
+    "furosemide",
+    152
+   ],
+   [
+    "oxycodone (immediate release)",
+    147
+   ],
+   [
+    "warfarin",
+    143
+   ],
+   [
+    "morphine sulfate",
+    142
+   ],
+   [
+    "0.9% sodium chloride",
+    126
+   ],
+   [
+    "ciprofloxacin hcl",
+    115
+   ],
+   [
+    "acetaminophen",
+    103
+   ],
+   [
+    "ondansetron",
+    96
+   ],
+   [
+    "metronidazole (flagyl)",
+    93
+   ],
+   [
+    "ceftriaxone",
+    89
+   ],
+   [
+    "insulin",
+    89
+   ],
+   [
+    "cefazolin",
+    88
+   ]
+  ],
+  "top_procedures": [
+   [
+    "Other endoscopy of small intestine",
+    67
+   ],
+   [
+    "Hemodialysis",
+    65
+   ],
+   [
+    "Esophagogastroduodenoscopy [EGD] with closed biopsy",
+    61
+   ],
+   [
+    "Percutaneous abdominal drainage",
+    47
+   ],
+   [
+    "Left heart cardiac catheterization",
+    42
+   ],
+   [
+    "Coronary arteriography using two catheters",
+    40
+   ],
+   [
+    "Venous catheterization, not elsewhere classified",
+    35
+   ],
+   [
+    "Closed [endoscopic] biopsy of large intestine",
+    34
+   ],
+   [
+    "Central venous catheter placement with guidance",
+    28
+   ],
+   [
+    "Colonoscopy",
+    28
+   ],
+   [
+    "Other electroshock therapy",
+    27
+   ],
+   [
+    "Transfusion of packed cells",
+    23
+   ],
+   [
+    "Percutaneous transluminal coronary angioplasty [PTCA]",
+    22
+   ],
+   [
+    "Endoscopic sphincterotomy and papillotomy",
+    21
+   ],
+   [
+    "Other incision with drainage of skin and subcutaneous tissue",
+    21
+   ]
+  ]
+ },
+ "eval_subset": {
+  "cases": 392,
+  "case_dirs_without_stages": 0,
+  "stages": 899,
+  "decisions": 2714,
+  "stages_per_case": {
+   "n": 392,
+   "mean": 2.29,
+   "p10": 1,
+   "median": 2,
+   "p90": 4
+  },
+  "cases_with_3plus_stages": 141,
+  "cases_with_history_agent": 392,
+  "age_field": {
+   "shifted_year_or_missing": 392
+  },
+  "gender": {
+   "F": 164,
+   "M": 228
+  },
+  "gold_per_stage": {
+   "n": 899,
+   "mean": 3.02,
+   "p10": 1,
+   "median": 1,
+   "p90": 7
+  },
+  "primary_dx_per_stage": {
+   "n": 899,
+   "mean": 0.14,
+   "p10": 0,
+   "median": 0,
+   "p90": 0
+  },
+  "gold_type_share": {
+   "diagnosis": 0.77,
+   "medication": 0.161,
+   "procedure": 0.069
+  },
+  "medication_action_share": {
+   "start": 0.771,
+   "adjust": 0.098,
+   "stop": 0.085,
+   "switch": 0.046
+  },
+  "unscoreable_share": 0.0088,
+  "diagnosis_icd_version": {
+   "9": 1715,
+   "10": 376
+  },
+  "events_per_stage": {
+   "n": 899,
+   "mean": 51.34,
+   "p10": 12,
+   "median": 41,
+   "p90": 107
+  },
+  "visible_events_per_stage": {
+   "n": 899,
+   "mean": 94.02,
+   "p10": 24,
+   "median": 85,
+   "p90": 176
+  },
+  "stage_span_hours": {
+   "n": 899,
+   "mean": 32.87,
+   "p10": 2.6,
+   "median": 20.0,
+   "p90": 64.0
+  },
+  "event_source_tables": {
+   "hosp_labevents_df": 23290,
+   "hosp_prescriptions_df": 8965,
+   "hosp_pharmacy_df": 8404,
+   "hosp_emar_detail_df": 3558,
+   "hosp_procedures_icd_df": 699,
+   "hosp_microbiologyevents_df": 666,
+   "radiology_note": 572
+  },
+  "readview_sizes_per_stage": {
+   "hpi_chars": {
+    "n": 899,
+    "mean": 1139.05,
+    "p10": 271,
+    "median": 1045,
+    "p90": 2134
+   },
+   "nurse_events": {
+    "n": 899,
+    "mean": 46.53,
+    "p10": 15,
+    "median": 42,
+    "p90": 80
+   },
+   "lab_events": {
+    "n": 899,
+    "mean": 45.45,
+    "p10": 0,
+    "median": 38,
+    "p90": 104
+   },
+   "history_chars": null
+  },
+  "top_diagnoses": [
+   [
+    "[4019] Unspecified essential hypertension",
+    114
+   ],
+   [
+    "[2724] Other and unspecified hyperlipidemia",
+    59
+   ],
+   [
+    "[25000] Diabetes mellitus without mention of complication, type II or unspecified type, not stated as uncontrolled",
+    55
+   ],
+   [
+    "[53081] Esophageal reflux",
+    52
+   ],
+   [
+    "[41401] Coronary atherosclerosis of native coronary artery",
+    40
+   ],
+   [
+    "[2449] Unspecified acquired hypothyroidism",
+    38
+   ],
+   [
+    "[V5867] Long-term (current) use of insulin",
+    35
+   ],
+   [
+    "[2859] Anemia, unspecified",
+    34
+   ],
+   [
+    "[5856] End stage renal disease",
+    31
+   ],
+   [
+    "[311] Depressive disorder, not elsewhere classified",
+    29
+   ],
+   [
+    "[5859] Chronic kidney disease, unspecified",
+    28
+   ],
+   [
+    "[42731] Atrial fibrillation",
+    25
+   ],
+   [
+    "[4280] Congestive heart failure, unspecified",
+    24
+   ],
+   [
+    "[40390] Hypertensive chronic kidney disease, unspecified, with chronic kidney disease stage I through stage IV, or unspecified",
+    23
+   ],
+   [
+    "[V4582] Percutaneous transluminal coronary angioplasty status",
+    20
+   ]
+  ],
+  "top_dx_chapters": [
+   [
+    "ICD9:2xx",
+    445
+   ],
+   [
+    "ICD9:4xx",
+    390
+   ],
+   [
+    "ICD9:5xx",
+    350
+   ],
+   [
+    "ICD9:7xx",
+    189
+   ],
+   [
+    "ICD10:V",
+    175
+   ],
+   [
+    "ICD9:3xx",
+    140
+   ],
+   [
+    "ICD9:1xx",
+    57
+   ],
+   [
+    "ICD10:E",
+    54
+   ],
+   [
+    "ICD9:9xx",
+    43
+   ],
+   [
+    "ICD10:Z",
+    40
+   ],
+   [
+    "ICD9:6xx",
+    37
+   ],
+   [
+    "ICD9:0xx",
+    34
+   ],
+   [
+    "ICD10:I",
+    23
+   ],
+   [
+    "ICD9:Vxx",
+    17
+   ],
+   [
+    "ICD10:K",
+    16
+   ],
+   [
+    "ICD9:8xx",
+    12
+   ],
+   [
+    "ICD10:D",
+    12
+   ],
+   [
+    "ICD10:N",
+    10
+   ]
+  ],
+  "top_drugs": [
+   [
+    "hydromorphone (dilaudid)",
+    32
+   ],
+   [
+    "vancomycin",
+    23
+   ],
+   [
+    "furosemide",
+    16
+   ],
+   [
+    "warfarin",
+    14
+   ],
+   [
+    "ciprofloxacin hcl",
+    13
+   ],
+   [
+    "oxycodone (immediate release)",
+    12
+   ],
+   [
+    "enoxaparin sodium",
+    12
+   ]
+  ],
+  "top_procedures": [
+   [
+    "Other endoscopy of small intestine",
+    15
+   ],
+   [
+    "Esophagogastroduodenoscopy [EGD] with closed biopsy",
+    10
+   ]
+  ]
+ }
+}

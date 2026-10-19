@@ -1,0 +1,102 @@
+{
+ "tasks": 100,
+ "checkpoints": 670,
+ "checkpoints_per_task": {
+  "n": 100,
+  "mean": 6.7,
+  "min": 5,
+  "median": 7,
+  "max": 9
+ },
+ "specialties": {
+  "Endocrinology": 10,
+  "Hematology": 10,
+  "Family Medicine": 9,
+  "Gastroenterology": 9,
+  "Infectious Disease": 7,
+  "Cardiology": 6,
+  "Internal Medicine": 6,
+  "Psychiatry": 5,
+  "Primary Care": 4,
+  "Gynecology": 4,
+  "Pulmonology": 4,
+  "Hepatology": 4,
+  "Nephrology": 3,
+  "Geriatric Medicine": 3,
+  "Allergy & Immunology": 3,
+  "Otolaryngology": 3,
+  "Urology": 3,
+  "Neurology": 3,
+  "Dermatology": 2,
+  "Rheumatology": 1,
+  "Oncology": 1
+ },
+ "task_categories": {
+  "Workup & Risk Stratification": 34,
+  "Treatment Planning": 27,
+  "Medication Prescribing": 26,
+  "Diagnosis & Interpretation": 13
+ },
+ "checkpoint_determinism": {
+  "deterministic": 299,
+  "non-deterministic": 163,
+  "semi-deterministic": 162,
+  "non_deterministic": 40,
+  "semi_deterministic": 2,
+  "?": 4
+ },
+ "checkpoint_grader": {
+  "llm_judge": 522,
+  "code": 128,
+  "code+llm": 20
+ },
+ "checkpoint_role": {
+  "data_retrieval": 98,
+  "reasoning": 331,
+  "action": 145,
+  "documentation": 96
+ },
+ "tasks_with_role": {
+  "reasoning": 100,
+  "data_retrieval": 98,
+  "action": 79,
+  "documentation": 95
+ },
+ "action_checkpoints_per_task": {
+  "n": 100,
+  "mean": 1.45,
+  "min": 0,
+  "median": 1,
+  "max": 4
+ },
+ "instruction_words": {
+  "n": 100,
+  "mean": 212.06,
+  "min": 168,
+  "median": 211,
+  "max": 271
+ },
+ "file_deliverables_per_task": {
+  "n": 100,
+  "mean": 0.95,
+  "min": 0,
+  "median": 1,
+  "max": 2
+ },
+ "fhir_resource_counts": {
+  "Patient": 108,
+  "Encounter": 0,
+  "Condition": 46856,
+  "Observation": 114241,
+  "MedicationRequest": 12548,
+  "ServiceRequest": 0,
+  "Procedure": 34555,
+  "DocumentReference": 2278,
+  "DiagnosticReport": 0,
+  "AllergyIntolerance": 0,
+  "Immunization": 0,
+  "Practitioner": 100,
+  "Communication": 0,
+  "Appointment": 0
+ }
+}

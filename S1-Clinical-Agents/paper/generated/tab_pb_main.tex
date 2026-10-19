@@ -1,0 +1,10 @@
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Decision maker & Pass@1 & $\Delta$ vs \textsc{LLM} [95\% CI] & McNemar $p$ & Checkpoints & $\Delta$ [95\% CI] & Turns & Gen.\ tokens & Min \\
+\midrule
+\textsc{LLM} & 42.3 & -- & -- & 81.3 & -- & 36.6 & 29k & 19.9 \\
+\textsc{S1-Select} & 38.1 & $-$4.1 [$-$13.4, +5.1] & 0.52 & 80.5 & $-$0.8 [$-$4.5, +3.1] & 31.3 & 120k & 28.5 \\
+\textsc{S1-Tool} & 7.2 & $-$35.0 [$-$45.4, $-$24.7] & $<$0.001 & 43.7 & $-$37.6 [$-$45.4, $-$29.9] & 25.9 & 18k & 19.8 \\
+\textsc{LLM} (repeat)$^\dagger$ & 0.0 & $-$33.3 [$-$66.7, +0.0] & -- & -- & $-$11.0 [$-$45.2, +22.0] & -- & -- & -- \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,56 @@
+{
+ "tasks": [],
+ "n_tasks": 0,
+ "arms": {
+  "clef_k5": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
+  "llm": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
+  "llm_select_k5": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  }
+ },
+ "progress": {
+  "clef_k5/run1": {
+   "finished": 3,
+   "passed": 1,
+   "checkpoint_pass": 0.778
+  },
+  "llm/run1": {
+   "finished": 9,
+   "passed": 2,
+   "checkpoint_pass": 0.702
+  },
+  "llm_select_k5/run1": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  }
+ }
+}

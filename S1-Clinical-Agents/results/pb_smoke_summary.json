@@ -1,0 +1,102 @@
+{
+ "tasks": [
+  "aortic_aneurysm_cad",
+  "iron_deficiency_anemia",
+  "pulsatile_tinnitus_workup"
+ ],
+ "n_tasks": 3,
+ "arms": {
+  "clef_k5": {
+   "run1": {
+    "pass@1": 0.333,
+    "checkpoint_pass": 0.7,
+    "checkpoint_pass_by_type": {
+     "Action Execution": 1.0,
+     "Clinical Reasoning": 0.7,
+     "Data Retrieval": 0.667,
+     "Documentation": 0.333
+    },
+    "mean_turns": 34.333,
+    "mean_completion_tokens": 88203.0,
+    "mean_agent_wall_s": 784.167,
+    "per_task_pass": {
+     "aortic_aneurysm_cad": true,
+     "iron_deficiency_anemia": false,
+     "pulsatile_tinnitus_workup": false
+    },
+    "decisions": {
+     "steps": 36,
+     "real_choices": 35,
+     "share_real": 0.972,
+     "mean_unique": 4.67,
+     "semantic_real_choices": 30,
+     "share_semantic_real": 0.833,
+     "steps_with_unique_mode": 5,
+     "pick_is_mode": 0.6,
+     "mean_max_p": 0.36,
+     "mean_entropy_norm": 0.912,
+     "decider_errors": 0,
+     "mean_decide_s": 3.5,
+     "fit_shortened_steps": 21,
+     "fit_omitted_steps": 0
+    }
+   }
+  },
+  "llm": {
+   "run1": {
+    "pass@1": 0.333,
+    "checkpoint_pass": 0.7,
+    "checkpoint_pass_by_type": {
+     "Action Execution": 1.0,
+     "Clinical Reasoning": 0.7,
+     "Data Retrieval": 0.667,
+     "Documentation": 0.333
+    },
+    "mean_turns": 39.667,
+    "mean_completion_tokens": 25109.333,
+    "mean_agent_wall_s": 620.833,
+    "per_task_pass": {
+     "aortic_aneurysm_cad": true,
+     "iron_deficiency_anemia": false,
+     "pulsatile_tinnitus_workup": false
+    }
+   }
+  },
+  "llm_select_k5": {
+   "run1": {
+    "pass@1": 0.333,
+    "checkpoint_pass": 0.75,
+    "checkpoint_pass_by_type": {
+     "Action Execution": 1.0,
+     "Clinical Reasoning": 0.7,
+     "Data Retrieval": 1.0,
+     "Documentation": 0.333
+    },
+    "mean_turns": 34.333,
+    "mean_completion_tokens": 119387.0,
+    "mean_agent_wall_s": 2521.4,
+    "per_task_pass": {
+     "aortic_aneurysm_cad": true,
+     "iron_deficiency_anemia": false,
+     "pulsatile_tinnitus_workup": false
+    },
+    "decisions": {
+     "steps": 32,
+     "real_choices": 31,
+     "share_real": 0.969,
+     "mean_unique": 4.69,
+     "semantic_real_choices": 29,
+     "share_semantic_real": 0.906,
+     "steps_with_unique_mode": 2,
+     "pick_is_mode": 0.0,
+     "mean_max_p": 1.0,
+     "mean_entropy_norm": 0.0,
+     "decider_errors": 0,
+     "mean_decide_s": 84.43,
+     "fit_shortened_steps": 0,
+     "fit_omitted_steps": 0
+    }
+   }
+  }
+ }
+}

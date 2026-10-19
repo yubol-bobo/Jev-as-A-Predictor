@@ -1,0 +1,33 @@
+{
+ "slug": "clef_k5/run1",
+ "order_steps": 83,
+ "tasks": 53,
+ "steps_any_right": 49,
+ "discriminative_steps": 43,
+ "deciders": {
+  "first": 0.3721,
+  "majority": 0.3721,
+  "clef_online": {
+   "n": 43,
+   "accuracy": 0.907,
+   "mass_on_right": 0.7324,
+   "auroc_candidate": 0.9483
+  }
+ },
+ "random_expected": 0.3535,
+ "whether_to_order": {
+  "required_available": {
+   "n": 42,
+   "share_creating": 0.3857,
+   "first": 0.381,
+   "clef_online": 1.0
+  },
+  "none_required": {
+   "n": 26,
+   "share_creating": 0.3,
+   "first": 0.1923,
+   "clef_online": 0.5385
+  }
+ },
+ "which_order_steps": 1
+}

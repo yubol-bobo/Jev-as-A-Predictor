@@ -1,0 +1,216 @@
+{
+ "tasks": [],
+ "n_tasks": 0,
+ "arms": {
+  "clef_k5": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   },
+   "run2": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   },
+   "run3": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
+  "llm": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   },
+   "run2": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   },
+   "run3": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
+  "llm_log_k5": {
+   "run0": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   },
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
+  "llm_select_k5": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
+  "llm_tool": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
+  "s1_tool": {
+   "run0": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   },
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   },
+   "run2": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   },
+   "run3": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  }
+ },
+ "progress": {
+  "clef_k5/run1": {
+   "finished": 100,
+   "passed": 37,
+   "checkpoint_pass": 0.8
+  },
+  "clef_k5/run2": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  },
+  "clef_k5/run3": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  },
+  "llm/run1": {
+   "finished": 100,
+   "passed": 41,
+   "checkpoint_pass": 0.812
+  },
+  "llm/run2": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  },
+  "llm/run3": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  },
+  "llm_log_k5/run0": {
+   "finished": 1,
+   "passed": 1,
+   "checkpoint_pass": 1.0
+  },
+  "llm_log_k5/run1": {
+   "finished": 6,
+   "passed": 0,
+   "checkpoint_pass": 0.651
+  },
+  "llm_select_k5/run1": {
+   "finished": 7,
+   "passed": 1,
+   "checkpoint_pass": 0.681
+  },
+  "llm_tool/run1": {
+   "finished": 36,
+   "passed": 15,
+   "checkpoint_pass": 0.845
+  },
+  "s1_tool/run0": {
+   "finished": 1,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  },
+  "s1_tool/run1": {
+   "finished": 97,
+   "passed": 7,
+   "checkpoint_pass": 0.435
+  },
+  "s1_tool/run2": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  },
+  "s1_tool/run3": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  }
+ }
+}

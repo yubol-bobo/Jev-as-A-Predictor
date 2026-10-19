@@ -1,0 +1,9 @@
+\begin{tabular}{lrrrrrl}
+\toprule
+& Steps/task & Distinct (\%) & Semantically distinct (\%) & Mean max $p$ & Norm.\ entropy & Pick = 1st sample (\%) / top tools \\
+\midrule
+\textsc{LLM} (repeat) & 12.3 & 99 & 84 & -- & -- & -- \\
+\textsc{S1-Select} & 11.9 & 99 & 90 & 0.383 & 0.886 & 21 \\
+\textsc{S1-Tool} & 21.1 & -- & -- & 0.451 & -- & \multicolumn{1}{l}{write\_file 44\%, observation\_search\_labs 17\%, document\_reference\_search\_clinical\_notes 10\%} \\
+\bottomrule
+\end{tabular}

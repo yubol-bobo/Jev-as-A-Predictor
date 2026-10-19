@@ -1,0 +1,27 @@
+#!/bin/bash
+# Refuse commits that could carry clinical data (PhysioNet / Redivis DUAs). Enabled with:
+#   git config core.hooksPath .githooks
+# Data, job directories, trajectories, cases and logs live outside the repo or are gitignored; this is the backstop.
+# Upstream public benchmark code under third_party/ is exempt from the content checks (its task files name MRNs).
+fail=0
+while IFS= read -r -d '' f; do
+  [ -f "$f" ] || continue
+  case "$f" in
+    data/*|cases/*|logs/*|jobs/*|*/jobs/*|results/raw/*|results/cache/*|*.sif|*.tar.gz|.env)
+      echo "pre-commit: blocked path $f"; fail=1; continue ;;
+  esac
+  size=$(stat -c %s "$f")
+  if [ "$size" -gt 2097152 ]; then echo "pre-commit: $f is $((size / 1024)) KB (> 2 MB)"; fail=1; fi
+  case "$f" in third_party/*|.githooks/*) continue ;; esac
+  case "$f" in
+    *.jsonl|*.csv|*.csv.gz|*.gz|*.parquet|*.db|*.mv.db|*.ndjson)
+      echo "pre-commit: data-like file type $f"; fail=1; continue ;;
+  esac
+  if grep -qE 'MRN[0-9]{6,}' "$f"; then echo "pre-commit: patient MRN in $f"; fail=1; fi
+  if grep -q '"resourceType"' "$f"; then echo "pre-commit: FHIR resource JSON in $f"; fail=1; fi
+  if grep -qE '(subject_id|hadm_id)"?[:=] ?"?[0-9]{7,}' "$f"; then echo "pre-commit: MIMIC identifier in $f"; fail=1; fi
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+if [ $fail -ne 0 ]; then
+  echo "Commit refused: clinical data must stay local (see docs/design.md §7)."
+  exit 1
+fi

@@ -1,0 +1,299 @@
+{
+ "paired_cases": 0,
+ "runs": {
+  "authors:-home-hice1-ylin766-bmed-sp-wang-YuxingData-Checkpoints-vllm_models-gemma-3-27b-it": {
+   "cases": 0,
+   "cases_finished": 3,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:-home-hice1-ylin766-bmed-sp-wang-YuxingData-Checkpoints-vllm_models-gpt-oss-120b": {
+   "cases": 0,
+   "cases_finished": 1,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:-home-hice1-ylin766-bmed-sp-wang-YuxingData-Checkpoints-vllm_models-gpt-oss-20b": {
+   "cases": 0,
+   "cases_finished": 95,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:Meta-Llama-3.1-70B-Instruct": {
+   "cases": 0,
+   "cases_finished": 134,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:Meta-Llama-3.1-8B-Instruct": {
+   "cases": 0,
+   "cases_finished": 132,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:deepseek-chat": {
+   "cases": 0,
+   "cases_finished": 134,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:gemma-3-12b-it": {
+   "cases": 0,
+   "cases_finished": 134,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:gemma-3-27b-it": {
+   "cases": 0,
+   "cases_finished": 134,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:gpt-5.4": {
+   "cases": 0,
+   "cases_finished": 134,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:gpt-5.4-mini": {
+   "cases": 0,
+   "cases_finished": 134,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "authors:gpt-5.4-nano": {
+   "cases": 0,
+   "cases_finished": 129,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__clef_k5__run0": {
+   "cases": 0,
+   "cases_finished": 2,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__clef_k5__run1": {
+   "cases": 0,
+   "cases_finished": 11,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__llm__run0": {
+   "cases": 0,
+   "cases_finished": 2,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__llm__run1": {
+   "cases": 0,
+   "cases_finished": 134,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__llm_log_k5__run0": {
+   "cases": 0,
+   "cases_finished": 2,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__llm_log_k5__run1": {
+   "cases": 0,
+   "cases_finished": 13,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__llm_select_k5__run0": {
+   "cases": 0,
+   "cases_finished": 2,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__llm_select_k5__run1": {
+   "cases": 0,
+   "cases_finished": 7,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__s1_tool__run0": {
+   "cases": 0,
+   "cases_finished": 2,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  },
+  "qwen3.8-27b__s1_tool__run1": {
+   "cases": 0,
+   "cases_finished": 22,
+   "stages": 0,
+   "stage_f1": null,
+   "f1_by_type": {
+    "diagnosis": null,
+    "medication": null,
+    "procedure": null
+   },
+   "coverage": null,
+   "efficiency": null,
+   "info_calls_per_stage": null
+  }
+ }
+}

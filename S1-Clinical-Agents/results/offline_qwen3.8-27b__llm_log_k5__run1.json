@@ -1,0 +1,114 @@
+{
+ "slug": "qwen3.8-27b__llm_log_k5__run1",
+ "items": 47,
+ "by_type": {
+  "diagnosis": 36,
+  "medication": 9,
+  "procedure": 2
+ },
+ "tau": 0.5,
+ "versions": {
+  "raw": {
+   "items_with_choice": 47,
+   "oracle_any_correct": 0.4255,
+   "random_expected": 0.3915,
+   "mean_options": 4.96,
+   "deciders": {
+    "first": {
+     "n": 47,
+     "accuracy": 0.383
+    },
+    "majority": {
+     "n": 47,
+     "accuracy": 0.383
+    },
+    "clef": {
+     "n": 47,
+     "accuracy": 0.383,
+     "mean_pick_score": 0.4175,
+     "ece_top1": 0.1588,
+     "brier_top1": 0.2293,
+     "auroc_candidate": 0.4766,
+     "mean_max_p_when_some_correct": 0.4102,
+     "mean_max_p_when_none_correct": 0.355
+    },
+    "clef_blind": {
+     "n": 47,
+     "accuracy": 0.383,
+     "mean_pick_score": 0.4175,
+     "ece_top1": 0.1533,
+     "brier_top1": 0.2414,
+     "auroc_candidate": 0.4566,
+     "mean_max_p_when_some_correct": 0.5035,
+     "mean_max_p_when_none_correct": 0.4344
+    }
+   }
+  },
+  "canon": {
+   "items_with_choice": 9,
+   "oracle_any_correct": 0.3333,
+   "random_expected": 0.1667,
+   "mean_options": 2.0,
+   "deciders": {
+    "clef": {
+     "n": 9,
+     "accuracy": 0.1111,
+     "mean_pick_score": 0.3595,
+     "ece_top1": 0.7007,
+     "brier_top1": 0.5874,
+     "auroc_candidate": 0.5111,
+     "mean_max_p_when_some_correct": 0.8107,
+     "mean_max_p_when_none_correct": 0.8124
+    },
+    "clef_blind": {
+     "n": 9,
+     "accuracy": 0.1111,
+     "mean_pick_score": 0.3554,
+     "ece_top1": 0.5587,
+     "brier_top1": 0.4528,
+     "auroc_candidate": 0.3556,
+     "mean_max_p_when_some_correct": 0.5843,
+     "mean_max_p_when_none_correct": 0.7125
+    },
+    "llm_select": {
+     "n": 9,
+     "accuracy": 0.3333,
+     "mean_pick_score": 0.5039
+    }
+   }
+  },
+  "inj": {
+   "items_with_choice": 30,
+   "oracle_any_correct": 1.0,
+   "random_expected": 0.5,
+   "mean_options": 2.0,
+   "deciders": {
+    "clef": {
+     "n": 30,
+     "accuracy": 0.1333,
+     "mean_pick_score": 0.2945,
+     "ece_top1": 0.7115,
+     "brier_top1": 0.6529,
+     "auroc_candidate": 0.0956,
+     "mean_max_p_when_some_correct": 0.8449,
+     "mean_max_p_when_none_correct": 0.0
+    },
+    "clef_blind": {
+     "n": 30,
+     "accuracy": 0.3667,
+     "mean_pick_score": 0.4712,
+     "ece_top1": 0.3027,
+     "brier_top1": 0.3425,
+     "auroc_candidate": 0.3589,
+     "mean_max_p_when_some_correct": 0.6694,
+     "mean_max_p_when_none_correct": 0.0
+    },
+    "llm_select": {
+     "n": 30,
+     "accuracy": 0.1,
+     "mean_pick_score": 0.2653
+    }
+   }
+  }
+ }
+}

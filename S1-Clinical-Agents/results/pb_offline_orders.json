@@ -1,0 +1,25 @@
+{
+ "slug": "llm_log_k5/run1",
+ "order_steps": 0,
+ "tasks": 0,
+ "steps_any_right": 0,
+ "discriminative_steps": 0,
+ "deciders": {
+  "first": 0.0,
+  "majority": 0.0
+ },
+ "random_expected": 0.0,
+ "whether_to_order": {
+  "required_available": {
+   "n": 0,
+   "share_creating": 0.0,
+   "first": 0.0
+  },
+  "none_required": {
+   "n": 0,
+   "share_creating": 0.0,
+   "first": 0.0
+  }
+ },
+ "which_order_steps": 0
+}
