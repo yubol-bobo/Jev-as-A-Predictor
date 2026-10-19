@@ -180,9 +180,9 @@
    "checkpoint_pass": 0.0
   },
   "clef_k5__pplx12/run1": {
-   "finished": 54,
-   "passed": 27,
-   "checkpoint_pass": 0.841
+   "finished": 61,
+   "passed": 29,
+   "checkpoint_pass": 0.827
   },
   "llm/run1": {
    "finished": 100,
@@ -205,9 +205,9 @@
    "checkpoint_pass": 1.0
   },
   "llm_log_k5/run1": {
-   "finished": 7,
-   "passed": 1,
-   "checkpoint_pass": 0.694
+   "finished": 10,
+   "passed": 3,
+   "checkpoint_pass": 0.729
   },
   "llm_select_k5/run1": {
    "finished": 7,
@@ -240,9 +240,9 @@
    "checkpoint_pass": 0.0
   },
   "s1_tool__pplx12/run1": {
-   "finished": 35,
-   "passed": 5,
-   "checkpoint_pass": 0.563
+   "finished": 39,
+   "passed": 7,
+   "checkpoint_pass": 0.572
   }
  }
 }
