@@ -29,7 +29,7 @@ Subdirectories of the derived-data root:
 ## 2. Commands
 
 ```bash
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 PY=$REPO/.venv/bin/python; cd $REPO
 
 # tests (19; synthetic + demo; the guard blocks all non-loopback traffic in-process)

@@ -4,7 +4,7 @@
 # state and options-only), next to the online arms. A replay costs about 170 decisions on the decider GPU, which the
 # online arms leave half idle.
 #   bash scripts/offline_deciders.sh        (loops until every decider has been replayed)
-cd /ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+cd /ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 umask 077
 declare -A PORT=([pplx12]=8022 [d3]=8023 [linne]=8024 [decider31b]=8025 [amos]=8026)
 SEL=/ocean/projects/cis260032p/yliy/data/offline/pb_clef_k5_run1/selections.jsonl

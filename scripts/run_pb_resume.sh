@@ -4,7 +4,7 @@
 # cache healthy (docs/full_experiment.md section 6). Clef runs 2-3 wait: GPU 3 goes to the other System One deciders.
 #   bash scripts/run_pb_resume.sh
 set -uo pipefail
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 cd "$REPO"
 umask 077
 PY=.venv/bin/python

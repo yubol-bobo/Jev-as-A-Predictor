@@ -1,7 +1,7 @@
 #!/bin/bash
 # Once no orphaned llm / llm_tool task processes remain (their drivers were stopped to relieve the Qwen replicas),
 # restart the llm_tool control on run 1 with 4 workers, next to the decider arms (scripts/run_deciders.sh).
-cd /ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+cd /ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 umask 077
 busy() { ps -u "$USER" -o args= | awk '$3=="src.s1clin.pb_run" && $4=="--one" {for (i=1;i<=NF;i++) if ($i=="--arm") print $(i+1)}' | grep -cxE "llm|llm_tool"; }
 while [ "$(busy)" -gt 0 ]; do sleep 30; done

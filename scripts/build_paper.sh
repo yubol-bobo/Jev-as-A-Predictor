@@ -2,7 +2,7 @@
 # Rebuild the paper from the latest results: analyses -> generated tables/numbers -> figures -> PDF (aggregates only).
 #   bash scripts/build_paper.sh
 set -uo pipefail
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 FIGPY=/ocean/projects/cis260032p/yliy/venvs/figs/bin/python
 cd "$REPO"
 (cd scripts && ../.venv/bin/python pb_analyze.py --out ../results/pb_analysis.json > /dev/null)

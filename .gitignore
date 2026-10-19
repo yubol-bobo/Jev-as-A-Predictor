@@ -17,3 +17,8 @@ paper/*.blg
 paper/*.out
 paper/figures/preview_*.png
 paper/figures/fig1_overview_preview.png
+# ClinEnv (vendored, local patches) has no upstream license: it stays local, never in this public repository
+third_party/clinenv/*
+!third_party/clinenv/NOT_INCLUDED.md
+# agent output files with patient content must never land here
+output/

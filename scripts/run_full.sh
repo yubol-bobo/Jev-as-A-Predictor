@@ -13,7 +13,7 @@
 #   bash scripts/run_full.sh              all streams + the progress-commit loop
 #   bash scripts/run_full.sh s_ce_log ... only the named streams (no commit loop)
 set -uo pipefail
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 cd "$REPO"
 umask 077
 PY=.venv/bin/python

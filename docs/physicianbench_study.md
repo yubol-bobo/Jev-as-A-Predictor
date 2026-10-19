@@ -4,7 +4,7 @@
 
 - **Code:** `research/external/PhysicianBench` (HealthRex/PhysicianBench @ `c7efa8f`, Apache-2.0). Below, `file:line` refers to this repo.
 - **Paper:** arXiv 2605.02240v1, 30 pages, read in full including the appendices. PDF and text are in `research/external/PhysicianBench_paper/physicianbench.{pdf,txt}`.
-- **Per-checkpoint classification** of all 670 checkpoints: see §3. The machine-readable file is `research/S1-Clinical-Agents//ocean/projects/cis260032p/yliy/data/physicianbench/derived/physicianbench_checkpoints.jsonl (kept out of git)`.
+- **Per-checkpoint classification** of all 670 checkpoints: see §3. The machine-readable file is `research/Jev-as-A-Predictor//ocean/projects/cis260032p/yliy/data/physicianbench/derived/physicianbench_checkpoints.jsonl (kept out of git)`.
 
 ---
 

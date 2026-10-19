@@ -56,6 +56,7 @@ enters this repository and is never sent to external services. Only aggregate me
 ClinEnv has no upstream license, so its vendored code is not included here (see
 `third_party/clinenv/NOT_INCLUDED.md`).
 
-This repository is published from the private working repository after each progress commit
-(`scripts/sync_to_jev.sh`). The earlier sequential-predictor study (abandoned) is kept at the tag
-`archive/seqpred-2026-10-19`.
+This is the working repository. Experiment progress (aggregates, tables, figures, the paper) is committed and pushed
+every 20 minutes by `scripts/progress_commit.sh`. Commits up to 2026-10-19 17:00 were developed in a local
+repository and published here as snapshots; each snapshot lists the local commits it covers. The earlier
+sequential-predictor study (abandoned) is kept at the tag `archive/seqpred-2026-10-19`.

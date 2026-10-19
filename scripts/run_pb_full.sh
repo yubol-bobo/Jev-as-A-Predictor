@@ -4,7 +4,7 @@
 # Order: run 1 of llm / clef / s1_tool / llm_log, then runs 2-3 of llm / clef / s1_tool (pass@3, pass^3).
 #   bash scripts/run_pb_full.sh
 set -uo pipefail
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 cd "$REPO"
 umask 077
 PY=.venv/bin/python

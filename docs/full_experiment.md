@@ -150,7 +150,7 @@ TP only splits the same bf16 weights over two GPUs, so the model, dtype and samp
 - **Progress commits.** `scripts/progress_commit.sh` commits only the aggregate summaries (`results/pb_summary.json`, `results/clinenv_summary.json`), every 20 minutes.
 - **Where data lives.** Trajectories, dialogues, notes, decision logs and cases stay under `/ocean/projects/cis260032p/yliy/data/`.
 - **Commit guard.** The pre-commit hook refuses data-like files, MRNs, FHIR JSON, MIMIC ids and anything over 2 MB.
-- **No push.** There is no git remote.
+- **Push.** Every progress commit is pushed to github.com/yubol-bobo/Jev-as-A-Predictor (public). Data, logs and the vendored ClinEnv code are git-ignored.
 
 ## 6. Status and resume (2026-10-19, interactive node w002 until 14:55)
 

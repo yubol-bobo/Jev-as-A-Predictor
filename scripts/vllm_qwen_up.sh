@@ -12,7 +12,7 @@
 # - ninja (FlashInfer sampler JIT) comes from the venv bin; nvcc from CUDA_HOME
 set -euo pipefail
 GPUS=$1; PORT=$2; TP=$(echo "$GPUS" | tr ',' '\n' | wc -l)
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 V=/ocean/projects/cis260032p/yliy/venvs/vllm_new_py311
 M=/ocean/projects/cis260032p/yliy/huggingface_cache/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0/
 PATH=$V/bin:$PATH CUDA_VISIBLE_DEVICES=$GPUS CUDA_HOME=/opt/packages/cuda/v12.6.1 HF_HUB_OFFLINE=1 \

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Download PhysioNet (MIMIC-IV 3.1, MIMIC-IV-Note 2.2, MIMIC-IV-Ext-CDM 1.1) and the PhysicianBench FHIR image.
 # Run on a Bridges-2 LOGIN or DATA-TRANSFER node (compute nodes have ~10-30 KB/s outbound), ideally in tmux:
-#   tmux new -s dl 'bash /ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents/scripts/download_data.sh'
+#   tmux new -s dl 'bash /ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor/scripts/download_data.sh'
 # Resumable (wget -c); re-run after an interruption. Credentials are read from ENV_FILE and never printed.
 #   ONLY=physionet | ONLY=physicianbench   to run one half.
 set -uo pipefail

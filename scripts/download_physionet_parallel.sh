@@ -3,7 +3,7 @@
 # 32 MB byte ranges and fetch PAR ranges at once. PhysioNet also caps concurrent connections per user: 16 were
 # refused (short error responses), 3-4 worked, so PAR defaults to 4. Run on a LOGIN or DATA-TRANSFER node in tmux, after stopping
 # scripts/download_data.sh (both write the same files):
-#   tmux new -s dlp 'bash /ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents/scripts/download_physionet_parallel.sh'
+#   tmux new -s dlp 'bash /ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor/scripts/download_physionet_parallel.sh'
 # Resumable: finished files (size and sha256 OK) are skipped; a partial file from download_data.sh is kept as the
 # prefix; finished chunks are kept; re-run after any interruption. Credentials come from ENV_FILE and are never
 # printed. PROJECTS can restrict the list, e.g. PROJECTS="mimiciv/3.1".

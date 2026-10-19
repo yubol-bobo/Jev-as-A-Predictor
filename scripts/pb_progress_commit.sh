@@ -5,7 +5,7 @@
 # (.githooks) refuses anything data-like. There is no git remote; nothing is pushed.
 set -uo pipefail
 NAME=$1; INTERVAL=${2:-1200}
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 OUT=results/pb_${NAME}_summary.json
 cd "$REPO"
 while true; do

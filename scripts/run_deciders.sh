@@ -5,7 +5,7 @@
 # suffix __<decider> (clef_k5__d3, s1_tool__d3, ...). Resumable: finished tasks are skipped, items are claimed.
 #   bash scripts/run_deciders.sh GPU [decider ...]     default order: pplx12 d3 linne amos decider31b
 set -uo pipefail
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 cd "$REPO"
 umask 077
 GPU=$1; shift

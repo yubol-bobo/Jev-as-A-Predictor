@@ -14,7 +14,7 @@
 #   amos        mukaddamzaid/amos-1-large @ d67e051c, its amos.serve (one option order, calibration.json)
 set -euo pipefail
 NAME=$1; GPU=$2
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 V=/ocean/projects/cis260032p/yliy/venvs
 export HF_HOME=/ocean/projects/cis260032p/yliy/huggingface_cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export CUDA_VISIBLE_DEVICES=$GPU TOKENIZERS_PARALLELISM=false PYTHONUNBUFFERED=1 OMP_NUM_THREADS=8

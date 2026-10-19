@@ -10,9 +10,9 @@
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=400G
 #SBATCH --time=08:00:00
-#SBATCH --output=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents/logs/slurm_%x_%j.out
+#SBATCH --output=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor/logs/slurm_%x_%j.out
 set -uo pipefail
-REPO=/ocean/projects/cis260032p/yliy/research/S1-Clinical-Agents
+REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 cd "$REPO"
 umask 077
 nvidia-smi -L
