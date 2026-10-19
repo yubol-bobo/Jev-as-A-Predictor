@@ -47,6 +47,20 @@ concrete actions.
 
 \begin{figure*}[t]
 \centering
+\includegraphics[width=\textwidth]{fig0_case.pdf}
+\caption{\textbf{One real consultation, one decision, two deciders.} A PhysicianBench task (instruction paraphrased):
+a hepatology e-consult on abnormal iron and liver tests, in which the agent must review the record, interpret the labs,
+order the workup and write a note, graded by seven checkpoints. The agent works step by step through the patient's
+record. At step 8 the LLM has proposed five next turns. Its own sample (A) keeps searching labs. The System One model
+reads the same state and all five proposals in one forward pass and puts the most probability on E, which places both
+orders the graders require. Across all \ONReqn{} order steps where a proposal places a required order, the LLM's own
+sample orders in \ONReqfirst\% and the System One model in \ONReqclef\%. The figure shows tool types,
+probabilities and outcomes only, never patient data.}
+\label{fig:case}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
 \includegraphics[width=\textwidth]{fig1_overview.pdf}
 \caption{\textbf{Three ways to make the next decision in the same clinical agent loop.} The loop, tools, records and
 graders stay fixed. \llm: the model samples its next turn after reasoning. \sel: the LLM proposes five complete turns
@@ -59,7 +73,7 @@ the full tool menu and the LLM writes the call.}
 
 A physician's agent takes dozens of steps per task: look up the problem list, pull the labs, read last month's note,
 order the imaging, write the assessment. Each step is a choice among a small set of concrete actions, and in today's
-systems an LLM makes every one of them by generating text \citep{physicianbench2026,clinenv2026,yao2023react}.
+systems an LLM makes every one of them by generating text \citep{physicianbench2026,clinenv2026,yao2023react}. Figure~\ref{fig:case} follows one such task.
 
 \emph{System One} decision models offer a different way to choose \citep{typesafe2026jev,clef2026}. They take a
 state and a typed question with named options and return a probability for every option in one forward pass, with no
@@ -86,7 +100,7 @@ the LLM (\sel) or chooses only the kind of action, leaving the LLM to write it (
   \PRSelLLMAE{} points (\S\ref{sec:act}).
   \item \textbf{It should not steer alone.} Choosing the tool for the LLM, the same model cuts data retrieval from
   \TLRetLLM{} to \TLRetTool{} calls per task and writes the note \TLDocTool{} times; checkpoint success falls to
-  \PBcpTool\%. A control with the same one-tool restriction but the LLM choosing loses only \PRCtlLLMcp{} points, so
+  \PBcpTool\%. A control with the same one-tool restriction but the LLM choosing stays within noise of the LLM (\PRCtlLLMcp{} points), so
   the loss lies in the System One model's choices (\S\ref{sec:steer}).
   \item \textbf{Selection is bounded by what the proposer samples.} On MIMIC-IV admissions, \CEOneDecision\% of the
   LLM's five-sample candidate sets contain a single clinical decision, and both deciders follow the proposer's
@@ -207,8 +221,8 @@ checkpoints collapse first. Figure~\ref{fig:tools} shows why: it retrieves \TLRe
 LLM's \TLRetLLM{}, and it writes the note \TLDocTool{} times, rewriting it again and again instead of finishing. The LLM
 disagrees with its tool choice often enough that \TOOLregen\% of steps must be regenerated with the tool named.
 
-The control settles where the loss comes from. Restricting the LLM to one tool per turn costs little: \ctl{} trails
-\llm{} by \PRCtlLLMcp{} points on checkpoints over \PRCtlLLMn{} tasks. Handing the same restricted choice to the System
+The control settles where the loss comes from. Restricting the LLM to one tool per turn costs nothing measurable: \ctl{} differs
+from \llm{} by \PRCtlLLMcp{} points on checkpoints over \PRCtlLLMn{} tasks. Handing the same restricted choice to the System
 One model costs \PRToolCtlcp{} points (\tool{} versus \ctl{}, \PRToolCtln{} tasks; task success
 \PRToolCtlx\% versus \PRToolCtly\%, $p\PRToolCtlp$). The tools it picks explain the gap (Table~\ref{tab:toolchoice}):
 it chooses to write the note at \TCwriteClef\% of steps, where the LLM does so at \TCwriteLLM\%, and it spends

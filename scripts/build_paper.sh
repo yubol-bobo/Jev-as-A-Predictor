@@ -11,6 +11,7 @@ cd "$REPO"
 .venv/bin/python scripts/make_tables.py > /dev/null
 $FIGPY paper/figures/src/data_figs.py > /dev/null
 [ -f paper/figures/fig1_overview.pdf ] || $FIGPY paper/figures/src/fig1_overview.py > /dev/null
+$FIGPY paper/figures/src/fig0_case.py > /dev/null  # its statistics come from the order-step report
 cd paper && for i in 1 2; do pdflatex -interaction=nonstopmode main.tex > /dev/null 2>&1; [ $i = 1 ] && bibtex main > /dev/null 2>&1; done
 pdflatex -interaction=nonstopmode main.tex > /dev/null 2>&1
 grep -q "Output written" main.log && echo "paper built: $(grep -o '([0-9]* pages' main.log)"
