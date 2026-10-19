@@ -1,0 +1,11 @@
+\begin{tabular}{@{}lrrrrrr@{}}\toprule
+& \multicolumn{3}{c}{Order steps (answer key)} & \multicolumn{3}{c}{All questions} \\
+\cmidrule(lr){2-4}\cmidrule(l){5-7}
+Decider & Right & \shortstack{Orders,\\required} & \shortstack{Orders,\\none req.} & \shortstack{Agrees\\w/ LLM} & Act & Note \\
+\midrule
+Random & 54 & -- & -- & -- & -- & -- \\
+\llm{} (own sample) & 71 & 75 & 75 & 100 & -- & -- \\
+\llm{} (most sampled) & 71 & -- & -- & -- & -- & -- \\
+\midrule
+pplx-decider-v1.2 & 100 & 100 & 100 & 32 & 19 & 10 \\
+\bottomrule\end{tabular}
