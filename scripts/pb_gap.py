@@ -77,11 +77,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(REPO / "results/pb_gap.json"))
     ap.add_argument("--decider-runs", default=None, help="comma list replacing the decider side's runs")
+    ap.add_argument("--tasks", default=None, help="@file: only these tasks (e.g. results/p1_unseen_tasks.txt)")
     a = ap.parse_args()
     if a.decider_runs:
         SIDES["decider"] = a.decider_runs.split(",")
     rng = random.Random(0)
     tasks = sorted(p.name for p in (JOBS / "llm/run1").iterdir() if p.is_dir())
+    if a.tasks:
+        keep = set(Path(a.tasks[1:]).read_text().split())
+        tasks = [t for t in tasks if t in keep]
     # per side, per task: list over runs of {cp: ok} and trajectory measures
     data = {s: defaultdict(list) for s in SIDES}
     for side, runs in SIDES.items():
