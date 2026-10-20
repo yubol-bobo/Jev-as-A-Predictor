@@ -11,7 +11,11 @@
 \renewcommand{\dbltopfraction}{0.85}
 \renewcommand{\dblfloatpagefraction}{0.7}
 \input{generated/numbers.tex}
-\providecommand{\EXRESULT}{}\providecommand{\ONRESULT}{}
+\providecommand{\EXnoneFirst}{--}
+\providecommand{\EXagreeRandom}{--}
+\providecommand{\EXpairPplxDthree}{--}
+\providecommand{\EXpairClefPplx}{--}
+\providecommand{\EXpairClefDthree}{--}
 % defaults for deciders that have not finished yet (numbers.tex defines the ones that have)
 \providecommand{\EXquestions}{--}
 \providecommand{\EXtasks}{--}
@@ -161,6 +165,10 @@ the LLM (\sel) or chooses only the kind of action, leaving the LLM to write it (
   \TLRetLLM{} to \TLRetTool{} calls per task and writes the note \TLDocTool{} times; checkpoint success falls to
   \PBcpTool\%. A control with the same one-tool restriction but the LLM choosing stays within noise of the LLM (\PRCtlLLMcp{} points), so
   the loss lies in the System One model's choices (\S\ref{sec:steer}).
+  \item \textbf{Other System One models behave the same way.} On one fixed exam of logged states and proposals,
+  pplx-decider-v1.2 and d3 take every required order on offer, as Clef does, while the LLM's own sample takes half;
+  online, pplx-decider-v1.2 again matches the LLM when selecting and falls behind when steering
+  (\S\ref{sec:deciders}; preliminary).
   \item \textbf{Selection is bounded by what the proposer samples.} On MIMIC-IV admissions, \CEOneDecision\% of the
   LLM's five-sample candidate sets contain a single clinical decision, and both deciders follow the proposer's
   hypothesis even when the gold decision is added (\S\ref{sec:diversity}).

@@ -10,12 +10,21 @@ candidate turns and the full state. Each step with at least two distinct candida
 \EXquestions{} questions from \EXtasks{} tasks. Every decider answers byte-identical requests: the same state, the
 same options and the same option letters. The comparison is restricted to the \EXcommon{} questions that all of
 them have answered. On order steps the task graders give an answer key (\EXkeyed{} questions that separate right
-from other options). Table~\ref{tab:exam} reports the result. \EXRESULT
+from other options). Table~\ref{tab:exam} reports the result. On order steps, all three
+deciders pick a right option far more often than the LLM's own sample (Clef \EXaccClef\%, pplx-decider-v1.2
+\EXaccPplx\%, d3 \EXaccDthree\%, against \EXaccFirst\% for the LLM and \EXaccRandom\% at random). When a proposal
+places a required order, every one of them takes it (\EXreqClef\%, \EXreqPplx\% and \EXreqDthree\%; the LLM
+\EXreqFirst\%). The bias toward action is shared too: when no proposal places a required order, they still order
+in \EXnoneClef\%, \EXnonePplx\% and \EXnoneDthree\% of steps, the LLM in \EXnoneFirst\%. Across all questions
+they agree with the LLM's own sample about as often as a random pick would (\EXagreeClef\%, \EXagreePplx\% and
+\EXagreeDthree\%; random \EXagreeRandom\%), and with each other more often (pplx-decider-v1.2 and d3 on
+\EXpairPplxDthree\% of questions). Taking the required action is how System One deciders behave, not a quirk of
+Clef.
 
 \paragraph{Whole tasks.} We also rerun the online arms with pplx-decider-v1.2 in Clef's seat
 (Table~\ref{tab:deciders}). Choosing among proposals, it again stays level with the LLM
 (\ONSelPplxcp{} checkpoint points over \ONSelPplxn{} tasks). Steering, it again falls far behind the same
-restriction with the LLM choosing (\ONToolPplxcp{} points over \ONToolPplxn{} tasks). \ONRESULT
+restriction with the LLM choosing (\ONToolPplxcp{} points over \ONToolPplxn{} tasks). Both online findings hold for a second System One model.
 
 \begin{table}[t]
 \centering\small

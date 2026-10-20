@@ -137,6 +137,7 @@ def report(path):
                          "orders_when_none_required": share(none, lambda i: qs[i]["creates"][qs[i]["first"]])},
         "majority": {"order_accuracy": share(keyed, lambda i: qs[i]["right"][majority(i)])},
         "random": {"order_accuracy": share(keyed, lambda i: sum(qs[i]["right"]) / len(qs[i]["right"]))}}
+    res["baselines"]["random"]["agrees_with_first_sample"] = share(common, lambda i: 1 / len(qs[i]["options"]))
     res["key"] = {"keyed_questions": len(keyed), "required_available": len(req), "none_required": len(none)}
     for n in names:
         a = ans[n]

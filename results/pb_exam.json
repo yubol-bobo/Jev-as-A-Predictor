@@ -1,7 +1,7 @@
 {
  "exam": "llm_log_k5/run1",
- "questions": 702,
- "tasks": 51,
+ "questions": 1061,
+ "tasks": 75,
  "answered_by_all": 357,
  "deciders": {
   "clef": {
@@ -20,7 +20,7 @@
    "mean_max_p": 0.4047
   },
   "d3": {
-   "answered": 426,
+   "answered": 533,
    "order_accuracy": 0.8929,
    "orders_when_required_available": 1.0,
    "orders_when_none_required": 0.7241,
@@ -65,7 +65,8 @@
    "order_accuracy": 0.5
   },
   "random": {
-   "order_accuracy": 0.4214
+   "order_accuracy": 0.4214,
+   "agrees_with_first_sample": 0.2204
   }
  },
  "key": {

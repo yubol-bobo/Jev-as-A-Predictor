@@ -323,7 +323,12 @@ def main():
         nums += macro("EXaccFirst", pct(b["first_sample"]["order_accuracy"], 0))
         nums += macro("EXaccRandom", pct(b["random"]["order_accuracy"], 0))
         nums += macro("EXreqFirst", pct(b["first_sample"]["orders_when_required_available"], 0))
-        rows = [f"Random & {pct(b['random']['order_accuracy'], 0)} & -- & -- & -- & -- & -- \\\\",
+        nums += macro("EXnoneFirst", pct(b["first_sample"]["orders_when_none_required"], 0))
+        nums += macro("EXagreeRandom", pct(b["random"].get("agrees_with_first_sample"), 0))
+        for pair, v in ex["agreement"].items():
+            x, y = (DEC[d][1] for d in pair.split("|"))
+            nums += macro(f"EXpair{x}{y}", pct(v, 0))
+        rows = [f"Random & {pct(b['random']['order_accuracy'], 0)} & -- & -- & {pct(b['random'].get('agrees_with_first_sample'), 0)} & -- & -- \\\\",
                 f"\\llm{{}} (own sample) & {pct(b['first_sample']['order_accuracy'], 0)} & "
                 f"{pct(b['first_sample']['orders_when_required_available'], 0)} & "
                 f"{pct(b['first_sample']['orders_when_none_required'], 0)} & 100 & -- & -- \\\\",

@@ -204,3 +204,18 @@ an answer key from the task's graders; the other steps give agreement. Code: `sc
 `scripts/pb_exam.py` (build / select / report), `scripts/exam_deciders.sh` (keeps the exam current and lets each
 loaded decider answer it). The online runs per decider (section 7) are secondary. They measure what the decider does
 to whole-task success, where the options differ between runs because the proposals are sampled anew.
+
+### 7b. State at the end of w008 (2026-10-19 23:00) and how to resume
+
+- **Exam:** the LLM's llm_log run is at about 75/100 tasks, about 1,060 questions. Answered so far: Clef 486,
+  pplx12 370, d3 about 530. The paper compares them on the questions all three answered (357).
+- **Online, pplx12:** S1-Select 72/100, S1-Tool 48/100, paused. Clef's online arms are complete. LLM-Tool is 99/100.
+- **Resume:** start Qwen TP2 only, on GPUs 0–1 (`scripts/vllm_qwen_up.sh 0,1 8011`). Routing now skips a replica
+  that is down. Use POOL = 8011 only.
+  1. Finish llm_log: `bash scripts/run_exam.sh 14`.
+  2. Run two deciders at once on GPUs 2 and 3. Pre-read the weights first (`cat *.safetensors > /dev/null`): a cold
+     read from /ocean took about 3 min per tensor on w008. Start them with `scripts/s1_up.sh NAME GPU`, or
+     `clef_server.py` for Clef. Let each answer the whole exam with
+     `S1CLIN_DECIDER=NAME .venv/bin/python scripts/pb_exam.py select`. Order: Clef, pplx12, d3, linne, amos,
+     decider31b.
+  3. Then, optionally, finish pplx12 online (`run_deciders.sh` with pplx12), and the LLM-Tool control.
