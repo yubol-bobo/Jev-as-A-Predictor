@@ -1,0 +1,92 @@
+{
+ "llm_log_k5/run1": {
+  "tasks_with_required_orders": 54,
+  "required": 118,
+  "placed": 82,
+  "offered_not_taken": 13,
+  "never_offered": 23,
+  "share": {
+   "placed": 0.6949,
+   "offered_not_taken": 0.1102,
+   "never_offered": 0.1949
+  },
+  "step_omissions": 94,
+  "placed_later_after_step_omission": 0.7872,
+  "task_pass": 20,
+  "tasks_that_would_pass_if_offered_orders_were_placed": 4
+ },
+ "clef_k5/run1": {
+  "tasks_with_required_orders": 54,
+  "required": 118,
+  "placed": 75,
+  "offered_not_taken": 10,
+  "never_offered": 33,
+  "share": {
+   "placed": 0.6356,
+   "offered_not_taken": 0.0847,
+   "never_offered": 0.2797
+  },
+  "step_omissions": 15,
+  "placed_later_after_step_omission": 0.1333,
+  "task_pass": 17,
+  "tasks_that_would_pass_if_offered_orders_were_placed": 0
+ },
+ "clef_k5__pplx12/run1": {
+  "tasks_with_required_orders": 38,
+  "required": 85,
+  "placed": 66,
+  "offered_not_taken": 0,
+  "never_offered": 19,
+  "share": {
+   "placed": 0.7765,
+   "offered_not_taken": 0.0,
+   "never_offered": 0.2235
+  },
+  "step_omissions": 0,
+  "placed_later_after_step_omission": 0.0,
+  "task_pass": 17,
+  "tasks_that_would_pass_if_offered_orders_were_placed": 0
+ },
+ "vs_llm_log": {
+  "clef_k5/run1": {
+   "placed": [
+    -0.0593,
+    -0.1458,
+    0.0303,
+    54
+   ],
+   "offered_not_taken": [
+    -0.0254,
+    -0.0992,
+    0.0439,
+    54
+   ],
+   "never_offered": [
+    0.0847,
+    -0.0087,
+    0.181,
+    54
+   ]
+  },
+  "clef_k5__pplx12/run1": {
+   "placed": [
+    0.1059,
+    0.0115,
+    0.2125,
+    38
+   ],
+   "offered_not_taken": [
+    -0.1176,
+    -0.1795,
+    -0.0641,
+    38
+   ],
+   "never_offered": [
+    0.0118,
+    -0.1081,
+    0.1154,
+    38
+   ]
+  }
+ }
+}

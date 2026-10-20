@@ -1,0 +1,193 @@
+{
+ "sides": {
+  "llm": [
+   "llm/run1",
+   "llm/run2",
+   "llm_log_k5/run1"
+  ],
+  "decider": [
+   "clef_k5/run1"
+  ]
+ },
+ "paired_tasks": 100,
+ "runs_per_task": {
+  "llm": 2.15,
+  "decider": 1.0
+ },
+ "task_pass": {
+  "llm": 0.4117,
+  "decider": 0.37,
+  "diff_ci": [
+   -0.0417,
+   -0.1183,
+   0.0317,
+   100
+  ]
+ },
+ "checkpoints": {
+  "AE: must not order": {
+   "n_checkpoints": 1,
+   "llm": 0.5,
+   "decider": 1.0,
+   "diff_ci": [
+    0.5,
+    0.5,
+    0.5,
+    1
+   ]
+  },
+  "AE: other action": {
+   "n_checkpoints": 21,
+   "llm": 0.8333,
+   "decider": 0.8889,
+   "diff_ci": [
+    0.0556,
+    -0.0556,
+    0.1667,
+    18
+   ]
+  },
+  "AE: required order": {
+   "n_checkpoints": 92,
+   "llm": 0.7569,
+   "decider": 0.7623,
+   "diff_ci": [
+    0.0054,
+    -0.0617,
+    0.0679,
+    54
+   ]
+  },
+  "Clinical Reasoning": {
+   "n_checkpoints": 355,
+   "llm": 0.8373,
+   "decider": 0.8267,
+   "diff_ci": [
+    -0.0107,
+    -0.043,
+    0.0249,
+    100
+   ]
+  },
+  "Data Retrieval": {
+   "n_checkpoints": 102,
+   "llm": 0.8266,
+   "decider": 0.8485,
+   "diff_ci": [
+    0.0219,
+    -0.0354,
+    0.0791,
+    99
+   ]
+  },
+  "Documentation": {
+   "n_checkpoints": 99,
+   "llm": 0.6987,
+   "decider": 0.6566,
+   "diff_ci": [
+    -0.0421,
+    -0.1178,
+    0.032,
+    99
+   ]
+  }
+ },
+ "trajectory": {
+  "steps": {
+   "llm": 36.2483,
+   "decider": 31.19,
+   "diff_ci": [
+    -5.0583,
+    -8.0967,
+    -1.9467,
+    100
+   ]
+  },
+  "orders": {
+   "llm": 3.1567,
+   "decider": 3.24,
+   "diff_ci": [
+    0.0833,
+    -0.4117,
+    0.5983,
+    100
+   ]
+  },
+  "required_placed": {
+   "llm": 0.6834,
+   "decider": 0.6636,
+   "diff_ci": [
+    -0.0198,
+    -0.0975,
+    0.0496,
+    54
+   ]
+  },
+  "forbidden_placed": {
+   "llm": 0.5,
+   "decider": 0.0,
+   "diff_ci": [
+    -0.5,
+    -0.5,
+    -0.5,
+    1
+   ]
+  },
+  "unmatched_orders": {
+   "llm": 3.1939,
+   "decider": 3.2364,
+   "diff_ci": [
+    0.0424,
+    -0.5727,
+    0.7758,
+    55
+   ]
+  },
+  "notes": {
+   "llm": 1.545,
+   "decider": 1.17,
+   "diff_ci": [
+    -0.375,
+    -0.5983,
+    -0.0883,
+    100
+   ]
+  },
+  "retrieve_before_first_action": {
+   "llm": 30.2583,
+   "decider": 24.79,
+   "diff_ci": [
+    -5.4683,
+    -8.0067,
+    -3.14,
+    100
+   ]
+  }
+ },
+ "noise_llm_vs_llm_log": {
+  "orders": [
+   0.18,
+   -0.34,
+   0.71,
+   100
+  ],
+  "required_placed": [
+   0.0494,
+   -0.0062,
+   0.1142,
+   54
+  ],
+  "unmatched_orders": [
+   0.3455,
+   -0.3091,
+   1.0182,
+   55
+  ],
+  "notes": [
+   -0.12,
+   -0.4,
+   0.15,
+   100
+  ]
+ }
+}
