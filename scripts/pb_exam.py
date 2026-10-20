@@ -29,7 +29,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(REPO), str(REPO / "scripts")]
 from pb_offline_orders import BLIND, matches, orders_in, replay, required_orders  # noqa: E402
-from src.s1clin.pb_decider import DECISION_QUESTION, ClefDecider, parse_turn  # noqa: E402
+from src.s1clin.pb_decider import DECISION_QUESTION, ClefDecider, parse_turn, turn_kind  # noqa: E402
 
 JOBS = Path("/ocean/projects/cis260032p/yliy/data/physicianbench/jobs")
 SLUG = "llm_log_k5/run1"
@@ -37,17 +37,7 @@ OD = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_exam")
 
 
 def kind(turn, raw):
-    names = {n for n, _ in turn}
-    if raw.startswith("write_file(") or "\nwrite_file(" in raw:  # a multi-line note does not parse as one call line
-        names.add("write_file")
-    if names & {"fhir_service_request_create", "fhir_medication_request_create", "fhir_appointment_create",
-                "fhir_communication_create_message"}:
-        return "act"
-    if "write_file" in names:
-        return "document"
-    if names == {"FINISH"}:
-        return "finish"
-    return "retrieve"
+    return turn_kind(raw)
 
 
 def build():

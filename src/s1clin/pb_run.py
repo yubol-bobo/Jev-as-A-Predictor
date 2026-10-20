@@ -8,6 +8,9 @@ Arms (docs/physicianbench_decider.md):
               history are logged for the offline decision evaluation
   s1_tool     each step: Clef chooses the tool (or FINISH) from the full menu, Qwen writes the call
   llm_tool    control for s1_tool: the same one-tool-per-turn restriction, the tool chosen by Qwen's own turn
+  gate        each step: Qwen samples K candidate turns; at commitment points (an order or FINISH among them) the
+              decider's pick overrules Qwen's first sample if it is ahead by log-odds >= --margin, else the first
+              sample (= `llm`) is executed (2026-10-20; pb_decider.GatedDecider)
 
 Per task, this mirrors third_party/physicianbench/scripts/run_task.py: a fresh FHIR server (Apptainer, own copy of
 the pristine database), the agent in a fresh process, the task's pytest graders (local judge), metadata.json.
@@ -67,7 +70,7 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
     from agent.mini_agent import MiniAgent
     from agent.tool_registry import ToolRegistry, register_all_tools
     from agent.trajectory import TrajectoryLogger
-    from src.s1clin.pb_decider import (TOOL_QUESTION, ClefDecider, DeciderClient, FirstDecider, LLMSelectDecider,
+    from src.s1clin.pb_decider import (TOOL_QUESTION, ClefDecider, DeciderClient, FirstDecider, GatedDecider, LLMSelectDecider,
                                        LLMToolClient, ToolChoiceClient)
 
     task_dir = PB / "tasks" / "v1" / task
@@ -97,6 +100,9 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
             client = ToolChoiceClient(base, ClefDecider(question=TOOL_QUESTION), log_dir / "decisions.jsonl", seed)
         elif arm == "llm_tool":
             client = LLMToolClient(base, log_dir / "decisions.jsonl", seed)
+        elif arm == "gate":
+            decider = GatedDecider(ClefDecider(), float(os.environ["S1CLIN_GATE_MARGIN"]))
+            client = DeciderClient(base, decider, k, log_dir / "decisions.jsonl", seed=seed)
         else:
             decider = {"clef": ClefDecider, "llm_log": FirstDecider}.get(arm, lambda: LLMSelectDecider(base, "high"))()
             client = DeciderClient(base, decider, k, log_dir / "decisions.jsonl", seed=seed)
@@ -123,7 +129,8 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
     write_metadata(job_dir, model=client.model_id, task=task, arm=arm, k=k, max_steps=max_steps, temperature=None,
                    reasoning_effort="high(qwen thinking)", fhir_url=fhir_url, success=success, test_results=tests,
                    judge="qwen3.8-27b (local, thinking off)", llm_url=os.environ["OPENAI_BASE_URL"],
-                   decider=os.environ.get("S1CLIN_DECIDER", "clef") if arm in ("clef", "s1_tool") else None,
+                   decider=os.environ.get("S1CLIN_DECIDER", "clef") if arm in ("clef", "s1_tool", "gate") else None,
+                   gate_margin=float(os.environ["S1CLIN_GATE_MARGIN"]) if arm == "gate" else None,
                    llm_server=os.environ.get("S1CLIN_LLM_SERVER",
                                              "scripts/vllm_qwen_up.sh (bf16, 128k, decode CUDA graphs, MTP-2)"),
                    host=f"{os.uname().nodename} job {os.environ.get('SLURM_JOB_ID')}",
@@ -135,7 +142,7 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arm", required=True, choices=["llm", "clef", "llm_select", "llm_log", "s1_tool", "llm_tool"])
+    ap.add_argument("--arm", required=True, choices=["llm", "clef", "llm_select", "llm_log", "s1_tool", "llm_tool", "gate"])
     ap.add_argument("--tasks", required=True, help="comma list, or @file with one task per line, or 'all'")
     ap.add_argument("--run", type=int, default=1)
     ap.add_argument("--k", type=int, default=5)
@@ -145,6 +152,7 @@ def main():
     ap.add_argument("--llm-url", default="http://127.0.0.1:8011/v1")
     ap.add_argument("--decider", default="clef", help="System One decider of the clef / s1_tool arms "
                     "(src/s1clin/pb_decider.DECIDER_URLS); other than clef, the job tag gets the suffix __<decider>")
+    ap.add_argument("--margin", type=float, default=1.5, help="gate arm: log-odds margin to overrule the LLM")
     ap.add_argument("--one", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument("--port", type=int, help=argparse.SUPPRESS)
     a = ap.parse_args()
@@ -156,7 +164,10 @@ def main():
     else:
         tasks = a.tasks.split(",")
     arm_tag = a.arm if a.arm in ("llm", "s1_tool", "llm_tool") else f"{a.arm}_k{a.k}"
-    if a.arm in ("clef", "s1_tool") and a.decider != "clef":
+    if a.arm == "gate":
+        arm_tag = f"gate{a.margin:g}_k{a.k}"
+        os.environ["S1CLIN_GATE_MARGIN"] = str(a.margin)
+    if a.arm in ("clef", "s1_tool", "gate") and a.decider != "clef":
         arm_tag += f"__{a.decider}"
     os.environ["S1CLIN_DECIDER"] = a.decider  # inherited by the per-task processes (child_env copies os.environ)
 

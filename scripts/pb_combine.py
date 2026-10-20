@@ -17,7 +17,7 @@ Policies, each against the LLM's own sample (`first`, what the llm arm executes)
   prefer_order      no model: the most-sampled option that places an order whenever one is offered, else `first`
                     (does a decider's order accuracy need more than a bias toward acting?)
   D                 decider D's argmax everywhere (S1-Select)
-  route(D)          D only at commitment points (some option places an order or finishes), else `first`
+  route(D)          D only at commitment points (some option orders, books, messages or finishes), else `first`
   gate(D, d)        D only when it prefers its pick over `first` by a log-odds margin >= d, else `first`
   route+gate(D, d)  both
   ens(S, w)         deciders in S: mean log-probability plus w * log of the LLM's sample frequency (smoothed)
@@ -108,8 +108,8 @@ def argmax(xs):
     return max(range(len(xs)), key=lambda i: (xs[i], -i))
 
 
-def commit_point(q):
-    return any(q["creates"]) or "finish" in q["kinds"]
+def commit_point(q):  # as the online gate arm (pb_decider.GatedDecider): an option acts on the record or finishes
+    return any(k in ("act", "finish") for k in q["kinds"])
 
 
 def make_policies(deciders):

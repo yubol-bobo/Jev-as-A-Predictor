@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import random
 import re
@@ -110,6 +111,24 @@ def parse_turn(r: str) -> list[tuple[str, dict]]:
             i += len(re.match(r"\s*,?\s*", s[i:]).group(0))
         calls.append((name, args))
     return calls
+
+
+ORDER_TOOLS = {"fhir_service_request_create", "fhir_medication_request_create", "fhir_appointment_create",
+               "fhir_communication_create_message"}
+
+
+def turn_kind(raw: str) -> str:
+    """act (places an order), document (writes the note), finish, or retrieve; from a rendered candidate turn."""
+    names = {n for n, _ in parse_turn(raw)}
+    if raw.startswith("write_file(") or "\nwrite_file(" in raw:  # a multi-line note does not parse as one call line
+        names.add("write_file")
+    if names & ORDER_TOOLS:
+        return "act"
+    if "write_file" in names:
+        return "document"
+    if names == {"FINISH"}:
+        return "finish"
+    return "retrieve"
 
 
 def render_tool(tool: dict) -> str:
@@ -214,6 +233,26 @@ class FirstDecider:
 
     def choose(self, messages, renderings, seed):
         return 0, None, {}
+
+
+class GatedDecider:
+    """Arm gate: the System One decider overrules the LLM's own sample only at commitment points (some candidate places
+    an order or finishes) and only when it prefers its pick to that sample by a log-odds margin; otherwise the first
+    sample, an `llm`-arm draw, is executed. Offline counterpart: route+gate in scripts/pb_combine.py. The logged
+    distribution is the decider's; `info.decider_pick` is its argmax, `info.gate` what happened."""
+
+    def __init__(self, decider, margin: float):
+        self.decider, self.margin = decider, margin
+        self.name = f"{decider.name}+gate{margin:g}"
+
+    def choose(self, messages, renderings, seed):
+        if not any(turn_kind(r) in ("act", "finish") for r in renderings):
+            return 0, None, {"gate": "not a commitment point"}
+        pick, dist, info = self.decider.choose(messages, renderings, seed)
+        lo = math.log(max(dist[pick], 1e-12)) - math.log(max(dist[0], 1e-12))
+        go = lo >= self.margin
+        return (pick if go else 0), dist, {**info, "decider_pick": pick, "log_odds": round(lo, 4),
+                                           "gate": "overrule" if go else "defer"}
 
 
 def _jsonable(o):
