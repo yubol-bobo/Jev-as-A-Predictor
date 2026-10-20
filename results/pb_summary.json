@@ -205,9 +205,9 @@
    "checkpoint_pass": 1.0
   },
   "llm_log_k5/run1": {
-   "finished": 51,
-   "passed": 21,
-   "checkpoint_pass": 0.832
+   "finished": 63,
+   "passed": 26,
+   "checkpoint_pass": 0.799
   },
   "llm_select_k5/run1": {
    "finished": 7,

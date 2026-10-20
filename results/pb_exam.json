@@ -2,64 +2,81 @@
  "exam": "llm_log_k5/run1",
  "questions": 702,
  "tasks": 51,
- "answered_by_all": 357,
+ "answered_by_all": 198,
  "deciders": {
   "clef": {
    "answered": 486,
-   "order_accuracy": 0.9286,
+   "order_accuracy": 0.9412,
    "orders_when_required_available": 1.0,
-   "orders_when_none_required": 0.6897,
-   "agrees_with_first_sample": 0.2325,
-   "agrees_with_majority": 0.2325,
+   "orders_when_none_required": 0.7143,
+   "agrees_with_first_sample": 0.2525,
+   "agrees_with_majority": 0.2475,
    "picked_kind": {
-    "retrieve": 0.6218,
-    "act": 0.2017,
-    "document": 0.0896,
-    "finish": 0.0868
+    "retrieve": 0.6414,
+    "act": 0.2121,
+    "finish": 0.0808,
+    "document": 0.0657
    },
-   "mean_max_p": 0.4047
+   "mean_max_p": 0.4033
+  },
+  "d3": {
+   "answered": 198,
+   "order_accuracy": 0.9412,
+   "orders_when_required_available": 1.0,
+   "orders_when_none_required": 0.6429,
+   "agrees_with_first_sample": 0.2172,
+   "agrees_with_majority": 0.2222,
+   "picked_kind": {
+    "retrieve": 0.6414,
+    "act": 0.1818,
+    "document": 0.096,
+    "finish": 0.0808
+   },
+   "mean_max_p": 0.5147
   },
   "pplx12": {
    "answered": 357,
-   "order_accuracy": 0.9286,
+   "order_accuracy": 1.0,
    "orders_when_required_available": 1.0,
-   "orders_when_none_required": 0.8276,
-   "agrees_with_first_sample": 0.2549,
-   "agrees_with_majority": 0.2549,
+   "orders_when_none_required": 0.7857,
+   "agrees_with_first_sample": 0.2778,
+   "agrees_with_majority": 0.2727,
    "picked_kind": {
-    "retrieve": 0.6246,
-    "act": 0.1905,
-    "document": 0.1008,
-    "finish": 0.084
+    "retrieve": 0.6465,
+    "act": 0.1869,
+    "document": 0.096,
+    "finish": 0.0707
    },
-   "mean_max_p": 0.4939
+   "mean_max_p": 0.5008
   }
  },
  "agreement": {
-  "clef|pplx12": 0.5238
+  "clef|d3": 0.5,
+  "clef|pplx12": 0.5253,
+  "d3|pplx12": 0.7222
  },
  "baselines": {
   "first_sample": {
-   "order_accuracy": 0.5,
+   "order_accuracy": 0.5294,
    "orders_when_required_available": 0.5,
-   "orders_when_none_required": 0.3793
+   "orders_when_none_required": 0.4286
   },
   "majority": {
-   "order_accuracy": 0.5
+   "order_accuracy": 0.5294
   },
   "random": {
-   "order_accuracy": 0.4214
+   "order_accuracy": 0.4471
   }
  },
  "key": {
-  "keyed_questions": 28,
-  "required_available": 24,
-  "none_required": 29
+  "keyed_questions": 17,
+  "required_available": 14,
+  "none_required": 14
  },
  "offered_kind": {
-  "retrieve": 1194,
-  "act": 216,
-  "document": 165,
-  "finish": 122
+  "retrieve": 668,
+  "act": 124,
+  "document": 79,
+  "finish": 64
  }
 }
