@@ -239,3 +239,6 @@ to whole-task success, where the options differ between runs because the proposa
 - **linne second instance** (`exam_linne2.sh`): when the GPU 0 and GPU 3 lanes are done, linne instance 2 on GPUs 0+3
   (`s1_up.sh linne 0,3 2`, ports +100) answers from the other end (`pb_exam.py select --reverse`); both instances
   skip questions the other has answered.
+- **decider31b is slow** (~210 questions an hour: NVFP4 weight-only on H100, KV cache for ~3 requests of 32k), so
+  `exam_second.sh decider31b 3 ...` starts a second instance on GPU 3 once amos is done; then linne's second instance
+  takes GPUs 0+3 once decider31b is done (`exam_linne2.sh`). Planned: amos ~11:50, decider31b ~14:30, linne ~16:30.

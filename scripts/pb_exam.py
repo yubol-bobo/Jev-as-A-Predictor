@@ -16,6 +16,7 @@ with the most-sampled option, and between deciders.
      --reverse: the same order backwards, for a second instance of the decider (S1CLIN_DECIDER_URL); both skip
      questions the other has answered in the meantime
   .venv/bin/python scripts/pb_exam.py report [--out results/pb_exam.json]
+  .venv/bin/python scripts/pb_exam.py answered NAME          # exit 0 when NAME has answered the whole exam
 Patient content stays under data/offline/pb_exam/; only aggregates go to results/.
 """
 
@@ -169,15 +170,27 @@ def report(path):
     print(json.dumps(res, indent=1))
 
 
+def answered(name):
+    """Exit 0 if decider `name` has answered every question or finally refused it (its options alone exceed the
+    32k fitting rule), else 1; for the shell drivers."""
+    qs = {json.loads(l)["id"] for l in (OD / "questions.jsonl").read_text().splitlines()}
+    out = OD / f"answers_{name}.jsonl"
+    done = {x["id"] for x in map(json.loads, out.read_text().splitlines())
+            if x["pick"] is not None or "does not fit" in (x["info"].get("error") or "")} if out.exists() else set()
+    sys.exit(0 if qs <= done else 1)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "select", "report"])
+    ap.add_argument("cmd", choices=["build", "select", "report", "answered"])
+    ap.add_argument("name", nargs="?", help="answered: the decider")
     ap.add_argument("--workers", type=int, default=2)
     ap.add_argument("--blind", action="store_true", help="options only, no state")
     ap.add_argument("--reverse", action="store_true", help="answer in reverse order (a second decider instance)")
     ap.add_argument("--out", default=str(REPO / "results/pb_exam.json"))
     a = ap.parse_args()
-    {"build": build, "select": lambda: select(a.workers, a.blind, a.reverse), "report": lambda: report(a.out)}[a.cmd]()
+    {"build": build, "select": lambda: select(a.workers, a.blind, a.reverse), "report": lambda: report(a.out),
+     "answered": lambda: answered(a.name)}[a.cmd]()
 
 
 if __name__ == "__main__":
