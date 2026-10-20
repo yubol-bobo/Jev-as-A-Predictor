@@ -21,6 +21,8 @@ Policies, each against the LLM's own sample (`first`, what the llm arm executes)
   gate(D, d)        D only when it prefers its pick over `first` by a log-odds margin >= d, else `first`
   route+gate(D, d)  both
   orders(D)         D only where some option places an order (FINISH and notes stay with `first`)
+  cgate(D, a, d)    S1 + LLM: D only where at most a of the LLM's K samples are semantically its first sample (the
+                    LLM is unsure), only with log-odds margin >= d, and never overruling toward FINISH
   ens(S, w)         deciders in S: mean log-probability plus w * log of the LLM's sample frequency (smoothed)
 The graders do not penalise orders nobody required, so over-ordering is not in the error rate; the gates trade it
 against omission, reported as a Pareto frontier (error vs over-ordering). Configurations are chosen by 5-fold cross-validation grouped by task (the chosen setting is scored only on held-out
@@ -44,11 +46,13 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(REPO), str(REPO / "scripts")]
 from pb_exam import JOBS, OD, SLUG  # noqa: E402
 from pb_offline_orders import replay  # noqa: E402
+from pb_summarize import semantic_key  # noqa: E402
 from src.s1clin.pb_decider import parse_turn  # noqa: E402
 
 MARGINS = [0.0, 0.5, 1.0, 1.5, 2.0, 3.0]
 WEIGHTS = [0.0, 0.25, 0.5, 1.0, 2.0]
 KEYS = ("order", "finish", "redundant")
+AGREE = [2, 3, 5]  # cgate: consult the decider only if at most this many of the K = 5 samples are semantically `first`
 
 
 def canon(name, args):
@@ -102,6 +106,8 @@ def load(deciders):
         if len(set(q["redundant"])) > 1:
             q["bad"]["redundant"] = q["redundant"]
         q["p"] = {d: ans[d][q["id"]] for d in deciders}
+        sem = [semantic_key(o) for o in q["options"]]
+        q["agree"] = sum(c for c, sk in zip(q["counts"], sem) if sk == sem[q["first"]])
     return qs
 
 
@@ -140,6 +146,22 @@ def make_policies(deciders):
         for m in MARGINS[1:]:
             pol[f"gate({d},{m})"] = (f"gate({d})", gate(d, m, False))
             pol[f"route+gate({d},{m})"] = (f"route+gate({d})", gate(d, m, True))
+
+    def cgate(d, a, m):  # S1 + LLM: the decider only where the LLM is unsure, only when confident, never to FINISH
+        def f(q):
+            if q["agree"] > a:
+                return q["first"]
+            p = q["p"][d]
+            k = argmax(p)
+            if q["kinds"][k] == "finish" and q["kinds"][q["first"]] != "finish":
+                return q["first"]
+            return k if math.log(max(p[k], 1e-12)) - math.log(max(p[q["first"]], 1e-12)) >= m else q["first"]
+        return f
+
+    for d in deciders:
+        for a in AGREE:
+            for m in MARGINS:
+                pol[f"cgate({d},{a},{m})"] = (f"cgate({d})", cgate(d, a, m))
 
     def ens(S, w):
         def f(q):

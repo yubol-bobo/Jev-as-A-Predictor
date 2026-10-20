@@ -64,6 +64,27 @@ only online runs rank deciders on outcome.
   3% vs LLM 55%), leaves finish and redundancy at the LLM's level, overrules the LLM on 11% of steps (pplx12 alone:
   73%; route(pplx12): 19%). Online: `pb_run.py --arm gate --margin 0 --points orders`.
 
+## Cycle 5 (2026-10-20 14:30): boundaries of the decider (`scripts/pb_boundary.py`)
+
+Benefit = key errors of the LLM's sample − key errors of the decider's pick, on keyed exam questions (Clef, pplx12,
+d3, amos; descriptive, no CIs).
+
+- **Confidence is informative.** Overrides with log-odds ≥ 3 over the LLM's sample: +0.8 to +1.0 on the order key,
+  +0.6 on redundancy; below 1.5: about 0. A high margin keeps the benefit with far fewer overrides.
+- **The decider helps where the reasoning model is unsure.** Semantic agreement of the LLM's 5 samples with its
+  first: 1–2 of 5 → benefit +0.37 to +0.40; 4 of 5 → +0.11 to +0.17; 5 of 5 → 0. Order decisions sit almost all at
+  1 of 5.
+- **Finishing is the decider's blind spot.** Confident overrides toward FINISH while a required order is open:
+  −0.75 to −0.80 (n = 4–5); deciders finish prematurely 90% vs the LLM's 80%.
+- **Correction of an earlier reading.** The deciders' low redundancy (3–8% vs 28%) is not state use: in 17–18 of
+  19–22 rescues the decider picks FINISH where the LLM's sample rewrites the note without new results. Their exam
+  advantages reduce to type preferences (orders 1.5×, FINISH 1.33×, retrieval 0.89× vs the LLM's sample).
+- **cgate(D, a, d)** (S1 + LLM: D only if ≤ a of 5 samples agree, only with margin d, never toward FINISH) scores
+  worse on the exam (CV 0.23 vs 0.17) because the redundancy key rewards finishing over a note rewrite; the keys
+  conflict, so the exam cannot choose this rule; online can.
+- Prior evidence (ClinEnv offline, 47 items, results/offline_qwen3.8-27b__llm_log_k5__run1.json): Clef with and
+  without the patient state has the same accuracy (0.383).
+
 ## Pre-registered tests (fixed 2026-10-20 14:00, before the data exist)
 
 - **P1 (replication on unseen tasks).** On the 24 tasks clef_k5__pplx12/run1 has not run yet, pplx12 in the decision
@@ -78,6 +99,11 @@ only online runs rank deciders on outcome.
   pass > LLM. Secondary: notes written and steps within the LLM's run-to-run noise (llm vs llm_log differences:
   notes −0.12 [−0.40, 0.15]); Documentation checkpoints not below the LLM; task pass reported with its CI, no claim
   unless the CI excludes 0. Started by `scripts/loop_online.sh` after the exam (2026-10-20, ~15:15–17:05).
+- **P4 (does the decider use the patient state? fixed 14:35).** pplx12 answers the exam blind (options only, the
+  same option letters; `pb_exam.py select --blind`). Style hypothesis: blind and state picks agree on ≥ 60% of
+  questions (about the agreement between different deciders with state), and the order and finish key errors differ
+  by ≤ 0.05. State hypothesis: agreement < 50% and blind errors clearly higher. Reported on all keys, plus agreement
+  on unkeyed questions.
 - **P3 (offline key).** Redefine the exam's order key to count only consequential omissions (the required order is
   not placed later in the trajectory). Prediction: the decider ranking on this key matches the online ranking
   (pplx12 > Clef), unlike the per-step key.
