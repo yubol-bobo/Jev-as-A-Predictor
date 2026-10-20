@@ -1,7 +1,7 @@
 {
  "exam": "llm_log_k5/run1",
- "questions": 1061,
- "tasks": 75,
+ "questions": 1387,
+ "tasks": 95,
  "answered_by_all": 357,
  "deciders": {
   "clef": {
