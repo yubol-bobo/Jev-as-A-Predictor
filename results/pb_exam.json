@@ -2,58 +2,64 @@
  "exam": "llm_log_k5/run1",
  "questions": 486,
  "tasks": 36,
- "answered_by_all": 8,
+ "answered_by_all": 333,
  "deciders": {
   "clef": {
-   "answered": 8,
-   "order_accuracy": null,
-   "orders_when_required_available": null,
-   "orders_when_none_required": 1.0,
-   "agrees_with_first_sample": 0.375,
-   "agrees_with_majority": 0.375,
+   "answered": 377,
+   "order_accuracy": 0.9231,
+   "orders_when_required_available": 1.0,
+   "orders_when_none_required": 0.7308,
+   "agrees_with_first_sample": 0.2222,
+   "agrees_with_majority": 0.2222,
    "picked_kind": {
-    "retrieve": 0.75,
-    "act": 0.25
+    "retrieve": 0.6366,
+    "act": 0.1982,
+    "document": 0.0841,
+    "finish": 0.0811
    },
-   "mean_max_p": 0.4993
+   "mean_max_p": 0.4051
   },
   "pplx12": {
    "answered": 357,
-   "order_accuracy": null,
-   "orders_when_required_available": null,
-   "orders_when_none_required": 1.0,
-   "agrees_with_first_sample": 0.25,
-   "agrees_with_majority": 0.25,
+   "order_accuracy": 0.9231,
+   "orders_when_required_available": 1.0,
+   "orders_when_none_required": 0.8077,
+   "agrees_with_first_sample": 0.2673,
+   "agrees_with_majority": 0.2673,
    "picked_kind": {
-    "retrieve": 0.75,
-    "act": 0.25
+    "retrieve": 0.6396,
+    "act": 0.1802,
+    "document": 0.1021,
+    "finish": 0.0781
    },
-   "mean_max_p": 0.4782
+   "mean_max_p": 0.4968
   }
  },
  "agreement": {
-  "clef|pplx12": 0.375
+  "clef|pplx12": 0.5405
  },
  "baselines": {
   "first_sample": {
-   "order_accuracy": null,
-   "orders_when_required_available": null,
-   "orders_when_none_required": 0.5
+   "order_accuracy": 0.5,
+   "orders_when_required_available": 0.5217,
+   "orders_when_none_required": 0.3846
   },
   "majority": {
-   "order_accuracy": null
+   "order_accuracy": 0.5
   },
   "random": {
-   "order_accuracy": null
+   "order_accuracy": 0.4077
   }
  },
  "key": {
-  "keyed_questions": 0,
-  "required_available": 0,
-  "none_required": 2
+  "keyed_questions": 26,
+  "required_available": 23,
+  "none_required": 26
  },
  "offered_kind": {
-  "retrieve": 35,
-  "act": 3
+  "retrieve": 1139,
+  "act": 189,
+  "document": 151,
+  "finish": 104
  }
 }
