@@ -85,6 +85,21 @@ d3, amos; descriptive, no CIs).
 - Prior evidence (ClinEnv offline, 47 items, results/offline_qwen3.8-27b__llm_log_k5__run1.json): Clef with and
   without the patient state has the same accuracy (0.383).
 
+## Cycle 6 (2026-10-20 14:40): synthesis — a commitment bias
+
+The same pattern shows in all three ways a decider sits in the loop:
+
+| framing | what the decider does (vs the LLM's own choice) | outcome |
+|---|---|---|
+| exam (picks among the LLM's 5 turns) | orders 1.5×, FINISH 1.33×, retrieval 0.89× | order key up; finish key down |
+| S1-Select online (clef_k5, pplx12) | retrieval before the first action 25–27 vs 30; fewer notes; shorter runs | required orders up (pplx12), notes down |
+| S1-Tool online (decider picks the tool) | write_file on 44% of steps, 9.2 notes per task vs 1.5; retrieval before the first action 9.9 vs 30; 15 loop aborts | pass 0.07 vs 0.41 |
+
+**Hypothesis H-commit:** System One deciders carry a prior toward committing actions (order, write, finish) over
+information gathering, largely independent of the state. It helps where the reasoning LLM under-commits (orders it
+defers) and hurts where commitment is premature (finishing with orders open, note loops when it picks tools, less
+retrieval). Test of state-independence: P4 (blind exam). Test of the fix: P2' (decider only at order points).
+
 ## Pre-registered tests (fixed 2026-10-20 14:00, before the data exist)
 
 - **P1 (replication on unseen tasks).** On the 24 tasks clef_k5__pplx12/run1 has not run yet, pplx12 in the decision
