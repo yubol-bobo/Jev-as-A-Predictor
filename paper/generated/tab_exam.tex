@@ -3,13 +3,14 @@
 \cmidrule(lr){2-4}\cmidrule(l){5-7}
 Decider & Right & \shortstack{Orders,\\required} & \shortstack{Orders,\\none req.} & \shortstack{Agrees\\w/ LLM} & Act & Note \\
 \midrule
-Random & 45 & -- & -- & 22 & -- & -- \\
-\llm{} (own sample) & 45 & 45 & 33 & 100 & -- & -- \\
-\llm{} (most sampled) & 45 & -- & -- & -- & -- & -- \\
+Random & 44 & -- & -- & 20 & -- & -- \\
+\llm{} (own sample) & 47 & 47 & 0 & 100 & -- & -- \\
+\llm{} (most sampled) & 47 & -- & -- & -- & -- & -- \\
 \midrule
-Clef-27B & 94 & 98 & 67 & 26 & 48 & 2 \\
-pplx-decider-v1.2 & 93 & 97 & 100 & 28 & 47 & 2 \\
-d3 & 91 & 96 & 67 & 22 & 47 & 3 \\
-linne-oak-1.0 & 92 & 95 & 67 & 35 & 46 & 2 \\
-amos-1-large & 78 & 82 & 67 & 19 & 40 & 2 \\
+Clef-27B & 96 & 100 & 0 & 20 & 81 & -- \\
+pplx-decider-v1.2 & 96 & 100 & 100 & 25 & 81 & -- \\
+d3 & 94 & 100 & 0 & 20 & 81 & -- \\
+linne-oak-1.0 & 94 & 98 & 0 & 42 & 78 & 2 \\
+amos-1-large & 89 & 93 & 0 & 14 & 75 & 2 \\
+decider-31b & 91 & 93 & 0 & 17 & 75 & 2 \\
 \bottomrule\end{tabular}
