@@ -56,6 +56,31 @@ def versions():
     return out
 
 
+def split_layers(eng, devs):
+    """Spread the decoder layers evenly over devs; everything else (embeddings, rotary, final norm, lm_head, towers)
+    stays on devs[0], so the engine's own code (inputs and lm_head on its device) runs unchanged. accelerate's hooks move
+    each layer's inputs to its GPU; nothing about the computation changes."""
+    import torch
+    from accelerate import dispatch_model
+    path, layers = next((n, x) for n, x in eng.model.named_modules()
+                        if n.endswith("layers") and isinstance(x, torch.nn.ModuleList))
+    n, dm = len(layers), {}
+    per = -(-n // len(devs))
+
+    def walk(prefix, mod):
+        for name, child in mod.named_children():
+            full = prefix + name
+            if full == path:
+                dm.update({f"{full}.{i}": devs[i // per] for i in range(n)})
+            elif path.startswith(full + "."):
+                walk(full + ".", child)
+            else:
+                dm[full] = devs[0]
+    walk("", eng.model)
+    dispatch_model(eng.model, device_map=dm, main_device=devs[0])
+    return {"layers": path, "n_layers": n, "per_device": per, "devices": devs}
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--snapshot", required=True, help="local snapshot dir (weights + linne_engine.py + nc_hook.py)")
@@ -66,6 +91,9 @@ def main():
     p.add_argument("--port", type=int, required=True)
     p.add_argument("--device", default="cuda:0")
     p.add_argument("--dtype", default="bfloat16")
+    p.add_argument("--devices", default=None,
+                   help="e.g. cuda:0,cuda:1: split the decoder layers over these GPUs (same weights and dtype). One H100 "
+                        "holds the 31B bf16 weights but not a 32k-token full forward pass next to them")
     a = p.parse_args()
 
     engine_dir = os.path.abspath(a.engine_dir or a.snapshot)
@@ -80,6 +108,7 @@ def main():
     options = dict(model=a.snapshot, device=a.device, dtype=a.dtype, chat_template=os.path.join(a.snapshot, "chat_template.jinja"),
                    **RUN_OPTIONS)
     eng = linne_engine.LinneEngine(**options)
+    split = split_layers(eng, a.devices.split(",")) if a.devices else None
     eng.synchronize()
     eng.warmup()                                             # kit runner: warm=True
     eng.synchronize()
@@ -89,7 +118,7 @@ def main():
             "pair_labels": len(eng.pair_labels()), "max_choice_options": max(26, len(eng.pair_labels())),
             "engine_sha256": {f: sha256(os.path.join(engine_dir, f)) for f in ("linne_engine.py", "nc_hook.py")},
             "chat_template_sha256": sha256(options["chat_template"]), "versions": versions(),
-            "load_seconds": round(time.time() - t0, 1)}
+            "split": split, "load_seconds": round(time.time() - t0, 1)}
     print("[linne_shim] ready", json.dumps(info), flush=True)
 
     class H(BaseHTTPRequestHandler):

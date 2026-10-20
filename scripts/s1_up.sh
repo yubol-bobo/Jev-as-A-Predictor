@@ -32,8 +32,11 @@ case $NAME in
     PYTHONPATH=$V/s1clin_web setsid nohup $V/d3/bin/python -B -u "$S/d3_server.py" --model "$S" --device cuda:0 \
       --batch-size 8 --verify fast --host 127.0.0.1 --port $BP > "$LOG" 2>&1 < /dev/null & ;;
   linne) S=$(snap PNPM244/linne-oak-1-0 20da7bf3eb4d13b21ae0403e4be834ca19ec5cd0); BP=27320; PORT=8024
+    export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # 32k-token full forward passes; fragmentation OOMed
+    # one H100 holds the weights but not a 32k-token forward pass: give linne two GPUs ("1,2"), layers split over them
+    LINNE_DEVICES=; [[ $GPU == *,* ]] && LINNE_DEVICES="--devices cuda:0,cuda:1"
     PYTHONSAFEPATH=1 setsid nohup $V/linne/bin/python -u "$REPO/scripts/s1_servers/linne_shim.py" --snapshot "$S" \
-      --repo PNPM244/linne-oak-1-0 --revision 20da7bf3eb4d13b21ae0403e4be834ca19ec5cd0 --host 127.0.0.1 --port $BP \
+      --repo PNPM244/linne-oak-1-0 --revision 20da7bf3eb4d13b21ae0403e4be834ca19ec5cd0 --host 127.0.0.1 --port $BP $LINNE_DEVICES \
       > "$LOG" 2>&1 < /dev/null & ;;
   decider31b) S=$(snap Mapika/decider-31b e12ddf20fbc8aa975622414c6b3568804717c8ae); BP=27350; PORT=8025
     export DECIDER_MODEL=$S DECIDER_VLLM_MAX_MODEL_LEN=40960 DECIDER_MAX_STATE_TOKENS=36864 \
