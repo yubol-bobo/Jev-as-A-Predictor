@@ -20,7 +20,7 @@
    "mean_max_p": 0.4047
   },
   "d3": {
-   "answered": 533,
+   "answered": 654,
    "order_accuracy": 0.8929,
    "orders_when_required_available": 1.0,
    "orders_when_none_required": 0.7241,
