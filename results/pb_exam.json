@@ -1,23 +1,23 @@
 {
  "exam": "llm_log_k5/run1",
- "questions": 188,
- "tasks": 15,
- "answered_by_all": 185,
+ "questions": 195,
+ "tasks": 16,
+ "answered_by_all": 195,
  "deciders": {
   "pplx12": {
-   "answered": 185,
+   "answered": 195,
    "order_accuracy": 1.0,
    "orders_when_required_available": 1.0,
    "orders_when_none_required": 0.7857,
-   "agrees_with_first_sample": 0.2865,
-   "agrees_with_majority": 0.2865,
+   "agrees_with_first_sample": 0.2821,
+   "agrees_with_majority": 0.2821,
    "picked_kind": {
-    "retrieve": 0.6324,
-    "act": 0.2,
-    "document": 0.1027,
-    "finish": 0.0649
+    "retrieve": 0.6205,
+    "act": 0.1949,
+    "document": 0.1077,
+    "finish": 0.0769
    },
-   "mean_max_p": 0.4921
+   "mean_max_p": 0.4896
   }
  },
  "agreement": {},
@@ -40,9 +40,9 @@
   "none_required": 14
  },
  "offered_kind": {
-  "retrieve": 614,
-  "act": 124,
-  "document": 78,
-  "finish": 59
+  "retrieve": 636,
+  "act": 129,
+  "document": 86,
+  "finish": 71
  }
 }
