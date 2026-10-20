@@ -234,29 +234,29 @@
  },
  "noise_floor": {
   "arm": "llm_log_k5",
-  "paired_tasks": 82,
-  "pass@1_llm": 0.4024,
-  "pass@1_repeat": 0.4146,
+  "paired_tasks": 93,
+  "pass@1_llm": 0.4086,
+  "pass@1_repeat": 0.4086,
   "pass@1_diff_ci": [
-   0.0122,
-   -0.1098,
-   0.1341
+   0.0,
+   -0.1075,
+   0.1075
   ],
-  "discordant_tasks": 25,
+  "discordant_tasks": 28,
   "checkpoint_diff_ci": [
-   -0.0018,
-   -0.0504,
-   0.0462
+   -0.0065,
+   -0.0505,
+   0.0393
   ],
   "decisions": {
-   "steps": 1190,
-   "steps_per_task": 14.5,
-   "share_distinct_strings": 0.987,
+   "steps": 1364,
+   "steps_per_task": 14.7,
+   "share_distinct_strings": 0.989,
    "share_semantically_distinct": 0.886,
-   "mean_unique": 4.72
+   "mean_unique": 4.73
   },
   "episode_end": {
-   "final_answer": 79,
+   "final_answer": 90,
    "context_overflow": 2,
    "loop_abort": 1
   }
@@ -276,19 +276,19 @@
    "mcnemar_p": 0.0,
    "checkpoint_diff_ci": [
     -0.3651,
-    -0.4328,
-    -0.2978
+    -0.4308,
+    -0.2975
    ],
    "by_type_diff_ci": {
     "Action Execution": [
      -0.2744,
-     -0.3974,
-     -0.1564
+     -0.3923,
+     -0.159
     ],
     "Clinical Reasoning": [
      -0.3692,
-     -0.4508,
-     -0.2837
+     -0.451,
+     -0.2865
     ],
     "Data Retrieval": [
      -0.3933,
@@ -384,19 +384,19 @@
    "mcnemar_p": 0.3771,
    "checkpoint_diff_ci": [
     -0.0048,
-    -0.0462,
-    0.0391
+    -0.0465,
+    0.0381
    ],
    "by_type_diff_ci": {
     "Action Execution": [
      0.0474,
-     -0.0423,
+     -0.0397,
      0.1436
     ],
     "Clinical Reasoning": [
      0.0038,
-     -0.0443,
-     0.0525
+     -0.0442,
+     0.051
     ],
     "Data Retrieval": [
      0.0083,
@@ -406,7 +406,7 @@
     "Documentation": [
      -0.0606,
      -0.1515,
-     0.0404
+     0.0303
     ]
    },
    "tools": {
@@ -468,19 +468,19 @@
    "mcnemar_p": 0.5235,
    "checkpoint_diff_ci": [
     -0.0111,
-    -0.0474,
-    0.0267
+    -0.0476,
+    0.0275
    ],
    "by_type_diff_ci": {
     "Action Execution": [
      0.0513,
-     -0.0256,
+     -0.0244,
      0.1385
     ],
     "Clinical Reasoning": [
      -0.0125,
-     -0.0528,
-     0.0313
+     -0.0537,
+     0.0312
     ],
     "Data Retrieval": [
      0.0183,
@@ -536,25 +536,25 @@
     "checkpoint_llm": 0.8089,
     "pass@1_diff_ci": [
      0.0526,
-     -0.0789,
+     -0.0921,
      0.1974
     ],
     "mcnemar_p": 0.5847,
     "checkpoint_diff_ci": [
      0.0113,
-     -0.0496,
-     0.0722
+     -0.0495,
+     0.0727
     ],
     "by_type_diff_ci": {
      "Action Execution": [
       0.154,
       0.0543,
-      0.2663
+      0.2645
      ],
      "Clinical Reasoning": [
       -0.0081,
-      -0.0809,
-      0.0656
+      -0.0803,
+      0.0654
      ],
      "Data Retrieval": [
       0.0132,
@@ -613,19 +613,19 @@
     "mcnemar_p": 0.21,
     "checkpoint_diff_ci": [
      0.0037,
-     -0.0474,
-     0.0507
+     -0.0471,
+     0.0509
     ],
     "by_type_diff_ci": {
      "Action Execution": [
       0.0344,
-      -0.0634,
+      -0.0652,
       0.1341
      ],
      "Clinical Reasoning": [
       -0.0024,
-      -0.064,
-      0.0566
+      -0.0649,
+      0.057
      ],
      "Data Retrieval": [
       -0.0373,
@@ -634,7 +634,7 @@
      ],
      "Documentation": [
       0.04,
-      -0.0667,
+      -0.0533,
       0.1467
      ]
     },
@@ -697,8 +697,8 @@
     "mcnemar_p": 0.1435,
     "checkpoint_diff_ci": [
      -0.2468,
-     -0.3461,
-     -0.1486
+     -0.349,
+     -0.1494
     ],
     "by_type_diff_ci": {
      "Action Execution": [
@@ -708,13 +708,13 @@
      ],
      "Clinical Reasoning": [
       -0.2354,
-      -0.3486,
-      -0.1296
+      -0.348,
+      -0.1286
      ],
      "Data Retrieval": [
       -0.3367,
       -0.4796,
-      -0.2041
+      -0.1939
      ],
      "Documentation": [
       -0.2245,
@@ -804,8 +804,8 @@
     "mcnemar_p": 0.0654,
     "checkpoint_diff_ci": [
      0.1746,
-     0.0551,
-     0.2873
+     0.0568,
+     0.2883
     ],
     "by_type_diff_ci": {
      "Action Execution": [
@@ -815,12 +815,12 @@
      ],
      "Clinical Reasoning": [
       0.1949,
-      0.0439,
-      0.35
+      0.0425,
+      0.3486
      ],
      "Data Retrieval": [
       0.1122,
-      -0.0102,
+      -0.0204,
       0.2449
      ],
      "Documentation": [
@@ -910,24 +910,24 @@
     "mcnemar_p": 0.0169,
     "checkpoint_diff_ci": [
      -0.2617,
-     -0.3769,
-     -0.1507
+     -0.3761,
+     -0.1522
     ],
     "by_type_diff_ci": {
      "Action Execution": [
       -0.1167,
       -0.25,
-      0.0167
+      0.0083
      ],
      "Clinical Reasoning": [
       -0.2303,
-      -0.3646,
+      -0.3612,
       -0.1031
      ],
      "Data Retrieval": [
       -0.3673,
       -0.5102,
-      -0.2245
+      -0.2449
      ],
      "Documentation": [
       -0.3265,
@@ -1015,7 +1015,7 @@
   "s1_tool/run1": 100,
   "s1_tool/run2": 0,
   "s1_tool/run3": 0,
-  "llm_log_k5/run1": 82,
+  "llm_log_k5/run1": 93,
   "llm_tool/run1": 100,
   "clef_k5__pplx12/run1": 76,
   "s1_tool__pplx12/run1": 49
