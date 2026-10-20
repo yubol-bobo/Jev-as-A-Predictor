@@ -1,65 +1,65 @@
 {
  "exam": "llm_log_k5/run1",
- "questions": 486,
- "tasks": 36,
- "answered_by_all": 333,
+ "questions": 702,
+ "tasks": 51,
+ "answered_by_all": 357,
  "deciders": {
   "clef": {
-   "answered": 377,
-   "order_accuracy": 0.9231,
+   "answered": 486,
+   "order_accuracy": 0.9286,
    "orders_when_required_available": 1.0,
-   "orders_when_none_required": 0.7308,
-   "agrees_with_first_sample": 0.2222,
-   "agrees_with_majority": 0.2222,
+   "orders_when_none_required": 0.6897,
+   "agrees_with_first_sample": 0.2325,
+   "agrees_with_majority": 0.2325,
    "picked_kind": {
-    "retrieve": 0.6366,
-    "act": 0.1982,
-    "document": 0.0841,
-    "finish": 0.0811
+    "retrieve": 0.6218,
+    "act": 0.2017,
+    "document": 0.0896,
+    "finish": 0.0868
    },
-   "mean_max_p": 0.4051
+   "mean_max_p": 0.4047
   },
   "pplx12": {
    "answered": 357,
-   "order_accuracy": 0.9231,
+   "order_accuracy": 0.9286,
    "orders_when_required_available": 1.0,
-   "orders_when_none_required": 0.8077,
-   "agrees_with_first_sample": 0.2673,
-   "agrees_with_majority": 0.2673,
+   "orders_when_none_required": 0.8276,
+   "agrees_with_first_sample": 0.2549,
+   "agrees_with_majority": 0.2549,
    "picked_kind": {
-    "retrieve": 0.6396,
-    "act": 0.1802,
-    "document": 0.1021,
-    "finish": 0.0781
+    "retrieve": 0.6246,
+    "act": 0.1905,
+    "document": 0.1008,
+    "finish": 0.084
    },
-   "mean_max_p": 0.4968
+   "mean_max_p": 0.4939
   }
  },
  "agreement": {
-  "clef|pplx12": 0.5405
+  "clef|pplx12": 0.5238
  },
  "baselines": {
   "first_sample": {
    "order_accuracy": 0.5,
-   "orders_when_required_available": 0.5217,
-   "orders_when_none_required": 0.3846
+   "orders_when_required_available": 0.5,
+   "orders_when_none_required": 0.3793
   },
   "majority": {
    "order_accuracy": 0.5
   },
   "random": {
-   "order_accuracy": 0.4077
+   "order_accuracy": 0.4214
   }
  },
  "key": {
-  "keyed_questions": 26,
-  "required_available": 23,
-  "none_required": 26
+  "keyed_questions": 28,
+  "required_available": 24,
+  "none_required": 29
  },
  "offered_kind": {
-  "retrieve": 1139,
-  "act": 189,
-  "document": 151,
-  "finish": 104
+  "retrieve": 1194,
+  "act": 216,
+  "document": 165,
+  "finish": 122
  }
 }
