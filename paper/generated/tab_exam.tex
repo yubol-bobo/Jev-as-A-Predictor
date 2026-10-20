@@ -3,9 +3,10 @@
 \cmidrule(lr){2-4}\cmidrule(l){5-7}
 Decider & Right & \shortstack{Orders,\\required} & \shortstack{Orders,\\none req.} & \shortstack{Agrees\\w/ LLM} & Act & Note \\
 \midrule
-Random & 41 & -- & -- & -- & -- & -- \\
-\llm{} (own sample) & 50 & 52 & 43 & 100 & -- & -- \\
-\llm{} (most sampled) & 50 & -- & -- & -- & -- & -- \\
+Random & -- & -- & -- & -- & -- & -- \\
+\llm{} (own sample) & -- & -- & 50 & 100 & -- & -- \\
+\llm{} (most sampled) & -- & -- & -- & -- & -- & -- \\
 \midrule
-pplx-decider-v1.2 & 92 & 100 & 78 & 26 & 18 & 11 \\
+Clef-27B & -- & -- & 100 & 38 & 25 & -- \\
+pplx-decider-v1.2 & -- & -- & 100 & 25 & 25 & -- \\
 \bottomrule\end{tabular}
