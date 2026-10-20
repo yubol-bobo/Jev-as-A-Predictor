@@ -64,4 +64,4 @@ TOK=$S/tokenizer.json; [ -f "$TOK" ] || TOK=$S/model/tokenizer.json
 setsid nohup "$REPO/.venv/bin/python" "$REPO/scripts/s1_proxy.py" --name "$NAME" --port $PORT \
   --backend "http://127.0.0.1:$BP/v1/systemone" --tokenizer "$TOK" > "$REPO/logs/s1_${TAG}_proxy.log" 2>&1 < /dev/null &
 echo $! > "$REPO/logs/s1_${TAG}_proxy.pid"
-sleep 2; curl -s -m 5 "http://127.0.0.1:$PORT/health"; echo
+for _ in $(seq 30); do curl -s -m 5 "http://127.0.0.1:$PORT/health" && break; sleep 2; done; echo  # the proxy loads a tokenizer first

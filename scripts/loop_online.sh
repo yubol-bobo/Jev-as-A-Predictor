@@ -18,16 +18,21 @@ POOL="http://127.0.0.1:8011/v1*5,http://127.0.0.1:8013/v1*1"
 export S1CLIN_LLM_SERVER="scripts/vllm_qwen_up.sh (bf16, 128k, decode CUDA graphs, MTP-2); 8011 = TP2 on 2 GPUs, 8013 = TP1"
 until $PY scripts/pb_exam.py answered linne; do sleep 60; done
 echo "$(date) linne has answered the exam"
-for g in 0 1 2 3; do until [ "$(nvidia-smi -i $g --query-gpu=memory.used --format=csv,noheader,nounits)" -lt 1000 ]; do sleep 10; done; done
+up() { curl -s -m 5 "$1" | grep -q "$2"; }  # a server already running (restart after a failed start) is kept
+if ! up http://127.0.0.1:8011/v1/models qwen; then
+  for g in 0 1 2 3; do until [ "$(nvidia-smi -i $g --query-gpu=memory.used --format=csv,noheader,nounits)" -lt 1000 ]; do sleep 10; done; done
+fi
 [ "$(date +%s)" -ge "$((END - 1800))" ] && { echo "$(date) too late to start online runs"; exit 0; }
 touch logs/exam.stop  # exam_deciders.sh: the exam is done
-bash scripts/vllm_qwen_up.sh 0,1 8011 > logs/qwen_8011.pid
-bash scripts/vllm_qwen_up.sh 3 8013 > logs/qwen_8013.pid
-bash scripts/s1_up.sh pplx12 2 > logs/s1_up_pplx12.log 2>&1 || { echo "$(date) pplx12 failed to start"; exit 1; }
+pgrep -u "$USER" -f "port 8011 " > /dev/null || bash scripts/vllm_qwen_up.sh 0,1 8011 > logs/qwen_8011.pid
+pgrep -u "$USER" -f "port 8013 " > /dev/null || bash scripts/vllm_qwen_up.sh 3 8013 > logs/qwen_8013.pid
+up http://127.0.0.1:8022/health pplx12 || bash scripts/s1_up.sh pplx12 2 > logs/s1_up_pplx12.log 2>&1 ||
+  { echo "$(date) pplx12 failed to start"; exit 1; }
 for p in 8011 8013; do
-  until curl -s -m 5 "http://127.0.0.1:$p/v1/models" | grep -q qwen; do sleep 15; done
+  until up "http://127.0.0.1:$p/v1/models" qwen; do sleep 15; done
 done
 echo "$(date) Qwen and pplx12 up"
+pgrep -u "$USER" -f "select --blind" > /dev/null ||
 until S1CLIN_DECIDER=pplx12 $PY scripts/pb_exam.py answered pplx12_blind; do  # P4; failed answers are retried
   S1CLIN_DECIDER=pplx12 $PY scripts/pb_exam.py select --blind --workers 2 >> logs/p4_blind.log 2>&1; sleep 60
 done &
