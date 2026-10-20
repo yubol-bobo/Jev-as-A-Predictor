@@ -219,3 +219,16 @@ to whole-task success, where the options differ between runs because the proposa
      `S1CLIN_DECIDER=NAME .venv/bin/python scripts/pb_exam.py select`. Order: Clef, pplx12, d3, linne, amos,
      decider31b.
   3. Then, optionally, finish pplx12 online (`run_deciders.sh` with pplx12), and the LLM-Tool control.
+
+### 7c. Resume on w002 (2026-10-20, 07:36–15:36)
+
+- **Started:** Qwen TP2 on GPUs 0–1 (8011); Clef on GPU 2, pplx12 on GPU 3. Weights were pre-read into page cache
+  (all six deciders took 2–25 min from /ocean, read in parallel; the node has 2 TB of RAM).
+- **llm_log:** 95/100 at the start; the last 5 tasks run with `run_exam.sh 6`. The exam had 95 tasks and 1,387
+  questions at 08:00.
+- **`exam_deciders.sh`** now runs one `select` per decider in parallel (pidfile `logs/exam_select_<d>.pid`); before,
+  the deciders answered one after another and one GPU sat idle.
+- **`exam_finish.sh`** hands the GPUs over unattended: when llm_log is done, Qwen stops and d3 (GPU 0) and linne
+  (GPU 1) come up; when Clef and pplx12 have answered the final exam, amos (GPU 2) and decider31b (GPU 3) come up.
+  The exam needs no LLM, so all four GPUs serve deciders. Online runs (pplx12 S1-Select 76/100, S1-Tool 49/100)
+  wait for a later allocation.

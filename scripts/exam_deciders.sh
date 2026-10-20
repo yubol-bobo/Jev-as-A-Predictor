@@ -12,7 +12,10 @@ while [ ! -f logs/exam.stop ]; do
     if [ "$d" = clef ]; then up=$(curl -s -m 5 -o /dev/null -w '%{http_code}' -X POST "http://127.0.0.1:8021/decide" -d '{}')
     else up=$(curl -s -m 5 -o /dev/null -w '%{http_code}' "http://127.0.0.1:${PORT[$d]}/health"); fi
     [ "$up" = 000 ] && continue
-    S1CLIN_DECIDER=$d .venv/bin/python scripts/pb_exam.py select --workers 2
+    # one select per decider at a time, the deciders in parallel (each has its own GPU)
+    kill -0 "$(cat "logs/exam_select_$d.pid" 2>/dev/null)" 2>/dev/null && continue
+    S1CLIN_DECIDER=$d .venv/bin/python scripts/pb_exam.py select --workers 2 &
+    echo $! > "logs/exam_select_$d.pid"
   done
   .venv/bin/python scripts/pb_exam.py report > /dev/null
   sleep 120
