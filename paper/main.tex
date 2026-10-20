@@ -11,6 +11,7 @@
 \renewcommand{\dbltopfraction}{0.85}
 \renewcommand{\dblfloatpagefraction}{0.7}
 \input{generated/numbers.tex}
+\providecommand{\EXRESULT}{}\providecommand{\ONRESULT}{}
 % defaults for deciders that have not finished yet (numbers.tex defines the ones that have)
 \providecommand{\EXquestions}{--}
 \providecommand{\EXtasks}{--}
@@ -303,6 +304,8 @@ sufficient is exactly the judgment the System One model lacks.
 \label{fig:tools}
 \end{figure}
 
+\input{sec_deciders.tex}
+
 \subsection{Selection is bounded by what the proposer samples}\label{sec:diversity}
 
 A selector can only add value where the proposals differ. ClinEnv lets us check every proposal against gold. In
@@ -364,7 +367,7 @@ natural next step.
 
 \section*{Limitations}
 
-We study one LLM and one System One model, which share a backbone; other pairs may divide the work differently. The
+We study one LLM. Our main System One model, Clef-27B, shares its backbone; the five other System One models (\S\ref{sec:deciders}) are evaluated on a growing exam and, for one of them, online, so their results are preliminary. The
 PhysicianBench numbers come from one run per arm, and the \ctl{} control covers the \PRToolCtln{} tasks it shares with
 \tool; repeated runs (pass@3) are in progress. Our judge is the local LLM rather than the
 leaderboard's, so absolute scores are not comparable with the leaderboard, while every arm shares the judge. The System
@@ -399,6 +402,8 @@ full arguments, and its results as the LLM saw them. It is fitted into the Syste
 deterministically: tool results are kept in full, then shortened oldest-first to 800 characters, then omitted
 oldest-first, each by the smallest number that fits. In the \sel{} run \DECSelshort\% of decisions saw shortened
 results and \DECSelomit\% saw omitted ones.
+
+\paragraph{Other System One models.} pplx-decider-v1.2 (\texttt{cce0f3f8}), d3 v3.1.0 (\texttt{cbff3a3c}), linne-oak-1.0 (\texttt{20da7bf3}), amos-1-large (\texttt{d67e051c}) and decider-31b (\texttt{e12ddf20}) each run their authors' own serving code on one H100, locally and offline. pplx-decider-v1.2 ships a library only, which we call on its reference path. decider-31b is NVFP4, which an H100 runs through vLLM's weight-only FP4 path; its authors used Blackwell GPUs. Every model receives the state and question built for Clef, with the same fitting rule, counted in its own tokenizer.
 
 \paragraph{The LLM.} Qwen3.8-27B with thinking on, temperature 1.0, top-$p$ 0.95, top-$k$ 20, at most 16,384 completion
 tokens per call. Two identical replicas serve all arms (one with tensor parallelism over two GPUs); each task is routed
