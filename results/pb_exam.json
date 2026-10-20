@@ -2,139 +2,139 @@
  "exam": "llm_log_k5/run1",
  "questions": 1466,
  "tasks": 100,
- "answered_by_all": 619,
+ "answered_by_all": 696,
  "deciders": {
   "amos": {
    "answered": 1461,
    "order_accuracy": 0.7835,
    "orders_when_required_available": 0.8242,
-   "orders_when_none_required": 0.5,
-   "agrees_with_first_sample": 0.2052,
-   "agrees_with_majority": 0.2068,
+   "orders_when_none_required": 0.4884,
+   "agrees_with_first_sample": 0.2141,
+   "agrees_with_majority": 0.2126,
    "picked_kind": {
-    "retrieve": 0.6107,
-    "act": 0.2052,
-    "finish": 0.0953,
-    "document": 0.0889
+    "retrieve": 0.6236,
+    "act": 0.1897,
+    "finish": 0.0963,
+    "document": 0.0905
    },
-   "mean_max_p": 0.4329
+   "mean_max_p": 0.4337
   },
   "clef": {
    "answered": 1461,
    "order_accuracy": 0.9381,
    "orders_when_required_available": 0.978,
-   "orders_when_none_required": 0.65,
-   "agrees_with_first_sample": 0.231,
-   "agrees_with_majority": 0.2262,
+   "orders_when_none_required": 0.6512,
+   "agrees_with_first_sample": 0.2342,
+   "agrees_with_majority": 0.2313,
    "picked_kind": {
-    "retrieve": 0.5703,
-    "act": 0.2536,
-    "finish": 0.0969,
-    "document": 0.0792
+    "retrieve": 0.5862,
+    "act": 0.2342,
+    "finish": 0.0977,
+    "document": 0.0819
    },
-   "mean_max_p": 0.4092
+   "mean_max_p": 0.4072
   },
   "d3": {
    "answered": 1461,
    "order_accuracy": 0.9072,
    "orders_when_required_available": 0.956,
-   "orders_when_none_required": 0.675,
-   "agrees_with_first_sample": 0.2036,
-   "agrees_with_majority": 0.2036,
+   "orders_when_none_required": 0.6744,
+   "agrees_with_first_sample": 0.204,
+   "agrees_with_majority": 0.2011,
    "picked_kind": {
-    "retrieve": 0.5703,
-    "act": 0.2375,
-    "finish": 0.0985,
-    "document": 0.0937
+    "retrieve": 0.5862,
+    "act": 0.2213,
+    "finish": 0.0991,
+    "document": 0.0934
    },
-   "mean_max_p": 0.5199
+   "mean_max_p": 0.5187
   },
   "decider31b": {
-   "answered": 690,
+   "answered": 786,
    "order_accuracy": 0.9072,
    "orders_when_required_available": 0.9341,
-   "orders_when_none_required": 0.525,
-   "agrees_with_first_sample": 0.2278,
-   "agrees_with_majority": 0.2359,
+   "orders_when_none_required": 0.5349,
+   "agrees_with_first_sample": 0.2299,
+   "agrees_with_majority": 0.2371,
    "picked_kind": {
-    "retrieve": 0.5767,
-    "act": 0.2213,
+    "retrieve": 0.592,
+    "act": 0.2055,
     "finish": 0.1034,
-    "document": 0.0985
+    "document": 0.0991
    },
-   "mean_max_p": 0.4643
+   "mean_max_p": 0.4604
   },
   "linne": {
-   "answered": 625,
+   "answered": 702,
    "order_accuracy": 0.9175,
    "orders_when_required_available": 0.9451,
-   "orders_when_none_required": 0.525,
-   "agrees_with_first_sample": 0.3716,
-   "agrees_with_majority": 0.378,
+   "orders_when_none_required": 0.5349,
+   "agrees_with_first_sample": 0.3693,
+   "agrees_with_majority": 0.3736,
    "picked_kind": {
-    "retrieve": 0.5719,
-    "act": 0.2246,
-    "finish": 0.1066,
-    "document": 0.0969
+    "retrieve": 0.5876,
+    "act": 0.2083,
+    "finish": 0.1063,
+    "document": 0.0977
    },
-   "mean_max_p": 0.6282
+   "mean_max_p": 0.6269
   },
   "pplx12": {
    "answered": 1461,
    "order_accuracy": 0.9278,
    "orders_when_required_available": 0.967,
-   "orders_when_none_required": 0.75,
-   "agrees_with_first_sample": 0.252,
-   "agrees_with_majority": 0.2472,
+   "orders_when_none_required": 0.7442,
+   "agrees_with_first_sample": 0.2529,
+   "agrees_with_majority": 0.2457,
    "picked_kind": {
-    "retrieve": 0.5735,
-    "act": 0.2407,
-    "finish": 0.0969,
-    "document": 0.0889
+    "retrieve": 0.5891,
+    "act": 0.2227,
+    "finish": 0.0977,
+    "document": 0.0905
    },
-   "mean_max_p": 0.5072
+   "mean_max_p": 0.5064
   }
  },
  "agreement": {
-  "amos|clef": 0.4313,
-  "amos|d3": 0.5816,
-  "amos|decider31b": 0.4637,
-  "amos|linne": 0.4055,
-  "amos|pplx12": 0.5412,
-  "clef|d3": 0.5283,
-  "clef|decider31b": 0.4733,
-  "clef|linne": 0.4071,
-  "clef|pplx12": 0.5347,
-  "d3|decider31b": 0.5428,
-  "d3|linne": 0.4362,
-  "d3|pplx12": 0.7771,
-  "decider31b|linne": 0.4701,
-  "decider31b|pplx12": 0.5347,
-  "linne|pplx12": 0.4491
+  "amos|clef": 0.4195,
+  "amos|d3": 0.5848,
+  "amos|decider31b": 0.4641,
+  "amos|linne": 0.4037,
+  "amos|pplx12": 0.5388,
+  "clef|d3": 0.5158,
+  "clef|decider31b": 0.4626,
+  "clef|linne": 0.4023,
+  "clef|pplx12": 0.5287,
+  "d3|decider31b": 0.5316,
+  "d3|linne": 0.4353,
+  "d3|pplx12": 0.7744,
+  "decider31b|linne": 0.4698,
+  "decider31b|pplx12": 0.5216,
+  "linne|pplx12": 0.4511
  },
  "baselines": {
   "first_sample": {
    "order_accuracy": 0.4536,
    "orders_when_required_available": 0.4505,
-   "orders_when_none_required": 0.325
+   "orders_when_none_required": 0.3256
   },
   "majority": {
    "order_accuracy": 0.4536
   },
   "random": {
    "order_accuracy": 0.4479,
-   "agrees_with_first_sample": 0.2153
+   "agrees_with_first_sample": 0.2155
   }
  },
  "key": {
   "keyed_questions": 97,
   "required_available": 91,
-  "none_required": 40
+  "none_required": 43
  },
  "offered_kind": {
-  "retrieve": 2051,
-  "act": 441,
-  "document": 248,
-  "finish": 240
+  "retrieve": 2328,
+  "act": 467,
+  "document": 285,
+  "finish": 270
  }
 }
