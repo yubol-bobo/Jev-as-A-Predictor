@@ -106,7 +106,10 @@ def select(workers, blind):
             f.write(json.dumps({"id": q["id"], "pick": pick, "distribution": dist,
                                 "info": {k: info.get(k) for k in ("error", "input_tokens", "fit") if k in info}}) + "\n")
 
-    todo = [q for q in qs if q["id"] not in done]
+    # questions the other deciders have already answered come first, so a late decider adds to the common set fastest
+    others = Counter(x["id"] for f in OD.glob("answers_*.jsonl") if f != out
+                     for x in map(json.loads, f.read_text().splitlines()) if x["pick"] is not None)
+    todo = sorted((q for q in qs if q["id"] not in done), key=lambda q: -others[q["id"]])
     print(f"{name}: {len(todo)} of {len(qs)} questions to answer", flush=True)
     with ThreadPoolExecutor(workers) as ex:
         list(ex.map(run, todo))
