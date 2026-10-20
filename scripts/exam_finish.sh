@@ -10,7 +10,16 @@ umask 077
 OD=/ocean/projects/cis260032p/yliy/data/offline/pb_exam
 gpu_free() { for i in $(seq 1 60); do
   [ "$(nvidia-smi -i "$1" --query-gpu=memory.used --format=csv,noheader,nounits)" -lt 1000 ] && return; sleep 5; done; }
-answered() { [ "$(grep -vc '"pick": null' "$OD/answers_$1.jsonl" 2>/dev/null || echo 0)" -ge "$(wc -l < "$OD/questions.jsonl")" ]; }
+answered() {  # every question has an answer, or a final refusal (its options alone exceed the 32k fitting rule)
+  .venv/bin/python - "$1" <<'PY'
+import json, sys
+od = "/ocean/projects/cis260032p/yliy/data/offline/pb_exam"
+qs = {json.loads(l)["id"] for l in open(f"{od}/questions.jsonl")}
+done = {x["id"] for x in map(json.loads, open(f"{od}/answers_{sys.argv[1]}.jsonl"))
+        if x["pick"] is not None or "does not fit" in (x["info"].get("error") or "")}
+sys.exit(0 if qs <= done else 1)
+PY
+}
 
 if pgrep -u "$USER" -f "vllm serve .*--port 8011" > /dev/null; then
   while pgrep -u "$USER" -f "src.s1clin.pb_run --arm llm_log" > /dev/null; do sleep 60; done

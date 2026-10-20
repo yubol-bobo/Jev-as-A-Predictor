@@ -71,7 +71,8 @@ def build():
                            "counts": r["counts"], "first": r["pick"], "kinds": [kind(t, c) for t, c in zip(turns, r["candidates"])],
                            "creates": [bool(o) for o in ords],
                            "right": [any(matches(specs[i], *o) for o in os_ for i in open_specs) for os_ in ords]
-                           if specs else None})
+                           if specs else None,
+                           "n_open_required": len(open_specs) if specs else None})
             for o in orders_in(turns[r["pick"]]):
                 placed |= {i for i, s in enumerate(specs) if matches(s, *o)}
     with open(OD / "questions.jsonl", "w") as f:
@@ -100,16 +101,21 @@ def select(workers, blind):
         try:
             msgs = [{"role": "user", "content": BLIND}] if blind else state(q)
             pick, dist, info = dec.choose(msgs, q["options"], seed)
-        except Exception as e:
-            pick, dist, info = None, None, {"error": repr(e)[:300]}
+        except Exception as e:  # keep the server's own message (e.g. a request that does not fit, which is final)
+            r = getattr(e, "response", None)
+            pick, dist, info = None, None, {"error": (repr(e) + (" " + r.text if r is not None else ""))[:600]}
         with lock, open(out, "a") as f:
             f.write(json.dumps({"id": q["id"], "pick": pick, "distribution": dist,
                                 "info": {k: info.get(k) for k in ("error", "input_tokens", "fit") if k in info}}) + "\n")
 
-    # questions the other deciders have already answered come first, so a late decider adds to the common set fastest
+    # questions with an answer key come first (order key, or FINISH offered while a required order is open), then the
+    # ones the other deciders have already answered, so a slow decider (linne: ~20 s per 32k-token question) covers
+    # the analysis (pb_combine.py) first
     others = Counter(x["id"] for f in OD.glob("answers_*.jsonl") if f != out
                      for x in map(json.loads, f.read_text().splitlines()) if x["pick"] is not None)
-    todo = sorted((q for q in qs if q["id"] not in done), key=lambda q: -others[q["id"]])
+    keyed = lambda q: bool(q["right"] and len(set(q["right"])) > 1  # noqa: E731
+                           or "finish" in q["kinds"] and (q.get("n_open_required") or 0) > 0)
+    todo = sorted((q for q in qs if q["id"] not in done), key=lambda q: (-keyed(q), -others[q["id"]]))
     print(f"{name}: {len(todo)} of {len(qs)} questions to answer", flush=True)
     with ThreadPoolExecutor(workers) as ex:
         list(ex.map(run, todo))

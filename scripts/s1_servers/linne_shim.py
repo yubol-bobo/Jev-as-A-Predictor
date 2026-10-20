@@ -62,8 +62,9 @@ def split_layers(eng, devs):
     each layer's inputs to its GPU; nothing about the computation changes."""
     import torch
     from accelerate import dispatch_model
-    path, layers = next((n, x) for n, x in eng.model.named_modules()
-                        if n.endswith("layers") and isinstance(x, torch.nn.ModuleList))
+    path, layers = max(((n, x) for n, x in eng.model.named_modules()  # the decoder's, not the vision tower's
+                        if n.endswith("layers") and isinstance(x, torch.nn.ModuleList)),
+                       key=lambda nx: sum(p.numel() for p in nx[1].parameters()))
     n, dm = len(layers), {}
     per = -(-n // len(devs))
 
