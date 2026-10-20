@@ -242,3 +242,9 @@ to whole-task success, where the options differ between runs because the proposa
 - **decider31b is slow** (~210 questions an hour: NVFP4 weight-only on H100, KV cache for ~3 requests of 32k), so
   `exam_second.sh decider31b 3 ...` starts a second instance on GPU 3 once amos is done; then linne's second instance
   takes GPUs 0+3 once decider31b is done (`exam_linne2.sh`). Planned: amos ~11:50, decider31b ~14:30, linne ~16:30.
+- **12:18: decider31b instance 1 stopped too early.** `exam_finish.sh` saw "answered" with 489 questions left: its
+  check read `questions.jsonl` while `exam_deciders.sh` was rewriting it (`pb_exam.py build` truncated then wrote),
+  and an empty exam counts as answered. GPU 0 sat idle until 13:24. Fixed: `build` writes a temp file and replaces it
+  in one step, and `pb_exam.py answered` refuses an empty exam. Instance 1 restarted on GPU 0 (`logs/exam_restart31b.log`,
+  stops itself when answered); `exam_linne2.sh` was restarted after it, so it waits for GPUs 0 and 3 again. The
+  ConnectionError rows in `answers_decider31b.jsonl` are from the stopped server and are retried.

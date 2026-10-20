@@ -23,6 +23,7 @@ Patient content stays under data/offline/pb_exam/; only aggregates go to results
 import argparse
 import hashlib
 import json
+import os
 import sys
 import threading
 from collections import Counter
@@ -68,9 +69,11 @@ def build():
                            "n_open_required": len(open_specs) if specs else None})
             for o in orders_in(turns[r["pick"]]):
                 placed |= {i for i, s in enumerate(specs) if matches(s, *o)}
-    with open(OD / "questions.jsonl", "w") as f:
+    tmp = OD / "questions.jsonl.tmp"  # replaced in one step: the drivers read it while exam_deciders.sh rebuilds it
+    with open(tmp, "w") as f:
         for q in qs:
             f.write(json.dumps(q, ensure_ascii=False) + "\n")
+    os.replace(tmp, OD / "questions.jsonl")
     print(f"exam: {n_tasks} tasks, {len(qs)} questions, "
           f"{sum(1 for q in qs if q['right'] and len(set(q['right'])) > 1)} with an answer key that separates options")
 
@@ -177,7 +180,7 @@ def answered(name):
     out = OD / f"answers_{name}.jsonl"
     done = {x["id"] for x in map(json.loads, out.read_text().splitlines())
             if x["pick"] is not None or "does not fit" in (x["info"].get("error") or "")} if out.exists() else set()
-    sys.exit(0 if qs <= done else 1)
+    sys.exit(0 if qs and qs <= done else 1)
 
 
 def main():
