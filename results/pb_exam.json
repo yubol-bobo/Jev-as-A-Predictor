@@ -2,100 +2,119 @@
  "exam": "llm_log_k5/run1",
  "questions": 1466,
  "tasks": 100,
- "answered_by_all": 154,
+ "answered_by_all": 210,
  "deciders": {
+  "amos": {
+   "answered": 288,
+   "order_accuracy": 0.7835,
+   "orders_when_required_available": 0.8242,
+   "orders_when_none_required": 0.6667,
+   "agrees_with_first_sample": 0.1905,
+   "agrees_with_majority": 0.1905,
+   "picked_kind": {
+    "retrieve": 0.4238,
+    "act": 0.4048,
+    "finish": 0.1476,
+    "document": 0.0238
+   },
+   "mean_max_p": 0.4818
+  },
   "clef": {
    "answered": 1461,
-   "order_accuracy": 0.9178,
-   "orders_when_required_available": 0.9701,
-   "orders_when_none_required": 0.0,
-   "agrees_with_first_sample": 0.2792,
-   "agrees_with_majority": 0.2727,
+   "order_accuracy": 0.9381,
+   "orders_when_required_available": 0.978,
+   "orders_when_none_required": 0.6667,
+   "agrees_with_first_sample": 0.2571,
+   "agrees_with_majority": 0.2524,
    "picked_kind": {
-    "act": 0.474,
-    "retrieve": 0.3766,
-    "finish": 0.1429,
-    "document": 0.0065
+    "act": 0.4762,
+    "retrieve": 0.3571,
+    "finish": 0.1476,
+    "document": 0.019
    },
-   "mean_max_p": 0.4738
+   "mean_max_p": 0.4513
   },
   "d3": {
    "answered": 1461,
-   "order_accuracy": 0.8767,
-   "orders_when_required_available": 0.9403,
-   "orders_when_none_required": 0.0,
-   "agrees_with_first_sample": 0.2468,
-   "agrees_with_majority": 0.2468,
+   "order_accuracy": 0.9072,
+   "orders_when_required_available": 0.956,
+   "orders_when_none_required": 0.6667,
+   "agrees_with_first_sample": 0.219,
+   "agrees_with_majority": 0.219,
    "picked_kind": {
-    "act": 0.461,
-    "retrieve": 0.3766,
-    "finish": 0.1429,
-    "document": 0.0195
+    "act": 0.4667,
+    "retrieve": 0.3571,
+    "finish": 0.1476,
+    "document": 0.0286
    },
-   "mean_max_p": 0.5972
+   "mean_max_p": 0.5763
   },
   "linne": {
-   "answered": 154,
-   "order_accuracy": 0.8904,
-   "orders_when_required_available": 0.9254,
-   "orders_when_none_required": 0.0,
-   "agrees_with_first_sample": 0.3247,
-   "agrees_with_majority": 0.3312,
+   "answered": 211,
+   "order_accuracy": 0.9175,
+   "orders_when_required_available": 0.9451,
+   "orders_when_none_required": 0.6667,
+   "agrees_with_first_sample": 0.3476,
+   "agrees_with_majority": 0.3524,
    "picked_kind": {
-    "act": 0.4481,
-    "retrieve": 0.3766,
-    "finish": 0.1558,
-    "document": 0.0195
+    "act": 0.4571,
+    "retrieve": 0.3619,
+    "finish": 0.1571,
+    "document": 0.0238
    },
-   "mean_max_p": 0.6747
+   "mean_max_p": 0.6622
   },
   "pplx12": {
-   "answered": 1378,
-   "order_accuracy": 0.9041,
-   "orders_when_required_available": 0.9552,
+   "answered": 1461,
+   "order_accuracy": 0.9278,
+   "orders_when_required_available": 0.967,
    "orders_when_none_required": 1.0,
-   "agrees_with_first_sample": 0.2987,
-   "agrees_with_majority": 0.2922,
+   "agrees_with_first_sample": 0.281,
+   "agrees_with_majority": 0.2762,
    "picked_kind": {
-    "act": 0.4675,
-    "retrieve": 0.3766,
-    "finish": 0.1429,
-    "document": 0.013
+    "act": 0.4714,
+    "retrieve": 0.3619,
+    "finish": 0.1476,
+    "document": 0.019
    },
-   "mean_max_p": 0.5923
+   "mean_max_p": 0.5719
   }
  },
  "agreement": {
-  "clef|d3": 0.5844,
-  "clef|linne": 0.5065,
-  "clef|pplx12": 0.5649,
-  "d3|linne": 0.5325,
-  "d3|pplx12": 0.7597,
-  "linne|pplx12": 0.5649
+  "amos|clef": 0.4667,
+  "amos|d3": 0.6048,
+  "amos|linne": 0.4429,
+  "amos|pplx12": 0.5571,
+  "clef|d3": 0.5381,
+  "clef|linne": 0.481,
+  "clef|pplx12": 0.5429,
+  "d3|linne": 0.4857,
+  "d3|pplx12": 0.7714,
+  "linne|pplx12": 0.5333
  },
  "baselines": {
   "first_sample": {
-   "order_accuracy": 0.4658,
-   "orders_when_required_available": 0.4627,
-   "orders_when_none_required": 0.0
+   "order_accuracy": 0.4536,
+   "orders_when_required_available": 0.4505,
+   "orders_when_none_required": 0.3333
   },
   "majority": {
-   "order_accuracy": 0.4658
+   "order_accuracy": 0.4536
   },
   "random": {
-   "order_accuracy": 0.4164,
-   "agrees_with_first_sample": 0.2231
+   "order_accuracy": 0.4479,
+   "agrees_with_first_sample": 0.2171
   }
  },
  "key": {
-  "keyed_questions": 73,
-  "required_available": 67,
-  "none_required": 1
+  "keyed_questions": 97,
+  "required_available": 91,
+  "none_required": 3
  },
  "offered_kind": {
-  "retrieve": 443,
-  "act": 180,
-  "finish": 84,
-  "document": 19
+  "retrieve": 594,
+  "act": 253,
+  "finish": 124,
+  "document": 34
  }
 }
