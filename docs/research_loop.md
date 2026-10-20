@@ -82,8 +82,6 @@ d3, amos; descriptive, no CIs).
 - **cgate(D, a, d)** (S1 + LLM: D only if ≤ a of 5 samples agree, only with margin d, never toward FINISH) scores
   worse on the exam (CV 0.23 vs 0.17) because the redundancy key rewards finishing over a note rewrite; the keys
   conflict, so the exam cannot choose this rule; online can.
-- Prior evidence (ClinEnv offline, 47 items, results/offline_qwen3.8-27b__llm_log_k5__run1.json): Clef with and
-  without the patient state has the same accuracy (0.383).
 
 ## Cycle 6 (2026-10-20 14:40): synthesis — a commitment bias
 
@@ -122,3 +120,16 @@ retrieval). Test of state-independence: P4 (blind exam). Test of the fix: P2' (d
 - **P3 (offline key).** Redefine the exam's order key to count only consequential omissions (the required order is
   not placed later in the trajectory). Prediction: the decider ranking on this key matches the online ranking
   (pplx12 > Clef), unlike the per-step key.
+
+## Status at the end of allocation 49512149 (2026-10-20 17:20)
+
+- **P1, P2', P4 not run.** `scripts/loop_online.sh` started both Qwen servers and pplx12 at 16:08, but neither Qwen
+  server wrote a log line or took GPU memory in 70 minutes, and the pplx12 server finished loading its weights (10 min)
+  and then did not open its port. The first attempt of the P4 blind exam therefore failed on all 1,466 questions
+  (connection refused; answers_pplx12_blind.jsonl holds only failed answers, which `select` retries). Cause not
+  diagnosed; slow model loading from shared storage is the likely suspect. No partial data exists for any of the three.
+- The paper draft states that the tests are pre-registered and not yet run, and makes no claim about the gate online
+  or about whether the commitment bias reads the state.
+- ClinEnv is dropped from the study (user, 2026-10-20 16:05); its one line of evidence here was removed.
+- Next allocation: P4 first (pplx12 only, short prompts, minutes), then P1 and P2' (~30 min per task, about two runs of
+  the LLM pool per allocation), then second runs of pplx12 and the gate and LLM run 2.

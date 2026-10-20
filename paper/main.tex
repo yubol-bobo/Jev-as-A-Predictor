@@ -108,7 +108,7 @@ reliable: their confidence is informative, they help where the LLM's own samples
 agree, and finishing is their blind spot. We also show that step-level answer keys mostly reward ordering
 \emph{early}: 79\% of the LLM's step-level ``omissions'' are placed later anyway. These findings motivate a narrower
 division of labour, in which the System One model decides only at order steps and the LLM keeps gathering,
-documenting and stopping; we report its first online test.
+documenting and stopping; we pre-register its online test.
 \end{abstract}
 
 \begin{figure*}[t]
@@ -456,15 +456,17 @@ finish step overrules on 19\%; a gate by log-odds margin or by the LLM's self-co
 error further under cross-validation, because the exam's redundancy key rewards finishing over a note rewrite and the
 keys pull against each other. The exam cannot choose among these designs; whole runs must.
 
-\paragraph{Preliminary online tests (pre-registered, running).} We fixed three tests before their data existed.
+\paragraph{Pre-registered online tests (not yet run).} We fixed three tests before their data existed; none has been run yet, and we make no claim about the gate's online effect.
 \textbf{P1} replicates pplx-decider-v1.2 in \sel{} on the 24 tasks it has not yet run; prediction: more required-order
-checkpoints than the pooled LLM runs. Result: \pending{P1 TBD: n tasks, required-order cp.\ difference [CI]}.
+checkpoints than the pooled LLM runs.
 \textbf{P2$'$} runs the orders-only gate with pplx-decider-v1.2; prediction: the required-order gain of \sel{} without
-its loss of notes (notes within the LLM's run-to-run noise, $-$0.12 [$-$0.40, 0.15]). Result: \pending{P2$'$ TBD: n
-tasks, required-order cp.\ difference [CI], notes difference [CI], task pass}. \textbf{P4} asks pplx-decider-v1.2 the
+its loss of notes (notes within the LLM's run-to-run noise, $-$0.12 [$-$0.40, 0.15]); documentation not lower; task
+pass reported with its CI, claimed only if the CI excludes 0. \textbf{P4} asks pplx-decider-v1.2 the
 whole exam blind, with the options but no patient state; if the commitment bias is a fixed preference, blind and
 informed picks agree on at least 60\% of questions and the order and finish key errors differ by at most 0.05.
-Result: \pending{P4 TBD: agreement blind vs state (all / keyed), key errors blind vs state, kind preferences}.
+If it reads the state, agreement falls below 50\% and blind key errors rise clearly. Until P4 is run, the
+commitment bias of Section~\ref{sec:commit} is a description of behaviour, not a claim that the preference ignores the
+state.
 
 \section{Related work}
 
@@ -488,7 +490,7 @@ code and rubric \citep{physicianbench2026}. It has been run only with generative
 \paragraph{A commitment bias, not a clinical judgment.} The clearest regularity in our data is a preference over
 kinds of action that six independently trained System One models share. It explains when they help (the LLM defers
 orders it already proposes) and when they hurt (finishing early, writing instead of looking). Whether the preference
-reads the state is what the blind test settles.
+reads the state is what the pre-registered blind test (P4) will settle.
 
 \paragraph{A division of labour.} The LLM is good at what the System One model cannot do: deciding what to look up,
 how much evidence is enough, when to stop, and writing the note. The System One model is good at what the LLM does
@@ -508,7 +510,7 @@ task); the orders-only gate needs proposals only where an order is on the table.
 
 We study one LLM and one benchmark. Clef shares its backbone with the LLM; the five other System One models are
 evaluated on the exam and, for one of them, online. Most online numbers come from one run per arm (the LLM has 2.15
-runs per task when pooled), and the online tests of the gated design are preliminary. The benchmark barely penalises
+runs per task when pooled), and the gated design has been tested only on the exam; its pre-registered online tests are still to run. The benchmark barely penalises
 over-ordering, so a commitment bias costs little here and could cost more in practice. Our judge is the local LLM
 rather than the leaderboard's, so absolute scores are not comparable with the leaderboard, while every arm shares the
 judge. The System One models read a 32k-token view of states the LLM reads in full. Inpatient settings such as ClinEnv
