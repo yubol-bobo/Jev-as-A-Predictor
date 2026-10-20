@@ -12,7 +12,9 @@ trajectory has not placed yet. Elsewhere there is no key, and the report gives a
 with the most-sampled option, and between deciders.
 
   .venv/bin/python scripts/pb_exam.py build                 # questions from the finished llm_log tasks (rerun to extend)
-  S1CLIN_DECIDER=d3 .venv/bin/python scripts/pb_exam.py select [--workers 2] [--blind]
+  S1CLIN_DECIDER=d3 .venv/bin/python scripts/pb_exam.py select [--workers 2] [--blind] [--reverse]
+     --reverse: the same order backwards, for a second instance of the decider (S1CLIN_DECIDER_URL); both skip
+     questions the other has answered in the meantime
   .venv/bin/python scripts/pb_exam.py report [--out results/pb_exam.json]
 Patient content stays under data/offline/pb_exam/; only aggregates go to results/.
 """
@@ -72,7 +74,7 @@ def build():
           f"{sum(1 for q in qs if q['right'] and len(set(q['right'])) > 1)} with an answer key that separates options")
 
 
-def select(workers, blind):
+def select(workers, blind, reverse=False):
     qs = [json.loads(l) for l in (OD / "questions.jsonl").read_text().splitlines()]
     dec = ClefDecider(question=DECISION_QUESTION)
     name = dec.name + ("_blind" if blind else "")
@@ -86,7 +88,18 @@ def select(workers, blind):
             cache[q["task"]] = replay(JOBS / SLUG / q["task"] / "logs/agent/decisions.messages.jsonl")
         return cache[q["task"]][q["msg_epoch"]][:q["n_messages"]]
 
+    seen = [0.0, set()]  # answers file mtime, ids answered there (by this or another instance)
+
+    def answered_meanwhile(i):
+        with lock:
+            m = out.stat().st_mtime if out.exists() else 0.0
+            if m != seen[0]:
+                seen[:] = [m, {x["id"] for x in map(json.loads, out.read_text().splitlines()) if x["pick"] is not None}]
+            return i in seen[1]
+
     def run(q):
+        if answered_meanwhile(q["id"]):
+            return
         seed = hashlib.sha256(q["id"].encode()).hexdigest()  # same letters for every decider
         try:
             msgs = [{"role": "user", "content": BLIND}] if blind else state(q)
@@ -105,7 +118,7 @@ def select(workers, blind):
                      for x in map(json.loads, f.read_text().splitlines()) if x["pick"] is not None)
     keyed = lambda q: bool(q["right"] and len(set(q["right"])) > 1  # noqa: E731
                            or "finish" in q["kinds"] and (q.get("n_open_required") or 0) > 0)
-    todo = sorted((q for q in qs if q["id"] not in done), key=lambda q: (-keyed(q), -others[q["id"]]))
+    todo = sorted((q for q in qs if q["id"] not in done), key=lambda q: (-keyed(q), -others[q["id"]]), reverse=reverse)
     print(f"{name}: {len(todo)} of {len(qs)} questions to answer", flush=True)
     with ThreadPoolExecutor(workers) as ex:
         list(ex.map(run, todo))
@@ -161,9 +174,10 @@ def main():
     ap.add_argument("cmd", choices=["build", "select", "report"])
     ap.add_argument("--workers", type=int, default=2)
     ap.add_argument("--blind", action="store_true", help="options only, no state")
+    ap.add_argument("--reverse", action="store_true", help="answer in reverse order (a second decider instance)")
     ap.add_argument("--out", default=str(REPO / "results/pb_exam.json"))
     a = ap.parse_args()
-    {"build": build, "select": lambda: select(a.workers, a.blind), "report": lambda: report(a.out)}[a.cmd]()
+    {"build": build, "select": lambda: select(a.workers, a.blind, a.reverse), "report": lambda: report(a.out)}[a.cmd]()
 
 
 if __name__ == "__main__":

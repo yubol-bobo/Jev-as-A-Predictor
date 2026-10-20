@@ -232,3 +232,10 @@ to whole-task success, where the options differ between runs because the proposa
   (GPU 1) come up; when Clef and pplx12 have answered the final exam, amos (GPU 2) and decider31b (GPU 3) come up.
   The exam needs no LLM, so all four GPUs serve deciders. Online runs (pplx12 S1-Select 76/100, S1-Tool 49/100)
   wait for a later allocation.
+- **09:28: allocation 49510083 ended** (its interactive step was killed with SIGKILL; peak memory 24 GB of 1,000 GB,
+  no server was starting, so not the workload). Answers are on /ocean and resumable. Resumed at 09:36 in 49512149
+  on w002: `exam_finish.sh` now takes lanes (`"0:pplx12,decider31b" "3:d3,amos" "1,2:linne"`) and only stops servers it
+  started; stale pid files from the old allocation were removed first. d3 finished at 09:55; amos up 09:58.
+- **linne second instance** (`exam_linne2.sh`): when the GPU 0 and GPU 3 lanes are done, linne instance 2 on GPUs 0+3
+  (`s1_up.sh linne 0,3 2`, ports +100) answers from the other end (`pb_exam.py select --reverse`); both instances
+  skip questions the other has answered.

@@ -190,7 +190,9 @@ class ClefDecider:
 
     def __init__(self, url: str | None = None, timeout: int = 600, question: str = DECISION_QUESTION):
         self.name = os.environ.get("S1CLIN_DECIDER", "clef")
-        self.url, self.timeout, self.question = url or DECIDER_URLS[self.name], timeout, question
+        # S1CLIN_DECIDER_URL: a further instance of the same decider (scripts/s1_up.sh NAME GPU N)
+        self.url = url or os.environ.get("S1CLIN_DECIDER_URL") or DECIDER_URLS[self.name]
+        self.timeout, self.question = timeout, question
 
     def choose(self, messages, renderings, seed):
         instruction, steps = history_steps(messages)
