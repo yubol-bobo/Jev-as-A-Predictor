@@ -20,6 +20,7 @@ Policies, each against the LLM's own sample (`first`, what the llm arm executes)
   route(D)          D only at commitment points (some option orders, books, messages or finishes), else `first`
   gate(D, d)        D only when it prefers its pick over `first` by a log-odds margin >= d, else `first`
   route+gate(D, d)  both
+  orders(D)         D only where some option places an order (FINISH and notes stay with `first`)
   ens(S, w)         deciders in S: mean log-probability plus w * log of the LLM's sample frequency (smoothed)
 The graders do not penalise orders nobody required, so over-ordering is not in the error rate; the gates trade it
 against omission, reported as a Pareto frontier (error vs over-ordering). Configurations are chosen by 5-fold cross-validation grouped by task (the chosen setting is scored only on held-out
@@ -112,6 +113,10 @@ def commit_point(q):  # as the online gate arm (pb_decider.GatedDecider): an opt
     return any(k in ("act", "finish") for k in q["kinds"])
 
 
+def order_point(q):  # orders only (research loop P2'): FINISH and notes stay with the LLM's sample
+    return any(q["creates"])
+
+
 def make_policies(deciders):
     """name -> (family, function(q) -> option index)."""
     pol = {"first": ("base", lambda q: q["first"]),
@@ -131,6 +136,7 @@ def make_policies(deciders):
     for d in deciders:
         pol[d] = ("decider", lambda q, d=d: argmax(q["p"][d]))
         pol[f"route({d})"] = ("route", lambda q, d=d: argmax(q["p"][d]) if commit_point(q) else q["first"])
+        pol[f"orders({d})"] = ("orders", lambda q, d=d: argmax(q["p"][d]) if order_point(q) else q["first"])
         for m in MARGINS[1:]:
             pol[f"gate({d},{m})"] = (f"gate({d})", gate(d, m, False))
             pol[f"route+gate({d},{m})"] = (f"route+gate({d})", gate(d, m, True))
@@ -230,7 +236,8 @@ def main():
                                  / sum(len(q["bad"]) for q in qs), 4)}
 
     # error profile: LLM vs each decider (the insight)
-    res["error_types"] = {x: error_types(qs, pol[x][1]) for x in ["first", "majority", "prefer_order"] + deciders}
+    res["error_types"] = {x: error_types(qs, pol[x][1]) for x in ["first", "majority", "prefer_order"] + deciders
+                          + [f"{r}({d})" for r in ("route", "orders") for d in deciders]}
     first_kind = Counter(q["kinds"][q["first"]] for q in qs)
     res["kind_preference"] = {d: {k: round(sum(q["kinds"][argmax(q["p"][d])] == k for q in qs) / max(c, 1), 3)
                                   for k, c in first_kind.items()} for d in deciders}  # picks of kind k / LLM's
@@ -244,7 +251,7 @@ def main():
     allp = {x: score(qs, f) for x, (_, f) in pol.items()}
     res["in_sample"] = {x: {"error": round(e, 4), "per_key": pk} for x, (e, pk) in
                         sorted(allp.items(), key=lambda kv: kv[1][0])[:25]}
-    for x in ["first", "majority", "prefer_order"] + deciders + [f"route({d})" for d in deciders]:
+    for x in ["first", "majority", "prefer_order"] + deciders + [f"{r}({d})" for r in ("route", "orders") for d in deciders]:
         res["in_sample"].setdefault(x, {"error": round(allp[x][0], 4), "per_key": allp[x][1]})
     fams = {}
     for x, (fam, _) in pol.items():
@@ -266,7 +273,7 @@ def main():
     best = min(pol, key=lambda x: (allp[x][0], x))
     res["vs_first_ci95"] = {x: {"diff": round(allp[x][0] - allp["first"][0], 4),
                                 "ci": bootstrap_diff(qs, pol[x][1], pol["first"][1])}
-                            for x in dict.fromkeys(deciders + [f"route({d})" for d in deciders] + [best, "majority", "prefer_order"])}
+                            for x in dict.fromkeys(deciders + [f"{r}({d})" for r in ("route", "orders") for d in deciders] + [best, "majority", "prefer_order"])}
     Path(a.out).write_text(json.dumps(res, indent=1))
     print(json.dumps({k: res[k] for k in ("deciders", "questions", "keyed", "random_error", "cross_validated")}, indent=1))
     print("in-sample best:", best, allp[best][0], "first:", allp["first"][0])

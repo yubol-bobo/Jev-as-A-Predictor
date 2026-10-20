@@ -101,7 +101,8 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
         elif arm == "llm_tool":
             client = LLMToolClient(base, log_dir / "decisions.jsonl", seed)
         elif arm == "gate":
-            decider = GatedDecider(ClefDecider(), float(os.environ["S1CLIN_GATE_MARGIN"]))
+            decider = GatedDecider(ClefDecider(), float(os.environ["S1CLIN_GATE_MARGIN"]),
+                                   os.environ.get("S1CLIN_GATE_POINTS", "commit"))
             client = DeciderClient(base, decider, k, log_dir / "decisions.jsonl", seed=seed)
         else:
             decider = {"clef": ClefDecider, "llm_log": FirstDecider}.get(arm, lambda: LLMSelectDecider(base, "high"))()
@@ -131,6 +132,7 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
                    judge="qwen3.8-27b (local, thinking off)", llm_url=os.environ["OPENAI_BASE_URL"],
                    decider=os.environ.get("S1CLIN_DECIDER", "clef") if arm in ("clef", "s1_tool", "gate") else None,
                    gate_margin=float(os.environ["S1CLIN_GATE_MARGIN"]) if arm == "gate" else None,
+                   gate_points=os.environ.get("S1CLIN_GATE_POINTS", "commit") if arm == "gate" else None,
                    llm_server=os.environ.get("S1CLIN_LLM_SERVER",
                                              "scripts/vllm_qwen_up.sh (bf16, 128k, decode CUDA graphs, MTP-2)"),
                    host=f"{os.uname().nodename} job {os.environ.get('SLURM_JOB_ID')}",
@@ -153,6 +155,9 @@ def main():
     ap.add_argument("--decider", default="clef", help="System One decider of the clef / s1_tool arms "
                     "(src/s1clin/pb_decider.DECIDER_URLS); other than clef, the job tag gets the suffix __<decider>")
     ap.add_argument("--margin", type=float, default=1.5, help="gate arm: log-odds margin to overrule the LLM")
+    ap.add_argument("--points", default="commit", choices=["commit", "orders"],
+                    help="gate arm: where the decider may overrule (commit: an order or FINISH among the candidates; "
+                         "orders: a service/medication order among them)")
     ap.add_argument("--one", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument("--port", type=int, help=argparse.SUPPRESS)
     a = ap.parse_args()
@@ -165,8 +170,9 @@ def main():
         tasks = a.tasks.split(",")
     arm_tag = a.arm if a.arm in ("llm", "s1_tool", "llm_tool") else f"{a.arm}_k{a.k}"
     if a.arm == "gate":
-        arm_tag = f"gate{a.margin:g}_k{a.k}"
+        arm_tag = f"gate{a.margin:g}{'' if a.points == 'commit' else '_' + a.points}_k{a.k}"
         os.environ["S1CLIN_GATE_MARGIN"] = str(a.margin)
+        os.environ["S1CLIN_GATE_POINTS"] = a.points
     if a.arm in ("clef", "s1_tool", "gate") and a.decider != "clef":
         arm_tag += f"__{a.decider}"
     os.environ["S1CLIN_DECIDER"] = a.decider  # inherited by the per-task processes (child_env copies os.environ)

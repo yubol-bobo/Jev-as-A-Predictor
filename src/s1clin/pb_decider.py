@@ -243,12 +243,22 @@ class GatedDecider:
     sample, an `llm`-arm draw, is executed. Offline counterpart: route+gate in scripts/pb_combine.py. The logged
     distribution is the decider's; `info.decider_pick` is its argmax, `info.gate` what happened."""
 
-    def __init__(self, decider, margin: float):
-        self.decider, self.margin = decider, margin
-        self.name = f"{decider.name}+gate{margin:g}"
+    POINTS = ("commit", "orders")  # orders: only where a candidate creates a service or medication request, so
+    # FINISH and notes stay with the LLM (offline counterpart: orders(D) in pb_combine.py; docs/research_loop.md P2')
+
+    def __init__(self, decider, margin: float, points: str = "commit"):
+        assert points in self.POINTS
+        self.decider, self.margin, self.points = decider, margin, points
+        self.name = f"{decider.name}+gate{margin:g}" + ("" if points == "commit" else f"_{points}")
+
+    def point(self, renderings):
+        if self.points == "orders":
+            return any(n in ("fhir_service_request_create", "fhir_medication_request_create")
+                       for r in renderings for n, _ in parse_turn(r))
+        return any(turn_kind(r) in ("act", "finish") for r in renderings)
 
     def choose(self, messages, renderings, seed):
-        if not any(turn_kind(r) in ("act", "finish") for r in renderings):
+        if not self.point(renderings):
             return 0, None, {"gate": "not a commitment point"}
         pick, dist, info = self.decider.choose(messages, renderings, seed)
         lo = math.log(max(dist[pick], 1e-12)) - math.log(max(dist[0], 1e-12))
