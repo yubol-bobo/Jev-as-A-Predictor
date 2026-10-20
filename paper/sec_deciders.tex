@@ -1,0 +1,37 @@
+\subsection{Other System One models in the same seat}\label{sec:deciders}
+
+Is this Clef's behaviour, or how System One models behave as deciders? We put five other open System One models in
+the same seat: pplx-decider-v1.2, d3, linne-oak-1.0, amos-1-large and decider-31b. Each runs its authors' own
+serving code at a pinned revision, and nothing else changes: the same rendering, question wording and 32k fitting
+rule (Appendix~\ref{app:interface}).
+
+\paragraph{The same exam for every decider.} The LLM runs every task once and logs, at each step, its five
+candidate turns and the full state. Each step with at least two distinct candidates becomes a question, so far
+\EXquestions{} questions from \EXtasks{} tasks. Every decider answers byte-identical requests: the same state, the
+same options and the same option letters. The comparison is restricted to the \EXcommon{} questions that all of
+them have answered. On order steps the task graders give an answer key (\EXkeyed{} questions that separate right
+from other options). Table~\ref{tab:exam} reports the result. \EXRESULT
+
+\paragraph{Whole tasks.} We also rerun the online arms with pplx-decider-v1.2 in Clef's seat
+(Table~\ref{tab:deciders}). Choosing among proposals, it again stays level with the LLM
+(\ONSelPplxcp{} checkpoint points over \ONSelPplxn{} tasks). Steering, it again falls far behind the same
+restriction with the LLM choosing (\ONToolPplxcp{} points over \ONToolPplxn{} tasks). \ONRESULT
+
+\begin{table}[t]
+\centering\small
+\resizebox{\columnwidth}{!}{\input{generated/tab_exam.tex}}
+\caption{\textbf{The same exam for every decider} (PhysicianBench, the LLM's own logged states and candidates;
+\EXcommon{} questions answered by every decider, \EXkeyed{} of them with an answer key). Right: picks a required
+order on order steps where options differ. Orders, required / none req.: picks an ordering option when one places a
+required order, or when none does. Agrees w/ LLM: same pick as the LLM's own sample. Act, Note: share of all picks
+that place orders or write the note. Preliminary: the exam and the remaining deciders are still running.}
+\label{tab:exam}
+\end{table}
+
+\begin{table}[t]
+\centering\small
+\resizebox{\columnwidth}{!}{\input{generated/tab_deciders_online.tex}}
+\caption{\textbf{Whole tasks with another decider in Clef's seat.} Paired checkpoint differences with 95\% intervals,
+each on the tasks both arms have completed.}
+\label{tab:deciders}
+\end{table}
