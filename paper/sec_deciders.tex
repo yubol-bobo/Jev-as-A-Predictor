@@ -1,39 +1,24 @@
-\subsection{Other System One models in the same seat}\label{sec:deciders}
+\subsection{The same behaviour across six models}\label{sec:deciders}
 
-Is this Clef's behaviour, or how System One models behave as deciders? We put five other open System One models in
-the same seat: pplx-decider-v1.2, d3, linne-oak-1.0, amos-1-large and decider-31b. Each runs its authors' own
-serving code at a pinned revision, and nothing else changes: the same rendering, question wording and 32k fitting
-rule (Appendix~\ref{app:interface}).
-
-\paragraph{The same exam for every decider.} The LLM runs every task once and logs, at each step, its five
-candidate turns and the full state. Each step with at least two distinct candidates becomes a question, so far
-\EXquestions{} questions from \EXtasks{} tasks. Every decider answers byte-identical requests: the same state, the
-same options and the same option letters. The comparison is restricted to the \EXcommon{} questions that all of
-them have answered. On order steps the task graders give an answer key (\EXkeyed{} questions that separate right
-from other options). Table~\ref{tab:exam} reports the result. On order steps, all three
-deciders pick a right option far more often than the LLM's own sample (Clef \EXaccClef\%, pplx-decider-v1.2
-\EXaccPplx\%, d3 \EXaccDthree\%, against \EXaccFirst\% for the LLM and \EXaccRandom\% at random). When a proposal
-places a required order, every one of them takes it (\EXreqClef\%, \EXreqPplx\% and \EXreqDthree\%; the LLM
-\EXreqFirst\%). The bias toward action is shared too: when no proposal places a required order, they still order
-in \EXnoneClef\%, \EXnonePplx\% and \EXnoneDthree\% of steps, the LLM in \EXnoneFirst\%. Across all questions
-they agree with the LLM's own sample about as often as a random pick would (\EXagreeClef\%, \EXagreePplx\% and
-\EXagreeDthree\%; random \EXagreeRandom\%), and with each other more often (pplx-decider-v1.2 and d3 on
-\EXpairPplxDthree\% of questions). Taking the required action is how System One deciders behave, not a quirk of
-Clef.
-
-\paragraph{Whole tasks.} We also rerun the online arms with pplx-decider-v1.2 in Clef's seat
-(Table~\ref{tab:deciders}). Choosing among proposals, it again stays level with the LLM
-(\ONSelPplxcp{} checkpoint points over \ONSelPplxn{} tasks). Steering, it again falls far behind the same
-restriction with the LLM choosing (\ONToolPplxcp{} points over \ONToolPplxn{} tasks). Both online findings hold for a second System One model.
+Is this Clef's behaviour, or how System One models behave as deciders? Table~\ref{tab:exam} gives every model's
+answers to the fixed exam. On order steps all six pick a right option far more often than the LLM's own sample (Clef
+\EXaccClef\%, pplx-decider-v1.2 \EXaccPplx\%, d3 \EXaccDthree\%, linne-oak-1.0 \EXaccLinne\%, decider-31b
+\EXaccMapika\%, amos-1-large \EXaccAmos\%; the LLM \EXaccFirst\%, random \EXaccRandom\%), and all of them also order
+when no required order is on offer (\EXnoneAmos--\EXnonePplx\% of such steps, the LLM \EXnoneFirst\%). They agree with
+each other more than with the LLM (pplx-decider-v1.2 and d3 on \EXpairPplxDthree\% of questions, Clef and
+pplx-decider-v1.2 on \EXpairClefPplx\%). Online, pplx-decider-v1.2 in \sel{} keeps the LLM's checkpoint level
+(\ONSelPplxcp{} points over \ONSelPplxn{} tasks) and in \tool{} falls far behind (\ONToolPplxcp{} points over
+\ONToolPplxn{} tasks; Table~\ref{tab:deciders}). The commitment bias, its benefit on orders and its failure when
+steering are shared by the models we could test, not a quirk of Clef.
 
 \begin{table}[t]
 \centering\small
 \resizebox{\columnwidth}{!}{\input{generated/tab_exam.tex}}
-\caption{\textbf{The same exam for every decider} (PhysicianBench, the LLM's own logged states and candidates;
-\EXcommon{} questions answered by every decider, \EXkeyed{} of them with an answer key). Right: picks a required
+\caption{\textbf{The same exam for every decider} (PhysicianBench, the LLM's own logged states and proposals;
+\EXcommon{} questions answered by every decider, \EXkeyed{} of them with an order key). Right: picks a required
 order on order steps where options differ. Orders, required / none req.: picks an ordering option when one places a
 required order, or when none does. Agrees w/ LLM: same pick as the LLM's own sample. Act, Note: share of all picks
-that place orders or write the note. Preliminary: the exam and the remaining deciders are still running.}
+that place orders or write the note.}
 \label{tab:exam}
 \end{table}
 
