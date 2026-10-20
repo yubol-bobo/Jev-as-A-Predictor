@@ -18,7 +18,8 @@ set -euo pipefail
 NAME=$1; GPU=$2; INST=${3:-1}; OFF=$(( (INST - 1) * 100 )); TAG=$NAME; [ "$INST" -gt 1 ] && TAG=${NAME}_$INST
 REPO=/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor
 V=/ocean/projects/cis260032p/yliy/venvs
-export HF_HOME=/ocean/projects/cis260032p/yliy/huggingface_cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+# S1CLIN_HF_HOME: a node-local copy of the hub, same snapshots (mmap-ed weights page in slowly from the shared filesystem)
+export HF_HOME=${S1CLIN_HF_HOME:-/ocean/projects/cis260032p/yliy/huggingface_cache} HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export CUDA_VISIBLE_DEVICES=$GPU TOKENIZERS_PARALLELISM=false PYTHONUNBUFFERED=1 OMP_NUM_THREADS=8
 unset AMOS_THINK_URL DECISION_API_KEY AUTOJEV_API_KEY DECIDER_TEMPERATURE DECIDER_LAYOUT
 C=/ocean/projects/cis260032p/yliy/cache/s1clin_$TAG; mkdir -p "$C"
