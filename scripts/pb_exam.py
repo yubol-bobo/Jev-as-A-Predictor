@@ -86,7 +86,8 @@ def select(workers, blind):
     dec = ClefDecider(question=DECISION_QUESTION)
     name = dec.name + ("_blind" if blind else "")
     out = OD / f"answers_{name}.jsonl"
-    done = {json.loads(l)["id"] for l in out.read_text().splitlines()} if out.exists() else set()
+    done = ({x["id"] for x in map(json.loads, out.read_text().splitlines()) if x["pick"] is not None}
+            if out.exists() else set())  # failed answers (e.g. the server went away) are retried
     lock, cache = threading.Lock(), {}
 
     def state(q):

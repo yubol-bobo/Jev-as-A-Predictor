@@ -15,5 +15,5 @@ while [ ! -f logs/exam.stop ]; do
     S1CLIN_DECIDER=$d .venv/bin/python scripts/pb_exam.py select --workers 2
   done
   .venv/bin/python scripts/pb_exam.py report > /dev/null
-  sleep 600
+  sleep 120
 done
