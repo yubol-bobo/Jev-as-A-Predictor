@@ -406,3 +406,27 @@ planned; its outcome is expected near zero for both arms.
   (exact expectation). Both hold -> online arm P9 (task-prior checklist at the first FINISH); (a) fails -> the missed
   orders cannot be recalled from the task text and the order-screening line stops; (a) holds, (b) fails -> the
   ranker is the bottleneck (try the LLM or a listwise ranker).
+
+## P8 verdict (2026-10-21 13:00): holds; the missed orders are known from the task text alone
+
+`scripts/pb_prior.py` -> `results/pb_prior.json`. 26 tasks with 36 required-order specs open at the base run's first
+FINISH. Qwen without thinking, task text only, 8 samples (177 s per task at 4 workers under load), pool 67 orders per
+task after dedup: **coverage of the open specs 0.84 [0.71, 0.95]** (pooled 29/36). pplx12 task-only ranking: top-5
+covers 0.35 [0.15, 0.54] vs a random 5 of the same pool 0.17, difference +0.17 [0.02, 0.33]; top-3 0.31 vs 0.11.
+Both criteria hold. Reading: the LLM, asked from the task alone, names most of the required orders it then fails to
+place while working in the chart: a commitment failure, not missing knowledge. Name matching against the rubric
+regexes is lenient for generic names; the online test is the real check.
+P7′ drivers stopped at 12:58 (tasks in flight finish): its mechanism shows a near-zero ceiling, and the remaining
+allocation goes to P9. P7′ is reported as interim on the tasks finished in both arms.
+
+- **P9 (task-prior checklist, online, fixed 2026-10-21 13:05, before any P9 run).** Arm `screen` with
+  `--ranker prior-pplx12 --b 0 --m 3` (`ScreenClient._prior`): at the first FINISH, the P8 pool of the task
+  (`prior_ranked_pplx12.json`, built before the run from the task text) minus orders the run has placed (by
+  normalized name), top 3 by pplx12, shown with the P7 checklist text; the LLM decides. Control: `--ranker
+  prior-random` (3 random orders of the same pool, same text), so the nudge is controlled and only the System One
+  ranking differs. Tasks: the 26 of P8 (`results/p9_tasks.txt`), run 1, both arms concurrently. Primary: required-
+  order checkpoint pass, prior-pplx12 − prior-random > 0 (task-bootstrap CI; claim only if it excludes 0).
+  Secondary: vs the LLM runs llm/run1 and llm/run2 (not llm_log_k5/run1, which selected the tasks: regression to the
+  mean would favour the arm); orders placed and orders outside the rubric (cost); task pass reported. Mechanism:
+  open specs closed by a flagged order (`pb_p7.py`). Runs unfinished at ~15:05 resume next allocation; any earlier
+  read is labelled interim.

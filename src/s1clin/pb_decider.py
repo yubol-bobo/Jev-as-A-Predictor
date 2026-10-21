@@ -499,6 +499,9 @@ def short_state(messages, budget: int = SCREEN_STATE_CHARS):
                           "results": [r if len(r) <= cap else r[:cap] + " [...]" for r in s["results"]]} for s in steps]
 
 
+PRIOR_DIR = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_screen")
+
+
 class ScreenClient:
     """Arm screen (P7): the LLM acts as in llm_log (K samples logged, the first executed). At its first FINISH, the
     orders proposed by any candidate so far, plus those in B extra samples that must call a tool, are pooled; orders
@@ -506,6 +509,9 @@ class ScreenClient:
     LLM's answer to that is executed instead of the FINISH. The LLM keeps the decision. Rankers: a System One model
     (P(Yes) to SCREEN_QUESTION on the short state, pointwise) or `freq` (how many candidates proposed it; control).
     A ranker `<decider>-task` sees the task instruction only, `<decider>-blind` the order alone (P7').
+    A ranker `prior-<decider>` (P9) skips the pooling: the pool is the task-prior list built before the run from the
+    task text alone (scripts/pb_prior.py export), already ranked by the decider; `prior-random` shuffles it (control).
+    Orders the run has placed are dropped and the top M shown. With B = 0 no extra samples are drawn.
     """
 
     def __init__(self, base, ranker: str, k: int, b: int, m: int, log_path: Path, seed: str):
@@ -520,6 +526,32 @@ class ScreenClient:
             for o in turn_orders(t):
                 self.proposed.setdefault(order_key(o), [o, 0])[1] += 1
         self.placed |= {order_key(o) for o in turn_orders(executed)}
+
+    def _prior(self):
+        name = self.ranker.partition("-")[2]
+        table = json.loads((PRIOR_DIR / "prior_ranked_pplx12.json").read_text())
+        pool = [((k, d, c), p) for k, d, c, p in table.get(self.seed.split("|")[0], [])
+                if order_key((k, d, c)) not in self.placed]
+        self.prior_pool = len(pool)
+        if name == "random":
+            random.Random(f"{self.seed}|prior").shuffle(pool)
+        return [(p, o) for o, p in pool[:self.m]]
+
+    def _rank(self, messages, common, screen):
+        """The top M (score, order) pairs of the pool; the pool and flagged orders go into `screen`."""
+        if self.ranker.startswith("prior-"):
+            ranked = self._prior()
+            screen["pool"] = self.prior_pool
+        else:
+            extra = self.base.chat(messages, n=self.b, tool_choice="required", **common).raw.choices
+            ext = [render_turn(c.message.content, c.message.tool_calls)[:MAX_CANDIDATE_CHARS] for c in extra]
+            self._note(ext, "")
+            pool = [o for key, (o, _) in self.proposed.items() if key not in self.placed]
+            scores = self._score(messages, pool) if pool else []
+            ranked = sorted(zip(scores, pool), key=lambda x: -x[0])[:self.m]
+            screen.update(pool=len(pool), extra_orders=sum(len(turn_orders(t)) for t in ext))
+        screen["flagged"] = [{"order": render_order(o), "score": round(s, 4)} for s, o in ranked]
+        return ranked
 
     def _score(self, messages, orders):
         if self.ranker == "freq":
@@ -560,14 +592,10 @@ class ScreenClient:
             self.done = True
             t0, screen = time.time(), {"ranker": self.ranker}
             try:
-                extra = self.base.chat(messages, n=self.b, tool_choice="required", **common).raw.choices
-                ext = [render_turn(c.message.content, c.message.tool_calls)[:MAX_CANDIDATE_CHARS] for c in extra]
-                self._note(ext, "")
-                pool = [o for key, (o, _) in self.proposed.items() if key not in self.placed]
-                scores = self._score(messages, pool) if pool else []
-                ranked = sorted(zip(scores, pool), key=lambda x: -x[0])[:self.m]
-                screen.update(pool=len(pool), extra_orders=sum(len(turn_orders(t)) for t in ext),
-                              flagged=[{"order": render_order(o), "score": round(s, 4)} for s, o in ranked])
+                ranked = self._rank(messages, common, screen)
+            except Exception as e:  # screening failure: the LLM's own FINISH stands
+                ranked, screen["error"] = [], repr(e)[:500]
+            try:
                 if ranked:
                     items = "\n".join(f"{i + 1}. {render_order(o)}" for i, (s, o) in enumerate(ranked))
                     note = CHECKLIST.format(items=items)
