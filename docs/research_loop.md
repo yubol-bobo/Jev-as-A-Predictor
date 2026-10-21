@@ -453,3 +453,18 @@ allocation goes to P9. P7′ is reported as interim on the tasks finished in bot
   measured against the historical LLM runs. **First job of the next allocation: a concurrent plain LLM run
   (`--arm llm_log --run 3`) on the P7/P9 tasks under the current serving setup**, to size the drift and re-baseline
   the gate before the paper relies on it further.
+
+## Allocation 49563852 (2026-10-21 16:32–00:26, w005): drift baseline D1, P9 resumed
+
+Checked before any run: the Qwen serving script is unchanged since 10-19 and no agent or PhysicianBench code changed
+after the historical LLM runs (llm/run1 10-18/19, llm/run2 10-19, llm_log_k5/run1 10-19/20), so the cause of the
+P7′ gap is not known. All 4 GPUs serve Qwen (two TP2 replicas, 8011 and 8013); P9 reads its precomputed ranking and
+needs no System One server.
+
+- **D1 (drift baseline, fixed 2026-10-21 16:45, before the run).** `pb_run --arm llm_log --run 3` (the same policy
+  as llm_log_k5/run1: K = 5 logged, the first executed) on the 54 P7 tasks, concurrently with P9. Comparison: run 3 −
+  the pooled historical LLM runs (pb_gap.py, required-order checkpoints, task bootstrap). If ≥ +0.10 with a CI
+  excluding 0, the drift is real: every comparison against historical LLM runs (P1, P2′, P5 gate; paper
+  Table tab:gate) is re-done against run 3, and P7′ / P9 use run 3 as their LLM reference. If the CI includes 0 and
+  the estimate is < +0.05, the P7′ arms' gain over the LLM is attributed to the screen arm itself (extra forced
+  samples or the checklist turn) and is examined. Also reported: run 3 − P7′ freq arm (both today).
