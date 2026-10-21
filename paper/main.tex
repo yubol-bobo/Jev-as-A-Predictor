@@ -98,8 +98,9 @@ pass: they read a state and a set of options and return a probability for each. 
 decision seat of a real clinical agent loop and ask how they perform, where their limits lie, and how they should be
 combined with the reasoning LLM. On PhysicianBench, 100 consultation tasks on an electronic health record of real
 de-identified patients, a System One model choosing among five turns proposed by the LLM keeps the LLM's quality:
-Clef-27B passes \PBcpSel\% of checkpoints against \PBcpLLM\%, and pplx-decider-v1.2 passes 13 points more of the
-required-order checkpoints (95\% CI 4 to 24), with no significant change in task success for either. Asked instead to
+Clef-27B passes \PBcpSel\% of checkpoints against \PBcpLLM\%, and neither it nor pplx-decider-v1.2 changes task
+success or required orders significantly; a gain of pplx-decider-v1.2 on required orders over its first 76 tasks
+(+13 points) did not replicate on 24 held-out tasks in a pre-registered test ($-$18 points, 95\% CI $-$36 to $-$2). Asked instead to
 choose the tool, a System One model passes only \PBpassTool\% of tasks. One trait explains both results: every model
 we test carries a \emph{commitment bias}. It prefers turns that order (1.3--1.6$\times$ the LLM's own rate) or
 finish (1.3--1.4$\times$) over turns that gather information. A pre-registered blind test splits it in two: most of
@@ -162,8 +163,9 @@ how they should share the work with the reasoning LLM.
 \paragraph{Findings.}
 \begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
   \item \textbf{Choosing among proposals, they keep the LLM's quality} (\S\ref{sec:select}). Clef matches the LLM
-  on checkpoints (\PRSelLLMcp{} points); pplx-decider-v1.2 places more of the required orders (+13 points on
-  required-order checkpoints, 95\% CI 4 to 24). Neither changes task success significantly.
+  on checkpoints (\PRSelLLMcp{} points). pplx-decider-v1.2 gained 13 points on required-order checkpoints over its
+  first 76 tasks, but the gain did not replicate on 24 held-out tasks (pre-registered; $-$18 points, 95\% CI $-$36 to
+  $-$2); over all 100 tasks it is +4 [$-$5, 14]. Neither changes task success significantly.
   \item \textbf{They carry a commitment bias} (\S\ref{sec:commit}). All six models prefer turns that order or finish
   over turns that gather information. A rule with no model that always takes an ordering turn when one is offered
   reaches most of their advantage on the order key; their apparent avoidance of redundant steps is mostly finishing
@@ -281,29 +283,30 @@ comparison (Table~\ref{tab:pooled}).
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lccc@{}}\toprule
 & \llm{} & Clef & pplx-decider \\
-& (pooled) & (100 tasks) & (76 tasks) \\\midrule
-Task pass & 0.41 & $-$0.04 [$-$0.12, 0.03] & +0.06 [$-$0.06, 0.17] \\
-Required-order cp. & 0.76 / 0.72 & +0.01 [$-$0.06, 0.07] & \textbf{+0.13 [0.04, 0.24]} \\
-Documentation cp. & 0.70 & $-$0.04 [$-$0.11, 0.03] & $-$0.02 [$-$0.12, 0.08] \\
-Required orders placed & 0.68 / 0.64 & $-$0.02 [$-$0.10, 0.05] & \textbf{+0.13 [0.02, 0.25]} \\
-Notes written & 1.5 & \textbf{$-$0.38} [$-$0.60, $-$0.09] & \textbf{$-$0.49} [$-$0.68, $-$0.32] \\
-Retrieval before 1st action & 30 & \textbf{$-$5.5} [$-$8.0, $-$3.1] & \textbf{$-$3.6} [$-$6.5, $-$0.8] \\
-Steps & 36 & \textbf{$-$5.1} [$-$8.1, $-$1.9] & \textbf{$-$4.3} [$-$7.8, $-$1.2] \\
+& (pooled) & (100 tasks) & (100 tasks) \\\midrule
+Task pass & 0.41 & $-$0.04 [$-$0.12, 0.03] & +0.04 [$-$0.06, 0.14] \\
+Required-order cp. & 0.76 & +0.01 [$-$0.06, 0.07] & +0.04 [$-$0.05, 0.14] \\
+Documentation cp. & 0.70 & $-$0.04 [$-$0.11, 0.03] & +0.03 [$-$0.05, 0.12] \\
+Required orders placed & 0.68 & $-$0.02 [$-$0.10, 0.05] & +0.05 [$-$0.05, 0.15] \\
+Notes written & 1.5 & \textbf{$-$0.38} [$-$0.60, $-$0.09] & \textbf{$-$0.52} [$-$0.68, $-$0.37] \\
+Retrieval before 1st action & 30 & \textbf{$-$5.5} [$-$8.0, $-$3.1] & \textbf{$-$3.2} [$-$5.6, $-$1.0] \\
+Steps & 36 & \textbf{$-$5.1} [$-$8.1, $-$1.9] & \textbf{$-$4.0} [$-$6.7, $-$1.5] \\
 \bottomrule\end{tabular}}
 \caption{\textbf{\sel{} against the pooled LLM runs}, paired by task (differences with 95\% task bootstrap intervals;
-LLM columns give the level on the 100 / 76 paired tasks). cp.: checkpoint pass rate. Bold: interval excludes 0.}
+LLM column: the level on the 100 paired tasks). cp.: checkpoint pass rate. Bold: interval excludes 0.}
 \label{tab:pooled}
 \end{table}
 
-The two System One models differ. Clef leaves the checkpoints where they were. pplx-decider-v1.2 raises the
-required-order checkpoints by 13 points and places 13 points more of the required orders; its task success is 6
-points higher but within noise. Both shorten the episode: they act after less retrieval, write fewer notes and take
+Neither System One model moves the checkpoints. pplx-decider-v1.2 looked different on its first 76 tasks (+13
+points on required-order checkpoints, [4, 24]); we pre-registered a replication on the 24 tasks it had not run, and
+it failed: $-$18 points [$-$36, $-$2] against an LLM that already passes 84\% of them. Over all 100 tasks the
+difference is +4 [$-$5, 14]. Both shorten the episode: they act after less retrieval, write fewer notes and take
 fewer steps. Documentation checkpoints dip by 2--4 points, within noise. Nothing in our data establishes a gain in
 task success.
 
 \subsection{Mechanism: a commitment bias}\label{sec:commit}
 
-Why do the System One models shorten the episode, and why does one of them place more orders? The fixed exam answers
+Why do the System One models shorten the episode? The fixed exam answers
 on identical inputs (Tables~\ref{tab:exam} and \ref{tab:errors}). All six models agree with the LLM's own sample
 about as often as a random pick would (21--27\% for five of them, 36\% for linne-oak-1.0; random \EXagreeRandom\%), and with each other
 more often. They make far fewer key errors than the LLM's sample (0.17--0.27 against 0.48; every bootstrap interval
@@ -360,9 +363,10 @@ same questions ($>1$: chosen more often than the LLM chooses it).}
 \label{tab:commit}
 \end{table}
 
-The bias is useful exactly where the LLM under-commits. pplx-decider-v1.2 online takes every required order that a
-proposal offers (offered but never executed: 0\% of required orders, against 11\% for the LLM; difference $-$12
-points [$-$18, $-$6]). Clef does not: on its own trajectories it places 6 points fewer of the required orders than
+The bias is useful exactly where the LLM under-commits, and it costs elsewhere. pplx-decider-v1.2 online takes more
+of the required orders that a proposal offers (offered but never executed: 4\% of required orders, against 11\% for
+the LLM; difference $-$7 points [$-$13, 0]), but 4 points more are never proposed at all ([$-$5, 13]), so it places
+about as many as the LLM (+3 [$-$8, 12]). Clef does not even gain the first part: on its own trajectories it places 6 points fewer of the required orders than
 the LLM ([$-$15, 3]), and 8 points more of them are never proposed at all ([$-$1, 18]), plausibly because it moves to
 action after less retrieval and the LLM then never thinks of them.
 
@@ -431,8 +435,8 @@ key mostly rewards ordering early, not ordering at all. Of all 118 required orde
 recover the 11\% (on these trajectories, 4 more of 54 tasks would pass); the 19\% are bounded by generation. Restricted
 to steps where the counterfactual is known (the LLM's sample takes no open required order and a proposal places one
 the run never places), the exam holds only 11 questions in 9 tasks, too few to rank deciders (take rates 0.64--0.91,
-intervals $\pm$0.2--0.3). On the per-step key Clef ranks at or above pplx-decider-v1.2, while online only the latter
-places more required orders. Step-level answer keys inside an agent's own trajectory measure decision \emph{style};
+intervals $\pm$0.2--0.3). On the per-step key Clef ranks at or above pplx-decider-v1.2, while online neither places
+reliably more required orders than the LLM. Step-level answer keys inside an agent's own trajectory measure decision \emph{style};
 only whole runs rank deciders on outcome.
 
 \begin{table}[t]
@@ -485,10 +489,11 @@ finish step overrules on 19\%; a gate by log-odds margin or by the LLM's self-co
 error further under cross-validation, because the exam's redundancy key rewards finishing over a note rewrite and the
 keys pull against each other. The exam cannot choose among these designs; whole runs must.
 
-\paragraph{Pre-registered online tests (running).} We fixed these tests before their data existed. They are running at
-the time of writing, and we make no claim about the gate's online effect.
-\textbf{P1} replicates pplx-decider-v1.2 in \sel{} on the 24 tasks it has not yet run; prediction: more required-order
-checkpoints than the pooled LLM runs.
+\paragraph{Pre-registered online tests.} We fixed these tests before their data existed. P2$'$ is running at the
+time of writing, and we make no claim about the gate's online effect.
+\textbf{P1} replicated pplx-decider-v1.2 in \sel{} on the 24 tasks it had not run; prediction: more required-order
+checkpoints than the pooled LLM runs. It failed ($-$18 points [$-$36, $-$2], 16 tasks with such checkpoints;
+\S\ref{sec:select}).
 \textbf{P2$'$} runs the orders-only gate with pplx-decider-v1.2; prediction: the required-order gain of \sel{} without
 its loss of notes (notes within the LLM's run-to-run noise, $-$0.12 [$-$0.40, 0.15]); documentation not lower; task
 pass reported with its CI, claimed only if the CI excludes 0. The blind test P4 is done

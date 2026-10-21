@@ -175,3 +175,24 @@ margin 1.5 at every commitment point (the original P2 design), not P2'. Fixed (t
 at 21:04 into `gate0_orders_k5__pplx12/run1`, children verified to run `--margin 0.0 --points orders`. The gate1.5 runs
 are kept as a separate, exploratory arm and are not counted for P2'. No earlier data was touched (the gate1.5 directory
 was new). P1 (clef arm) was not affected.
+
+## P1 result (2026-10-20 22:17): the pplx12 order gain does not replicate
+
+`pb_gap.py --decider-runs clef_k5__pplx12/run1 --tasks @results/p1_unseen_tasks.txt` -> `results/pb_gap_p1.json`;
+all 100 tasks -> `results/pb_gap_pplx12_all.json`. Paired with the pooled LLM runs, task-bootstrap 95% CIs.
+
+| | 24 held-out tasks (P1) | all 100 tasks |
+|---|---|---|
+| required-order checkpoints | LLM 0.84, **−0.18 [−0.36, −0.02]** (16 tasks) | +0.04 [−0.05, 0.14] (54 tasks) |
+| required orders placed | −0.15 [−0.29, −0.02] | +0.05 [−0.05, 0.15] |
+| task pass | −0.02 [−0.17, 0.13] | +0.04 [−0.06, 0.14] |
+| Documentation checkpoints | +0.19 [0.06, 0.33] | +0.03 [−0.05, 0.12] |
+| notes written | −0.58 [−0.88, −0.33] | −0.52 [−0.68, −0.37] |
+| steps | −3.0 [−6.1, 0.5] | −4.0 [−6.7, −1.5] |
+
+**Verdict: P1 fails** (prediction: positive difference; observed significantly negative). The +13 points on the first
+76 tasks were not a property of the decider. Ceiling analysis rerun on all 54 tasks with required orders
+(`results/pb_ceiling.json`): pplx12 halves offered-not-taken (4% vs 11%, −7 [−13, 0]) but more required orders are never
+offered (+4 [−5, 13]), so placed +3 [−8, 12]. Selection recovers part of the 11% and loses about as much on generation
+(it acts after less retrieval). This fits the ceiling reading: the decision seat is not where the LLM's order errors
+are. Paper corrected (abstract, findings, Table pooled, §4.1, §4.2, §4.4, §4.7).

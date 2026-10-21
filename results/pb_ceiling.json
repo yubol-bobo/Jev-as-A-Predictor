@@ -32,20 +32,20 @@
   "tasks_that_would_pass_if_offered_orders_were_placed": 0
  },
  "clef_k5__pplx12/run1": {
-  "tasks_with_required_orders": 38,
-  "required": 85,
-  "placed": 66,
-  "offered_not_taken": 0,
-  "never_offered": 19,
+  "tasks_with_required_orders": 54,
+  "required": 118,
+  "placed": 85,
+  "offered_not_taken": 5,
+  "never_offered": 28,
   "share": {
-   "placed": 0.7765,
-   "offered_not_taken": 0.0,
-   "never_offered": 0.2235
+   "placed": 0.7203,
+   "offered_not_taken": 0.0424,
+   "never_offered": 0.2373
   },
-  "step_omissions": 0,
-  "placed_later_after_step_omission": 0.0,
-  "task_pass": 17,
-  "tasks_that_would_pass_if_offered_orders_were_placed": 0
+  "step_omissions": 8,
+  "placed_later_after_step_omission": 0.25,
+  "task_pass": 23,
+  "tasks_that_would_pass_if_offered_orders_were_placed": 2
  },
  "vs_llm_log": {
   "clef_k5/run1": {
@@ -70,22 +70,22 @@
   },
   "clef_k5__pplx12/run1": {
    "placed": [
-    0.1059,
-    0.0115,
-    0.2125,
-    38
+    0.0254,
+    -0.0769,
+    0.122,
+    54
    ],
    "offered_not_taken": [
-    -0.1176,
-    -0.1795,
-    -0.0641,
-    38
+    -0.0678,
+    -0.1293,
+    0.0,
+    54
    ],
    "never_offered": [
-    0.0118,
-    -0.1081,
-    0.1154,
-    38
+    0.0424,
+    -0.0531,
+    0.1327,
+    54
    ]
   }
  }
