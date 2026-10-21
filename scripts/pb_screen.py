@@ -190,10 +190,15 @@ def score(blind, workers, rich=False, task=False):
         list(ex.map(run, todo))
 
 
-def llm(url, workers):
-    out, done = _answers("llm")
+def llm(url, workers, task=False):
+    out, done = _answers("llm_task" if task else "llm")
     states = json.loads((OD / "states.json").read_text())
+    if task:  # the task instruction only (P6c control)
+        states = {t: (v[0], []) for t, v in states.items()}
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
+    if task:  # only the subset the unplaced AUROC is computed on: unplaced orders of tasks with a missed required one
+        missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
+        todo = [q for q in todo if q["task"] in missed and not q["placed"]]
     lock = threading.Lock()
     print(f"{out.name}: {len(todo)} to score", flush=True)
 
@@ -301,7 +306,7 @@ def main():
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task), "llm": lambda: llm(a.url, a.workers),
+    {"build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task), "llm": lambda: llm(a.url, a.workers, a.task),
      "report": lambda: report(a.out)}[a.cmd]()
 
 

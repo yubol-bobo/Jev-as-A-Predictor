@@ -362,3 +362,17 @@ Full aggregates: `results/pb_screen.json` (with per-task unplaced AUROC and boot
   input chosen by P6c (`--ranker pplx12-task` or `pplx12-blind`). The freq control does not depend on P6c and starts
   first. Primary unchanged: required orders placed, screen − freq > 0 and screen − LLM > 0, claims only where the
   CI excludes 0. Note: online, the pool is one run's proposals plus 8 forced samples, not the 5-run pool of P6.
+
+## P6c verdict (2026-10-21 09:50): holds; the short input is the System One model's best view
+
+Task instruction only (a few hundred tokens, 0.39 s per question): pplx12 unplaced AUROC **0.652 [0.508, 0.786]**
+(21 tasks; own state 0.430, rich 0.436, blind 0.628), recall@5 of missed required orders 0.32 (random ~0.14);
+within ServiceRequests 0.73 (13 tasks; blind 0.61), so the task text adds information beyond the order prior.
+Clef task-only 0.625 [0.503, 0.742]. Over all orders, task-only is also pplx12's best input: AUROC 0.80
+[0.73, 0.87] vs 0.74 with the state and 0.57 blind. The trajectory hurts: it shows the model what the agent did,
+and the model follows it. Decision as pre-registered: P7′ runs with `--ranker pplx12-task`. Control added after
+the fact (exploratory, not part of P6c): Qwen thinking on the same task-only input, unplaced subset only
+(`pb_screen.py llm --task`), to separate "a System One model" from "a short input".
+
+P7′ started 09:40 (freq control, 8011) and 09:45 (pplx12-task; 8011 and a Qwen replica on GPU 3, port 8013, that
+replaced the Clef server), 12 workers each.
