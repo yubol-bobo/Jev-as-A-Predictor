@@ -480,3 +480,9 @@ synonyms), 2 are open required orders, 16 match no grader; random: 4 / 2 / 12 of
 clearly indicated puts what was clearly done on top. Candidate fix (P9b, after P9 is read): drop pool items that a
 System One model judges the same order as one already placed (a short-input question: the order and the list of
 placed orders), then rank. Not applied to P9, which runs as fixed.
+- **P8b (placed-aware ranking, offline, fixed 2026-10-21 18:10, before scoring).** As P8, but pplx12 also sees the
+  base run's orders placed before its first FINISH (one step listing them; still a short input) and is asked whether
+  the order is "indicated and still missing, not the same as or equivalent to an order already placed"
+  (`pb_prior.py score --placed`, `report --placed`). Same 26 tasks, pool and target as P8. Prediction: top-3
+  coverage of open specs ≥ 0.40 and above P8's 0.31 (paired by task). If it holds, P9b runs online with this ranker
+  (the placed list taken from the run itself); if not, the variant problem is left to the LLM. Runs when a GPU frees.

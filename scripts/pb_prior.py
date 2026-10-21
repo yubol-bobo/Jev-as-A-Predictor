@@ -8,7 +8,7 @@ with the task-only question of P6c. Target per task: the required-order specs th
 FINISH. Aggregates only in results/.
 
   .venv/bin/python scripts/pb_prior.py gen [--url http://127.0.0.1:8013/v1] [--workers 4]
-  S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_prior.py score [--workers 4]
+  S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_prior.py score [--placed] [--workers 4]
   .venv/bin/python scripts/pb_prior.py report [--out results/pb_prior.json]
   .venv/bin/python scripts/pb_prior.py export   (-> prior_ranked_pplx12.json, read by pb_run --ranker prior-pplx12)
 Patient content stays under data/offline/pb_screen/.
@@ -41,11 +41,18 @@ GEN_PROMPT = (
     "medications) that could be indicated as part of completing this task. Up to 15, one per line, each in the form\n"
     "ServiceRequest: <name> (code <code>)\nor\nMedicationRequest: <name> (code <code>)\n"
     "leaving out the code part when unsure. Nothing else.")
+PLACED_QUESTION = (
+    "The state shows a clinical task assigned to an AI agent that works in an electronic health record through FHIR "
+    "tools, and the orders the agent has placed so far. Consider this order for the patient: {order}. Is this order "
+    "indicated as part of completing the task and still missing, that is, not the same as or equivalent to an order "
+    "already placed?")
+PLACED_YES, PLACED_NO = "Yes, indicated and still missing", "No, not indicated or already placed"
 LINE = re.compile(r"(ServiceRequest|MedicationRequest)\s*:\s*(.+?)(?:\s*\(code\s*([^)]*)\))?\s*$")
 
 
 def tasks():
-    """task -> (instruction, required specs, indices of specs open at the base run's first FINISH, placed names)."""
+    """task -> (instruction, required specs, indices of specs open at the base run's first FINISH, placed names,
+    placed orders)."""
     states = json.loads((OD / "states.json").read_text())
     out = {}
     for t, (instruction, _) in states.items():
@@ -54,7 +61,7 @@ def tasks():
         last = next((r for r in rows if turn_kind(r["candidates"][r["pick"]]) == "finish"), rows[-1])
         placed = [o for r in rows[:rows.index(last)] for o in orders_in(parse_turn(r["candidates"][r["pick"]]))]
         met = {i for i, s in enumerate(specs) if any(matches(s, *o) for o in placed)}
-        out[t] = (instruction, specs, [i for i in range(len(specs)) if i not in met], {norm(o) for o in placed})
+        out[t] = (instruction, specs, [i for i in range(len(specs)) if i not in met], {norm(o) for o in placed}, placed)
     return out
 
 
@@ -99,12 +106,14 @@ def pools(drop=True):
     return out
 
 
-def score(workers):
+def score(workers, placed=False):
+    """P(Yes) per pool order on the task text; with `placed` (P8b) also the run's placed orders, asking for an order
+    that is indicated and not yet placed in any equivalent form."""
     name = os.environ.get("S1CLIN_DECIDER", "pplx12")
-    path, lock = OD / f"prior_scores_{name}.jsonl", threading.Lock()
+    path, lock = OD / f"prior_scores_{name}{'_placed' if placed else ''}.jsonl", threading.Lock()
     done = {(x["task"], x["order"]) for x in map(json.loads, path.read_text().splitlines())} if path.exists() else set()
     info = tasks()
-    todo = [(t, o) for t, pool in pools(drop=False).items() for o in pool if (t, render_order(o)) not in done]
+    todo = [(t, o) for t, pool in pools(drop=not placed).items() for o in pool if (t, render_order(o)) not in done]
     print(f"{path.name}: {len(todo)} to score", flush=True)
 
     def run(item):
@@ -112,9 +121,12 @@ def score(workers):
         letters = ["A", "B"]
         random.Random(f"{t}|{render_order(o)}").shuffle(letters)
         try:
+            steps = [{"action": "Orders the agent has placed so far",
+                      "results": ["\n".join(map(render_order, info[t][4])) or "(none)"]}] if placed else []
             r = requests.post(DECIDER_URLS[name], timeout=600, json={
-                "instruction": info[t][0], "steps": [], "question": QUESTION.format(order=render_order(o)),
-                "options": {letters[0]: YES, letters[1]: NO}})
+                "instruction": info[t][0], "steps": steps,
+                "question": (PLACED_QUESTION if placed else QUESTION).format(order=render_order(o)),
+                "options": {letters[0]: PLACED_YES if placed else YES, letters[1]: PLACED_NO if placed else NO}})
             r.raise_for_status()
             p = r.json()["distribution"][letters[0]]
         except Exception as e:
@@ -150,7 +162,7 @@ def report(path, name="pplx12"):
     sc = {(x["task"], x["order"]): x["p"] for x in map(json.loads, sp.read_text().splitlines())} if sp.exists() else {}
     gens = {g["task"]: g for g in map(json.loads, (OD / "prior_gen.jsonl").read_text().splitlines())}
     rows = []
-    for t, (_, specs, open_, _) in info.items():
+    for t, (_, specs, open_, _, _) in info.items():
         if not open_ or t not in pool:
             continue
         items = pool[t]
@@ -184,9 +196,11 @@ def main():
     ap.add_argument("--url", default="http://127.0.0.1:8013/v1")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", default=str(REPO / "results/pb_prior.json"))
+    ap.add_argument("--placed", action="store_true", help="score/report: P8b, the placed orders in the input")
     a = ap.parse_args()
     os.umask(0o077)
-    {"gen": lambda: gen(a.url, a.workers), "score": lambda: score(a.workers), "report": lambda: report(a.out), "export": export}[a.cmd]()
+    {"gen": lambda: gen(a.url, a.workers), "score": lambda: score(a.workers, a.placed),
+     "report": lambda: report(a.out, "pplx12_placed" if a.placed else "pplx12"), "export": export}[a.cmd]()
 
 
 if __name__ == "__main__":
