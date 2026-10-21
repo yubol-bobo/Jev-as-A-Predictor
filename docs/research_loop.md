@@ -166,3 +166,12 @@ keys, reversed on the finish key**.
   agrees with the LLM's (wrong) sense that the case is done, and more strongly.
 - So the commitment bias has two parts: a state-free prior toward orders, and a state-driven, mistaken judgement that
   the work is done. The orders-only gate (P2') keeps the first and removes the second by design.
+
+## Incident (2026-10-20 21:00): the first P2' tasks ran the wrong gate
+
+`pb_run.py` did not pass `--margin`/`--points` to its per-task child, which re-parsed its own defaults (margin 1.5,
+points commit) and wrote to `gate1.5_k5__pplx12/run1`. The 22 tasks finished 20:14–20:59 are therefore a gate with
+margin 1.5 at every commitment point (the original P2 design), not P2'. Fixed (the child gets both flags); P2' restarted
+at 21:04 into `gate0_orders_k5__pplx12/run1`, children verified to run `--margin 0.0 --points orders`. The gate1.5 runs
+are kept as a separate, exploratory arm and are not counted for P2'. No earlier data was touched (the gate1.5 directory
+was new). P1 (clef arm) was not affected.

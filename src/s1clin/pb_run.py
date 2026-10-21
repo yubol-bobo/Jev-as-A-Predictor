@@ -208,7 +208,7 @@ def main():
             port, url = ports.get(), route(a.llm_url, t)
             cmd = [sys.executable, "-m", "src.s1clin.pb_run", "--one", "--arm", a.arm, "--tasks", t, "--run",
                    str(a.run), "--k", str(a.k), "--port", str(port), "--max-steps", str(a.max_steps),
-                   "--decider", a.decider]
+                   "--decider", a.decider, "--margin", str(a.margin), "--points", a.points]  # else the child's defaults
             t0 = time.time()
             try:
                 with open(jd / "runner.log", "w") as log:
