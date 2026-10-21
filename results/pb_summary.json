@@ -221,9 +221,9 @@
    "checkpoint_pass": 0.822
   },
   "gate0_orders_k5__pplx12/run2": {
-   "finished": 17,
-   "passed": 6,
-   "checkpoint_pass": 0.855
+   "finished": 29,
+   "passed": 15,
+   "checkpoint_pass": 0.889
   },
   "gate1.5_k5__pplx12/run1": {
    "finished": 22,
