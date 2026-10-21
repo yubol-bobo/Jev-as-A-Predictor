@@ -42,6 +42,28 @@
     "per_task_pass": {}
    }
   },
+  "gate0_orders_k5__pplx12": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
+  "gate1.5_k5__pplx12": {
+   "run1": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
+   }
+  },
   "llm": {
    "run1": {
     "pass@1": 0.0,
@@ -183,6 +205,16 @@
    "finished": 76,
    "passed": 36,
    "checkpoint_pass": 0.819
+  },
+  "gate0_orders_k5__pplx12/run1": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
+  },
+  "gate1.5_k5__pplx12/run1": {
+   "finished": 0,
+   "passed": 0,
+   "checkpoint_pass": 0.0
   },
   "llm/run1": {
    "finished": 100,
