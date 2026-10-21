@@ -448,3 +448,8 @@ allocation goes to P9. P7′ is reported as interim on the tasks finished in bot
   `pb_run --arm screen --ranker prior-pplx12|prior-random --b 0 --m 3 --tasks @results/p9_tasks.txt --run 1`
   (unfinished task directories restart clean). Also pending: Qwen task-only comparator
   (`pb_screen.py llm --task`, 209/919), and a concurrent plain-LLM run (llm_log) on the P9 tasks to measure the drift.
+- Checked 14:58: ScreenClient and DeciderClient call the LLM identically (same temperature, reasoning effort, n = K),
+  so the drift is not the client. Consequence beyond P7′: the gate results (P2′, P5; paper Table tab:gate) are also
+  measured against the historical LLM runs. **First job of the next allocation: a concurrent plain LLM run
+  (`--arm llm_log --run 3`) on the P7/P9 tasks under the current serving setup**, to size the drift and re-baseline
+  the gate before the paper relies on it further.
