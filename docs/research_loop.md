@@ -430,3 +430,21 @@ allocation goes to P9. P7′ is reported as interim on the tasks finished in bot
   mean would favour the arm); orders placed and orders outside the rubric (cost); task pass reported. Mechanism:
   open specs closed by a flagged order (`pb_p7.py`). Runs unfinished at ~15:05 resume next allocation; any earlier
   read is labelled interim.
+
+## P7′ interim (2026-10-21 14:54, 30 tasks per arm, 27 paired with the control) and P9 status
+
+`pb_gap.py` -> `results/pb_gap_p7_vs_freq_interim.json`, `pb_gap_p7_vs_llm_interim.json`,
+`pb_gap_p7freq_vs_llm_interim.json`; mechanism `results/pb_p7_mechanism.json`.
+- **Primary, screen (pplx12-task) − freq control: required-order checkpoints −0.02 [−0.15, 0.11]**, task pass −0.11
+  [−0.26, 0.04]: no ranker effect. Mechanism: the checklist closed an open required spec in 3 of 29 tasks with
+  pplx12-task (0.17 per task) and in 0 of 30 with freq.
+- Both arms vs the pooled historical LLM runs: required-order checkpoints **+0.15 [0.04, 0.27] (pplx12-task) and
+  +0.14 [0.03, 0.27] (freq)**, orders +1.0 / +1.8, notes +0.6 / +0.9. Since the checklist closes almost nothing,
+  this gain arises before the first FINISH, where both arms run the same code path as llm_log. It is therefore not
+  a screening effect: either the arm's client calls the LLM differently from DeciderClient (to check), or today's
+  serving setup (MTP speculative decoding, load) differs from that of the historical runs. Until resolved, no
+  comparison against historical LLM runs is trusted; only concurrent controls count (P7′ was built with one, P9 too).
+- P9: 5 (prior-pplx12) and 4 (prior-random) of 26 tasks finished; too few to read. Resume next allocation:
+  `pb_run --arm screen --ranker prior-pplx12|prior-random --b 0 --m 3 --tasks @results/p9_tasks.txt --run 1`
+  (unfinished task directories restart clean). Also pending: Qwen task-only comparator
+  (`pb_screen.py llm --task`, 209/919), and a concurrent plain-LLM run (llm_log) on the P9 tasks to measure the drift.
