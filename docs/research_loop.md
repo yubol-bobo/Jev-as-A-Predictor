@@ -159,7 +159,7 @@ keys, reversed on the finish key**.
   patient state (options alone: an order-shaped turn is preferred, 1.38× blind vs 1.49× with state).
 - The FINISH error is driven by the state. 73% of the options on these questions are FINISH (the LLM's own samples
   mostly stop there too). Blind, pplx12 avoids FINISH (0.53, below random); with the state it finishes with a
-  required order open on 0.90, above random and above the LLM's first sample (0.81). **Reading the state is what
+  required order open on 0.90, above random and above the LLM's first sample (0.80). **Reading the state is what
   makes it stop.** The truncation explanation cannot be tested here: 27 of the 30 finish questions are read with
   shortened tool results (finish error 0.93 shortened vs 0.67 full, n = 3).
 - In the LLM's terms: these are late steps where the LLM itself mostly wants to stop. The decider with the state

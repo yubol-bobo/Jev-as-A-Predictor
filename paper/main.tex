@@ -102,8 +102,9 @@ Clef-27B passes \PBcpSel\% of checkpoints against \PBcpLLM\%, and pplx-decider-v
 required-order checkpoints (95\% CI 4 to 24), with no significant change in task success for either. Asked instead to
 choose the tool, a System One model passes only \PBpassTool\% of tasks. One trait explains both results: every model
 we test carries a \emph{commitment bias}. It prefers turns that order (1.3--1.6$\times$ the LLM's own rate) or
-finish (1.3--1.4$\times$) over turns that gather information, largely regardless of the state. The bias helps where
-the LLM defers required orders and hurts where commitment is premature. We map where System One deciders are
+finish (1.3--1.4$\times$) over turns that gather information. A pre-registered blind test splits it in two: most of
+the gain on orders survives without the patient state, while the excess of premature finishing appears only when the
+model reads the state. The bias helps where the LLM defers required orders and hurts where commitment is premature. We map where System One deciders are
 reliable: their confidence is informative, they help where the LLM's own samples disagree and add nothing where they
 agree, and finishing is their blind spot. We also show that step-level answer keys mostly reward ordering
 \emph{early}: 79\% of the LLM's step-level ``omissions'' are placed later anyway. These findings motivate a narrower
@@ -166,7 +167,9 @@ how they should share the work with the reasoning LLM.
   \item \textbf{They carry a commitment bias} (\S\ref{sec:commit}). All six models prefer turns that order or finish
   over turns that gather information. A rule with no model that always takes an ordering turn when one is offered
   reaches most of their advantage on the order key; their apparent avoidance of redundant steps is mostly finishing
-  instead of rewriting the note.
+  instead of rewriting the note. Asked blind, without the patient state, pplx-decider-v1.2 keeps about two thirds of
+  its gain on orders but finishes early less often than chance instead of more: the order preference is largely a
+  prior, the excess of premature finishing comes from reading the state.
   \item \textbf{Steering alone, the bias breaks the agent} (\S\ref{sec:steer}). Choosing the tool, Clef cuts
   retrieval before the first action from \TLFirstLLM{} to \TLFirstTool{} calls and writes the note \TLDocTool{}
   times per task; task success falls to \PBpassTool\%.
@@ -361,8 +364,34 @@ The bias is useful exactly where the LLM under-commits. pplx-decider-v1.2 online
 proposal offers (offered but never executed: 0\% of required orders, against 11\% for the LLM; difference $-$12
 points [$-$18, $-$6]). Clef does not: on its own trajectories it places 6 points fewer of the required orders than
 the LLM ([$-$15, 3]), and 8 points more of them are never proposed at all ([$-$1, 18]), plausibly because it moves to
-action after less retrieval and the LLM then never thinks of them. Whether the bias depends on the state at all is
-the subject of a blind test (\S\ref{sec:gate}).
+action after less retrieval and the LLM then never thinks of them.
+
+\paragraph{A prior and a misreading (blind test, pre-registered).} Does the bias read the patient at all? We asked
+pplx-decider-v1.2 the whole exam again with the options but no state (same option letters; test P4, fixed before its
+data existed). The pre-registered style hypothesis, that blind and informed picks agree on at least 60\% of questions
+and the order and finish errors move by at most 0.05, is rejected: they agree on 41\% (random 22\%), and blind picks
+match the kind of the informed pick barely more often than chance (91\% against 88\%; other deciders with the state:
+95--98\%). The model reads the state. But the keys move in opposite directions (Table~\ref{tab:blind}). On orders,
+the blind model is already far better than chance: about two thirds of the reduction from a random pick needs no
+patient state, so the order preference is largely a prior over what the options look like. On redundancy, the state
+does most of the work. On finishing, the state hurts: these are late steps where 73\% of the options are
+\textsc{finish} and the LLM itself mostly wants to stop. Blind, the decider avoids finishing (below chance); with the
+state, it finishes while a required order is open more often than chance and more often than the LLM's own sample.
+The premature finishing is thus a misreading of the state, which agrees with, and strengthens, the LLM's own sense
+that the case is done.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Key error & Random & Blind & State & Blind $-$ state \\\midrule
+Order (97 q.) & 0.55 & 0.22 & 0.07 & $+$0.14 [0.08, 0.21] \\
+Redundancy (86) & 0.35 & 0.24 & 0.03 & $+$0.21 [0.11, 0.31] \\
+Finish (30) & 0.73 & 0.53 & 0.90 & $-$0.37 [$-$0.53, $-$0.19] \\\bottomrule
+\end{tabular}
+\caption{\textbf{Blind test (P4), pplx-decider-v1.2.} Key errors of a random option, of the decider without the patient
+state (options only) and with it; differences with task-bootstrap 95\% CIs. The LLM's own sample: 0.55, 0.28, 0.80.}
+\label{tab:blind}
+\end{table}
 
 \subsection{Steering alone, the bias breaks the agent}\label{sec:steer}
 
@@ -456,17 +485,15 @@ finish step overrules on 19\%; a gate by log-odds margin or by the LLM's self-co
 error further under cross-validation, because the exam's redundancy key rewards finishing over a note rewrite and the
 keys pull against each other. The exam cannot choose among these designs; whole runs must.
 
-\paragraph{Pre-registered online tests (not yet run).} We fixed three tests before their data existed; none has been run yet, and we make no claim about the gate's online effect.
+\paragraph{Pre-registered online tests (running).} We fixed these tests before their data existed. They are running at
+the time of writing, and we make no claim about the gate's online effect.
 \textbf{P1} replicates pplx-decider-v1.2 in \sel{} on the 24 tasks it has not yet run; prediction: more required-order
 checkpoints than the pooled LLM runs.
 \textbf{P2$'$} runs the orders-only gate with pplx-decider-v1.2; prediction: the required-order gain of \sel{} without
 its loss of notes (notes within the LLM's run-to-run noise, $-$0.12 [$-$0.40, 0.15]); documentation not lower; task
-pass reported with its CI, claimed only if the CI excludes 0. \textbf{P4} asks pplx-decider-v1.2 the
-whole exam blind, with the options but no patient state; if the commitment bias is a fixed preference, blind and
-informed picks agree on at least 60\% of questions and the order and finish key errors differ by at most 0.05.
-If it reads the state, agreement falls below 50\% and blind key errors rise clearly. Until P4 is run, the
-commitment bias of Section~\ref{sec:commit} is a description of behaviour, not a claim that the preference ignores the
-state.
+pass reported with its CI, claimed only if the CI excludes 0. The blind test P4 is done
+(\S\ref{sec:commit}); it supports the design: the gate keeps the decider where its preference is a useful prior
+(orders) and takes it away where reading the state misleads it (finishing).
 
 \section{Related work}
 
@@ -487,10 +514,11 @@ code and rubric \citep{physicianbench2026}. It has been run only with generative
 
 \section{Discussion}
 
-\paragraph{A commitment bias, not a clinical judgment.} The clearest regularity in our data is a preference over
+\paragraph{A commitment bias: a prior and a misreading.} The clearest regularity in our data is a preference over
 kinds of action that six independently trained System One models share. It explains when they help (the LLM defers
-orders it already proposes) and when they hurt (finishing early, writing instead of looking). Whether the preference
-reads the state is what the pre-registered blind test (P4) will settle.
+orders it already proposes) and when they hurt (finishing early, writing instead of looking). The blind test splits
+it: the preference for orders is largely a prior over the options, while the excess of premature finishing comes from
+reading a state in which the work looks done, the same reading the LLM makes, held more firmly.
 
 \paragraph{A division of labour.} The LLM is good at what the System One model cannot do: deciding what to look up,
 how much evidence is enough, when to stop, and writing the note. The System One model is good at what the LLM does
