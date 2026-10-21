@@ -31,7 +31,7 @@ import requests
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(REPO), str(REPO / "scripts")]
-from pb_offline_orders import BLIND, matches, orders_in, replay, required_orders  # noqa: E402
+from pb_offline_orders import BLIND, CREATE, matches, orders_in, replay, required_orders  # noqa: E402
 from src.s1clin.pb_decider import DECIDER_URLS, history_steps, parse_turn, turn_kind  # noqa: E402
 
 JOBS = Path("/ocean/projects/cis260032p/yliy/data/physicianbench/jobs")
@@ -116,17 +116,52 @@ def build():
           f"chars per state median {sorted(len(i) + sum(len(s['action']) + sum(map(len, s['results'])) for s in st) for i, st in states.values())[len(states) // 2]}")
 
 
+RICH_CHARS = 90_000  # about 26k tokens: the System One models read 32k
+
+
+def build_rich():
+    """P6b: the same questions with more of the chart. The run's own state plus the retrieval steps the other four
+    pool runs took before their first order (so no other run's orders leak in), identical results kept once, each
+    result cut so the whole fits about RICH_CHARS."""
+    states = json.loads((OD / "states.json").read_text())
+    rich, extra = {}, []
+    for task, (instruction, own) in states.items():
+        seen = {r for st in own for r in st["results"]}
+        more = []
+        for run in POOL_RUNS[1:]:
+            ml = JOBS / run / task / "logs/agent/decisions.messages.jsonl"
+            if not ml.exists():
+                continue
+            _, steps = history_steps(max(replay(ml), key=len))
+            for st in steps:
+                if any(n in CREATE for n, _ in parse_turn(st["action"])) or st["action"].startswith(("write_file", "FINISH")):
+                    break
+                res = [r for r in st["results"] if r not in seen]
+                seen |= set(res)
+                if res:
+                    more.append({"action": st["action"][:2000], "results": res})
+        steps = own + more
+        n = sum(len(st["results"]) for st in steps) or 1
+        cap = max(300, (RICH_CHARS - len(instruction) - sum(len(st["action"]) for st in steps)) // n)
+        rich[task] = (instruction, [{"action": st["action"],
+                                     "results": [r if len(r) <= cap else r[:cap] + " [...]" for r in st["results"]]}
+                                    for st in steps])
+        extra.append(len(more))
+    (OD / "states_rich.json").write_text(json.dumps(rich, ensure_ascii=False))
+    print(f"rich states: {len(rich)} tasks, extra retrieval steps per task median {sorted(extra)[len(extra) // 2]}")
+
+
 def _answers(name):
     p = OD / f"answers_{name}.jsonl"
     return p, ({x["id"]: x for x in map(json.loads, p.read_text().splitlines()) if x.get("p") is not None}
                if p.exists() else {})
 
 
-def score(blind, workers):
+def score(blind, workers, rich=False):
     name = os.environ.get("S1CLIN_DECIDER", "clef")
     url = os.environ.get("S1CLIN_DECIDER_URL") or DECIDER_URLS[name]
-    out, done = _answers(name + ("_blind" if blind else ""))
-    states = json.loads((OD / "states.json").read_text())
+    out, done = _answers(name + ("_blind" if blind else "") + ("_rich" if rich else ""))
+    states = json.loads((OD / ("states_rich.json" if rich else "states.json")).read_text())
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
     lock = threading.Lock()
     print(f"{out.name}: {len(todo)} to score", flush=True)
@@ -204,12 +239,17 @@ def report(path):
     res = {"tasks": len(by_task), "orders": len(qs), "labels": dict(Counter(str(q["label"]) for q in qs)),
            "required_not_placed": sum(q["label"] == "required" and not q["placed"] for q in qs), "scorers": {}}
     for name, sc in scorers.items():
-        per, rec, times = {}, [], []
+        per, rec, times, unpl = {}, [], [], []
         for t, tq in by_task.items():
             tq = [q for q in tq if q["id"] in sc and q["label"] != "forbidden"]
             a = auroc([sc[q["id"]] for q in tq if q["label"] == "required"], [sc[q["id"]] for q in tq if q["label"] is None])
             if a is not None:
                 per[t] = a
+            # the decision-relevant subset: orders the run has not placed (what a screen could add)
+            u = auroc([sc[q["id"]] for q in tq if q["label"] == "required" and not q["placed"]],
+                      [sc[q["id"]] for q in tq if q["label"] is None and not q["placed"]])
+            if u is not None:
+                unpl.append(u)
             un = sorted((q for q in tq if not q["placed"]), key=lambda q: -sc[q["id"]])
             miss = [q for q in un if q["label"] == "required"]
             if miss:
@@ -221,6 +261,7 @@ def report(path):
             "scored": len(sc), "tasks": len(ts),
             "auroc_mean_per_task": round(sum(per.values()) / len(ts), 4) if ts else None,
             "ci95": [round(boot[50], 4), round(boot[1949], 4)] if boot else None,
+            "auroc_unplaced_mean_per_task": round(sum(unpl) / len(unpl), 4) if unpl else None, "tasks_unplaced": len(unpl),
             "recall_at5_required_not_placed": round(sum(rec) / len(rec), 4) if rec else None, "tasks_with_missed": len(rec),
             "median_s_per_question": sorted(a["s"] for a in ans.values())[len(ans) // 2] if ans else None,
             "mean_p": {lab: round(sum(sc[q["id"]] for q in qs if q["id"] in sc and str(q["label"]) == lab) /
@@ -237,14 +278,15 @@ def report(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "score", "llm", "report"])
+    ap.add_argument("cmd", choices=["build", "build_rich", "score", "llm", "report"])
     ap.add_argument("--blind", action="store_true")
+    ap.add_argument("--rich", action="store_true", help="score: the rich states (P6b)")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--url", default="http://127.0.0.1:8011/v1")
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"build": build, "score": lambda: score(a.blind, a.workers), "llm": lambda: llm(a.url, a.workers),
+    {"build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich), "llm": lambda: llm(a.url, a.workers),
      "report": lambda: report(a.out)}[a.cmd]()
 
 

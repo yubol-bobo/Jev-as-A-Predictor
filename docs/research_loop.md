@@ -316,3 +316,25 @@ required (5%), median state 16.7k characters. Scoring started 07:31 (pplx12, Cle
   Primary: required orders placed, screen − freq > 0 and screen − LLM > 0 (CIs reported; claim only where the CI
   excludes 0). Secondary: required-order checkpoints; orders placed (over-ordering: screen − LLM reported, a cost);
   task pass reported, no claim unless its CI excludes 0.
+
+## P6 interim (2026-10-21 08:15): the screen ranks what was done, not what was missed
+
+State scores complete for pplx12 and Clef, Qwen at 866/2102. Overall AUROC (required vs not, per task): pplx12 0.74
+[0.66, 0.81], Clef 0.71 [0.63, 0.79], Qwen (thinking, partial) 0.68. Split by whether the run placed the order:
+placed orders 0.67 / 0.66 / 0.65; **orders the run did not place 0.43 / 0.40 / 0.41 (21, 21, 7 tasks)**. The
+overall AUROC comes from placed orders (19% required) scoring above unplaced ones (1.7% required): the models read
+what the agent did. On the orders a screen could add, every model, the LLM included, ranks the missed required orders
+below the unneeded ones. recall@5 of missed required orders: pplx12 0.14, Clef 0.11 (random top-5 of ~37: ~0.14).
+Clef blind on unplaced: 0.55 (partial). The pre-registered frequency comparator is invalid as built: required
+variants are merged by rubric spec and unneeded ones are not, so frequency inflates required orders by construction
+(AUROC 0.97); it is dropped.
+Reading: the missed orders do not look indicated from the state the agent built. Either the information that
+makes them indicated was never retrieved, or the rubric asks for what the chart does not imply.
+
+- **P6b (more information, fixed 2026-10-21 08:20, before the data exist).** The same questions, with a rich state:
+  the run's own state plus the retrieval steps the other four pool runs took before their first order (no other
+  run's orders leak in), identical results kept once, up to ~26k tokens (`pb_screen.py build_rich`, median 15 extra
+  retrieval steps per task). Scored by pplx12 (`score --rich`). Prediction: AUROC on unplaced orders ≥ 0.60 and
+  ≥ 0.10 above the own state (0.43). If it holds, missed orders are an information gap that a fast, wide reader can
+  close (design: the System One model reads a chart dump, not the agent's trajectory); if not, the gap is not in
+  what the agent read, and screening is dropped. P7 is on hold until P6b is read.
