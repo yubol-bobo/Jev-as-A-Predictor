@@ -386,3 +386,23 @@ to the replica at 10:12. The Qwen task-only comparator is paused (209/919 answer
 Also from P6 data (exploratory): on orders the run *did* place, task-only beats the state as well, pplx12 0.82 vs
 0.67 and Clef 0.76 vs 0.66 (42 tasks), so "the trajectory makes the System One model worse" holds on both subsets
 and both models. Mechanism script for P7′: `scripts/pb_p7.py`.
+
+## P7′ mechanism, interim (2026-10-21 12:00, 14 tasks per arm): the in-run pool cannot hold what is missed
+
+`scripts/pb_p7.py` -> `results/pb_p7_mechanism.json`. At the first FINISH, of ~2.1 required-order specs per task
+only 0.29 (freq) / 0.43 (pplx12-task) are still open; the checklist flags an open one in 1 / 2 of 14 tasks and
+closes none so far. Of the 2.7 flagged orders, 1.1 / 1.7 match a required spec, but almost all of those are
+variants of orders already placed under another name or code. The ceiling of an in-run screen is tiny: the
+required orders a run misses are mostly not among its own proposals, whatever the ranker. P7′ continues as
+planned; its outcome is expected near zero for both arms.
+
+- **P8 (task-prior pool, offline, fixed 2026-10-21 12:05, before any generation).** A pool from outside the run,
+  built from short inputs only: Qwen (no thinking) reads the task instruction alone and lists candidate orders,
+  8 samples, union by normalized name (`scripts/pb_prior.py gen`); items matching the base run's orders placed
+  before its first FINISH (by normalized name, as an online screen would) are dropped; pplx12 ranks the rest with the
+  task-only question of P6c (`score`). Target: per task, the required-order specs not met by the base run
+  (`llm_log_k5/run1`) before its first FINISH. Over tasks with ≥ 1 open spec: (a) pool coverage of open specs ≥ 0.40;
+  (b) pplx12 top-5 covers ≥ 0.25 of open specs (mean per task) and more than a random 5 of the same pool
+  (exact expectation). Both hold -> online arm P9 (task-prior checklist at the first FINISH); (a) fails -> the missed
+  orders cannot be recalled from the task text and the order-screening line stops; (a) holds, (b) fails -> the
+  ranker is the bottleneck (try the LLM or a listwise ranker).

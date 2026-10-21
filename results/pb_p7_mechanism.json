@@ -1,0 +1,40 @@
+{
+ "screen_freq_b8m3_k5/run1": {
+  "tasks": 14,
+  "screened": 14,
+  "pool": 15.357,
+  "flagged": 2.714,
+  "flagged_required": 1.071,
+  "answer_orders": 0.929,
+  "answer_required": 0.357,
+  "screen_s": 542.408,
+  "tasks_with_flagged_required": 11,
+  "tasks_with_answer_required": 5,
+  "specs": 2.214,
+  "open_before": 0.286,
+  "flagged_open": 0.071,
+  "closed_after": 0.0,
+  "closed_by_flag": 0.0,
+  "tasks_with_flagged_open": 1,
+  "tasks_closed_by_flag": 0
+ },
+ "screen_pplx12-task_b8m3_k5/run1": {
+  "tasks": 14,
+  "screened": 14,
+  "pool": 15.214,
+  "flagged": 2.643,
+  "flagged_required": 1.786,
+  "answer_orders": 0.786,
+  "answer_required": 0.429,
+  "screen_s": 492.534,
+  "tasks_with_flagged_required": 10,
+  "tasks_with_answer_required": 4,
+  "specs": 2.0,
+  "open_before": 0.429,
+  "flagged_open": 0.143,
+  "closed_after": 0.0,
+  "closed_by_flag": 0.0,
+  "tasks_with_flagged_open": 2,
+  "tasks_closed_by_flag": 0
+ }
+}

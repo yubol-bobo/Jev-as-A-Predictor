@@ -15,7 +15,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(REPO / "scripts"), str(REPO)]
-from pb_offline_orders import matches, required_orders  # noqa: E402
+from pb_gap import calls  # noqa: E402
+from pb_offline_orders import matches, orders_in, required_orders  # noqa: E402
 from pb_summarize import JOBS  # noqa: E402
 from src.s1clin.pb_decider import turn_orders  # noqa: E402
 
@@ -26,6 +27,11 @@ def is_required(o, specs):
     return any(matches(s, o[0], o[1], o[2]) for s in specs)
 
 
+def met(orders, specs):
+    """Indices of the required-order specs that some order matches."""
+    return {i for i, s in enumerate(specs) if any(matches(s, *o) for o in orders)}
+
+
 def arm(slug):
     rows = []
     for jd in sorted(p for p in (JOBS / slug).iterdir() if p.is_dir()):
@@ -33,7 +39,9 @@ def arm(slug):
         if not (jd / "metadata.json").exists() or not dec.exists():
             continue
         specs = [s for s in required_orders(jd.name) if not s["negative"]]
-        screen = next((r["screen"] for r in map(json.loads, dec.read_text().splitlines()) if "screen" in r), None)
+        recs = [json.loads(line) for line in dec.read_text().splitlines()]
+        at = next((i for i, r in enumerate(recs) if "screen" in r), None)
+        screen = recs[at]["screen"] if at is not None else None
         row = {"task": jd.name, "screened": screen is not None and "error" not in screen}
         if row["screened"]:
             flagged = []
@@ -42,6 +50,11 @@ def arm(slug):
                 if m:
                     flagged.append(("medication" if m[1] == "MedicationRequest" else "service", m[2], m[3] or ""))
             placed = turn_orders(screen.get("answer", ""))
+            before = met([o for r in recs[:at] for o in turn_orders(r["candidates"][r.get("pick", 0)])], specs)
+            final = met(orders_in(calls(jd)), specs)
+            open_ = set(range(len(specs))) - before  # required specs not yet met when the screen ran
+            row.update(specs=len(specs), open_before=len(open_), flagged_open=len(met(flagged, specs) & open_),
+                       closed_after=len(final & open_), closed_by_flag=len(final & open_ & met(flagged, specs)))
             row.update(pool=screen.get("pool", 0), flagged=len(flagged), s=screen.get("s"),
                        flagged_required=sum(is_required(o, specs) for o in flagged),
                        answer_orders=len(placed), answer_required=sum(is_required(o, specs) for o in placed))
@@ -52,7 +65,11 @@ def arm(slug):
             "flagged_required": mean("flagged_required"), "answer_orders": mean("answer_orders"),
             "answer_required": mean("answer_required"), "screen_s": mean("s"),
             "tasks_with_flagged_required": sum(r["flagged_required"] > 0 for r in sc),
-            "tasks_with_answer_required": sum(r["answer_required"] > 0 for r in sc)}
+            "tasks_with_answer_required": sum(r["answer_required"] > 0 for r in sc),
+            "specs": mean("specs"), "open_before": mean("open_before"), "flagged_open": mean("flagged_open"),
+            "closed_after": mean("closed_after"), "closed_by_flag": mean("closed_by_flag"),
+            "tasks_with_flagged_open": sum(r["flagged_open"] > 0 for r in sc),
+            "tasks_closed_by_flag": sum(r["closed_by_flag"] > 0 for r in sc)}
 
 
 def main():
