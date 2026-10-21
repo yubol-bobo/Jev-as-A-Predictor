@@ -264,3 +264,38 @@ On llm_log_k5/run1 (100 tasks, rough string dedup): ~9.8 distinct proposed-but-u
 Requiring support from ≥ 2 candidates does not raise it (2 of 62). Upper bound on task pass: +4 of 54 tasks
 (pb_ceiling). Not pursued: it would add ~9 orders per task to recover ~0.1. Selection-side fixes are exhausted on this
 benchmark; the remaining gap is generation (19% of required orders never proposed).
+
+## Cycle 8 (2026-10-21 07:15, offline): System One as a fast screener over a wider pool (idea: Yubo)
+
+Idea: a System One model is fast, not only cheap. Instead of picking 1 of 5 turns, let it screen many more candidates
+(each with a short input, or all at once) so more information reaches a model that can judge it. The ceiling says
+the gap is generation (required orders never proposed); the question is whether breadth fixes generation.
+
+`scripts/pb_pool.py`: pool the orders proposed by any candidate in five logged runs of the same task
+(llm_log_k5, clef_k5, clef_k5__pplx12, gate run 1, gate run 2; 100 tasks, 590 required order × run pairs).
+
+- Proposed within one run: 75% of required orders (placed 68%). Proposed somewhere in the 5-run pool: **91%**.
+- Of the required orders a run never proposes, **62% (91/146) are proposed in another run** of the same task.
+  "Never proposed" is mostly sampling breadth, not inability: the LLM knows these orders, in some runs.
+- The pool is not small: median 26.5 distinct order strings per task (mean 36.6; includes spelling variants, so the
+  string-level base rate of required, 0.30, is rough). Frequency across runs does not separate them (string-level
+  dedup too fine to judge; precision 0.31 at ≥ 2 runs, 0.60 at all 5 but only 15 orders).
+- Speed: the decider takes 4.3 s (Clef) / 12.3 s (pplx12) median per step on ~32k-token inputs (prefill); the five LLM
+  proposals take ~6k generated tokens per step. A short input (a few k tokens) and a shared prefix should put one
+  screening judgement well under a second, so screening ~40 orders costs less than one LLM step.
+
+So the idea has room: breadth would recover up to ~16 points of required orders (75% -> 91% proposed), more than the
+selection ceiling (11%). It works only if the screener separates required from unneeded orders given the state;
+the blind test (P4) warns that the order preference is largely state-free, which is exactly what screening cannot use.
+
+- **P6 (offline screening test, fixed 2026-10-21 07:20, before the data exist).** For the 54 tasks with required
+  orders, the state is the llm_log_k5/run1 state just before its first FINISH (the point where a missed order is
+  lost), shortened to the instruction plus retrieved results (≤ 8k tokens). Options: the task's 5-run order pool,
+  variants merged by rubric spec where they match one (others by normalized name). Each order is scored pointwise
+  ("Should this order be placed for this patient now? Yes / No", P(Yes)) by pplx12 and Clef, with the state and blind
+  (order only). Comparators: the LLM (Qwen, thinking) asked the same question, and frequency across runs. Metrics,
+  per task then averaged: AUROC required vs not; recall@5 of required orders not placed by the run.
+  Predictions: (a) with the state, a System One screener reaches AUROC ≥ 0.70; (b) state − blind ≥ 0.10 AUROC (the
+  screener reads the state; if not, the idea fails for the reason P4 found); (c) within 0.05 AUROC of the LLM at
+  < 1/10 of its wall time. If (a) and (b) hold, the online test is: before FINISH, the screener's top orders not yet
+  placed are shown to the LLM as a checklist, the LLM keeps the decision (so the commitment bias cannot over-order).
