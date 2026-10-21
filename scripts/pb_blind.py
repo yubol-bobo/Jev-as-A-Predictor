@@ -8,8 +8,9 @@ the agreement between different deciders with the state as a yardstick. Aggregat
 
 import argparse
 import json
+import random
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -48,6 +49,24 @@ def main():
         first_kind = Counter(q["kinds"][q["first"]] for q in qs)
         res.setdefault("kind_preference", {})[n] = {
             k: round(sum(q["kinds"][f(q)] == k for q in qs) / c, 3) for k, c in first_kind.items()}
+    # yardsticks for same_kind_pick: a random pick, and other deciders with the state
+    res["same_kind_baseline"] = {
+        "random": share(qs, lambda q: sum(q["kinds"][pk[d][q["id"]]] == k for k in q["kinds"]) / len(q["kinds"])),
+        **{o: share(qs, lambda q, o=o: q["kinds"][pk[d][q["id"]]] == q["kinds"][pk[o][q["id"]]]) for o in others}}
+    # blind minus state, per key: questions, tasks, difference with a task-bootstrap 95% CI
+    rng = random.Random(0)
+    for key in ("order", "finish", "redundant"):
+        by_task = defaultdict(list)
+        for q in qs:
+            if key in q["bad"]:
+                by_task[q["task"]].append(q["bad"][key][pk[b][q["id"]]] - q["bad"][key][pk[d][q["id"]]])
+        tasks = list(by_task)
+        diff = lambda ts: sum(sum(by_task[t]) for t in ts) / sum(len(by_task[t]) for t in ts)  # noqa: E731
+        boot = sorted(diff(rng.choices(tasks, k=len(tasks))) for _ in range(2000)) if tasks else []
+        res.setdefault("blind_minus_state", {})[key] = {
+            "questions": sum(map(len, by_task.values())), "tasks": len(tasks),
+            "difference": round(diff(tasks), 4) if tasks else None,
+            "ci95": [round(boot[50], 4), round(boot[1949], 4)] if boot else None}
     Path(a.out).write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
 

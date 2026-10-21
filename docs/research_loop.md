@@ -133,3 +133,32 @@ retrieval). Test of state-independence: P4 (blind exam). Test of the fix: P2' (d
 - ClinEnv is dropped from the study (user, 2026-10-20 16:05); its one line of evidence here was removed.
 - Next allocation: P4 first (pplx12 only, short prompts, minutes), then P1 and P2' (~30 min per task, about two runs of
   the LLM pool per allocation), then second runs of pplx12 and the gate and LLM run 2.
+
+## P4 result (2026-10-20 20:00, allocation 49526072): the decider reads the state, and the state is what makes it stop
+
+`scripts/pb_blind.py --decider pplx12` -> `results/pb_blind.json`; 1,461 questions, pplx12 with the state vs blind
+(options only, same letters). Differences blind − state, paired, task-bootstrap 95% CIs.
+
+| | with state | blind | blind − state |
+|---|---|---|---|
+| agreement with the state picks | — | 0.41 (keyed 0.45; random 0.22) | |
+| same kind of action as the state pick | — | 0.91 (random 0.875; other deciders with state 0.95–0.98) | |
+| order key error (97 q, 48 tasks) | 0.07 | 0.22 | **+0.14 [0.08, 0.21]** |
+| redundancy key error (86 q, 61 tasks) | 0.03 | 0.24 | **+0.21 [0.11, 0.31]** |
+| finish key error (30 q, 25 tasks) | 0.90 | 0.53 | **−0.37 [−0.53, −0.19]** |
+| type preference act / finish / document / retrieve | 1.49 / 1.34 / 1.09 / 0.90 | 1.38 / 0.96 / 0.80 / 0.98 | |
+
+**Verdict against the pre-registration.** Style hypothesis (agreement ≥ 60%, order and finish errors within 0.05):
+**rejected**. State hypothesis (agreement < 50%, blind errors clearly higher): **supported on the order and redundancy
+keys, reversed on the finish key**.
+
+**Reading (refines H-commit).**
+- pplx12 uses the patient state. Without it, its picks are near chance in kind and much worse on orders and redundancy.
+- The order preference is partly a prior: blind it still prefers orders 1.38× (with the state 1.49×).
+- The FINISH preference is not a prior. Blind, pplx12 finishes no more often than the LLM's sample (0.96×), and it
+  finishes early with a required order open on 53% of those questions vs 90% with the state. **Reading the state is
+  what makes it stop.** Plausible mechanism, untested: 85% of keyed questions exceed the 32k window and are read with
+  shortened tool results, so a long trajectory looks complete. Next test: finish errors by truncation (full vs
+  shortened states) for pplx12 with state.
+- So the commitment bias has two parts: a state-free prior toward orders, and a state-driven, mistaken judgement that
+  the work is done. The orders-only gate (P2') keeps the first and removes the second by design.
