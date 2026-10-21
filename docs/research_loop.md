@@ -473,3 +473,10 @@ Harness note: `fhir_document_reference_search_clinical_notes` (third_party/physi
 has a parameter named `type`, so its error path `raise type(e)(...)` fails with "'NoneType' object is not callable":
 when that search returns an HTTP error, the agent sees this message instead of the server's. It appears in 14-22% of
 tasks in every run (historical and today alike), so it is not the drift; left unchanged to keep runs comparable.
+
+**P9 interim mechanism (18:00, 11 / 6 tasks; exploratory).** Of the 33 orders the pplx12 checklist showed, 15 are
+variants of required orders the run had already placed under another name (name dedup misses abbreviations and
+synonyms), 2 are open required orders, 16 match no grader; random: 4 / 2 / 12 of 18. A ranker that scores what is
+clearly indicated puts what was clearly done on top. Candidate fix (P9b, after P9 is read): drop pool items that a
+System One model judges the same order as one already placed (a short-input question: the order and the list of
+placed orders), then rank. Not applied to P9, which runs as fixed.
