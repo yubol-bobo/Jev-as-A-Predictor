@@ -35,6 +35,11 @@
    "order": 0.5464,
    "finish": 0.8,
    "redundant": 0.2791
+  },
+  "random_option": {
+   "order": 0.5521,
+   "finish": 0.7333,
+   "redundant": 0.3543
   }
  },
  "kind_preference": {

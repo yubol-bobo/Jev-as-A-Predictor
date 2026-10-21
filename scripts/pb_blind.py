@@ -49,6 +49,9 @@ def main():
         first_kind = Counter(q["kinds"][q["first"]] for q in qs)
         res.setdefault("kind_preference", {})[n] = {
             k: round(sum(q["kinds"][f(q)] == k for q in qs) / c, 3) for k, c in first_kind.items()}
+    res["key_error"]["random_option"] = {
+        key: share([q for q in qs if key in q["bad"]], lambda q, key=key: sum(q["bad"][key]) / len(q["bad"][key]))
+        for key in ("order", "finish", "redundant")}
     # yardsticks for same_kind_pick: a random pick, and other deciders with the state
     res["same_kind_baseline"] = {
         "random": share(qs, lambda q: sum(q["kinds"][pk[d][q["id"]]] == k for k in q["kinds"]) / len(q["kinds"])),
