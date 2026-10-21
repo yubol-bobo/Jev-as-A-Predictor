@@ -202,3 +202,31 @@ are. Paper corrected (abstract, findings, Table pooled, §4.1, §4.2, §4.4, §4
 Job 49526072 had an 8 h limit but ended in TIMEOUT after 3 h 03 min (22:31; cause unknown), with P2' at 30/100 tasks.
 Resumed on w001 with the node-local model copy (servers up in 9 min) and two P2' drivers (14 + 8 workers); the
 P2' score (`results/pb_gap_p2prime.json`) is committed every 45 min in case this job also ends early.
+
+## P2' result (2026-10-21 02:55): the gate keeps the agent's length and notes, not an order gain; it over-orders
+
+`pb_gap.py --decider-runs gate0_orders_k5__pplx12/run1` -> `results/pb_gap_p2prime.json`, all 100 tasks, paired with
+the pooled LLM runs (llm/run1, llm/run2, llm_log_k5/run1), task-bootstrap 95% CIs. LLM-vs-LLM noise in brackets.
+
+| | gate (P2') − LLM | full steering (pplx12) − LLM | LLM noise |
+|---|---|---|---|
+| required-order checkpoints (54 tasks) | +0.05 [−0.02, 0.14] | +0.04 [−0.05, 0.14] | |
+| required orders placed | +0.03 [−0.05, 0.11] | +0.05 [−0.05, 0.15] | +0.05 [−0.01, 0.11] |
+| orders placed | **+1.28 [0.76, 1.89]** | +0.26 [−0.35, 0.93] | +0.18 [−0.34, 0.71] |
+| orders not in the rubric (55 tasks) | **+1.13 [0.52, 1.79]** | +0.21 [−0.70, 1.11] | +0.35 [−0.31, 1.02] |
+| notes written | −0.02 [−0.26, 0.24] | −0.52 [−0.68, −0.37] | −0.12 [−0.40, 0.15] |
+| steps | −0.5 [−4.4, 3.9] | −4.0 [−6.7, −1.5] | |
+| Documentation checkpoints | −0.03 [−0.10, 0.04] | +0.03 [−0.05, 0.12] | |
+| task pass | −0.04 [−0.13, 0.04] | +0.04 [−0.06, 0.14] | |
+
+**Verdict: P2' primary fails** (the CI includes 0). Secondary: notes and steps within the LLM's noise (the note loss and
+the shortening are gone, as designed); Documentation not significantly below (point estimate −0.03); no task-pass claim.
+**Unplanned observation (post hoc):** the gate places 1.3 more orders per task, almost all of them orders the rubric
+does not name. Reading (H-commit): the state-free order prior acts at every order point, and the gated agent, unlike
+full steering, does not stop early, so the prior has more steps to act on. Not claimed until P5.
+
+- **P5 (replication of the over-ordering, fixed 2026-10-21 02:58, before the data exist).** gate(pplx12, margin 0,
+  points = orders), run 2, same tasks, paired with the pooled LLM runs. Prediction: orders placed higher than the LLM
+  with the CI excluding 0 (point estimate ≥ +0.5), and orders not in the rubric higher with the CI excluding 0.
+  Required-order checkpoints reported, no new prediction. Pooled gate runs 1+2 reported as the paper's gate estimate.
+  Started on allocation 49531604 at ~03:00; tasks that do not finish before the job ends are resumed later.
