@@ -51,6 +51,15 @@
     "mean_completion_tokens": 0.0,
     "mean_agent_wall_s": 0.0,
     "per_task_pass": {}
+   },
+   "run2": {
+    "pass@1": 0.0,
+    "checkpoint_pass": 0.0,
+    "checkpoint_pass_by_type": {},
+    "mean_turns": 0.0,
+    "mean_completion_tokens": 0.0,
+    "mean_agent_wall_s": 0.0,
+    "per_task_pass": {}
    }
   },
   "gate1.5_k5__pplx12": {
@@ -210,6 +219,11 @@
    "finished": 100,
    "passed": 37,
    "checkpoint_pass": 0.822
+  },
+  "gate0_orders_k5__pplx12/run2": {
+   "finished": 1,
+   "passed": 1,
+   "checkpoint_pass": 1.0
   },
   "gate1.5_k5__pplx12/run1": {
    "finished": 22,
