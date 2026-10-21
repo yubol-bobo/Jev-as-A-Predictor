@@ -196,3 +196,9 @@ all 100 tasks -> `results/pb_gap_pplx12_all.json`. Paired with the pooled LLM ru
 offered (+4 [−5, 13]), so placed +3 [−8, 12]. Selection recovers part of the 11% and loses about as much on generation
 (it acts after less retrieval). This fits the ceiling reading: the decision seat is not where the LLM's order errors
 are. Paper corrected (abstract, findings, Table pooled, §4.1, §4.2, §4.4, §4.7).
+
+## Allocation 49531604 (2026-10-20 23:45)
+
+Job 49526072 had an 8 h limit but ended in TIMEOUT after 3 h 03 min (22:31; cause unknown), with P2' at 30/100 tasks.
+Resumed on w001 with the node-local model copy (servers up in 9 min) and two P2' drivers (14 + 8 workers); the
+P2' score (`results/pb_gap_p2prime.json`) is committed every 45 min in case this job also ends early.
