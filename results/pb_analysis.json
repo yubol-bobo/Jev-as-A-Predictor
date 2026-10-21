@@ -529,21 +529,21 @@
  "deciders": {
   "pplx12": {
    "select_vs_llm": {
-    "paired_tasks": 99,
-    "pass@1_clef_k5__pplx12": 0.4444,
-    "pass@1_llm": 0.4141,
-    "checkpoint_clef_k5__pplx12": 0.8184,
-    "checkpoint_llm": 0.8138,
+    "paired_tasks": 100,
+    "pass@1_clef_k5__pplx12": 0.45,
+    "pass@1_llm": 0.41,
+    "checkpoint_clef_k5__pplx12": 0.8203,
+    "checkpoint_llm": 0.8128,
     "pass@1_diff_ci": [
-     0.0303,
-     -0.0808,
-     0.1414
+     0.04,
+     -0.07,
+     0.15
     ],
-    "mcnemar_p": 0.7283,
+    "mcnemar_p": 0.6076,
     "checkpoint_diff_ci": [
-     0.0046,
-     -0.0431,
-     0.0541
+     0.0074,
+     -0.0407,
+     0.0566
     ],
     "by_type_diff_ci": {
      "Action Execution": [
@@ -552,19 +552,19 @@
       0.1513
      ],
      "Clinical Reasoning": [
-      -0.0099,
-      -0.066,
-      0.0478
+      -0.0058,
+      -0.062,
+      0.0523
      ],
      "Data Retrieval": [
-      0.0303,
-      -0.0303,
-      0.0909
+      0.03,
+      -0.03,
+      0.09
      ],
      "Documentation": [
-      0.0204,
-      -0.0816,
-      0.1224
+      0.0202,
+      -0.0808,
+      0.1212
      ]
     },
     "tools": {
@@ -575,67 +575,67 @@
       "document": 1.0
      },
      "llm": {
-      "calls": 36.4,
-      "retrieve": 31.3,
+      "calls": 36.3,
+      "retrieve": 31.2,
       "act": 3.5,
       "document": 1.6
      }
     },
     "decisions": {
      "clef_k5__pplx12": {
-      "steps": 1096,
+      "steps": 1111,
       "steps_per_task": 11.1,
-      "share_distinct_strings": 0.984,
-      "share_semantically_distinct": 0.899,
+      "share_distinct_strings": 0.985,
+      "share_semantically_distinct": 0.897,
       "mean_unique": 4.73,
       "mean_max_p": 0.468,
-      "mean_entropy_norm": 0.803,
-      "pick_is_first_sample": 0.259,
+      "mean_entropy_norm": 0.804,
+      "pick_is_first_sample": 0.258,
       "decider_errors": 0,
-      "share_fit_shortened": 0.481,
+      "share_fit_shortened": 0.483,
       "share_fit_omitted": 0.002,
-      "mean_decide_s": 19.22
+      "mean_decide_s": 19.04
      },
      "llm": null
     }
    },
    "select_vs_clef": {
-    "paired_tasks": 99,
-    "pass@1_clef_k5__pplx12": 0.4444,
-    "pass@1_clef_k5": 0.3737,
-    "checkpoint_clef_k5__pplx12": 0.8184,
-    "checkpoint_clef_k5": 0.804,
+    "paired_tasks": 100,
+    "pass@1_clef_k5__pplx12": 0.45,
+    "pass@1_clef_k5": 0.37,
+    "checkpoint_clef_k5__pplx12": 0.8203,
+    "checkpoint_clef_k5": 0.8017,
     "pass@1_diff_ci": [
-     0.0707,
-     -0.0303,
-     0.1717
+     0.08,
+     -0.02,
+     0.18
     ],
-    "mcnemar_p": 0.2295,
+    "mcnemar_p": 0.1686,
     "checkpoint_diff_ci": [
-     0.0144,
-     -0.0273,
-     0.0542
+     0.0186,
+     -0.0235,
+     0.0585
     ],
     "by_type_diff_ci": {
      "Action Execution": [
       0.0064,
-      -0.0705,
-      0.0872
+      -0.0731,
+      0.0846
      ],
      "Clinical Reasoning": [
-      0.0007,
-      -0.0487,
-      0.047
+      0.0067,
+      -0.0438,
+      0.0545
      ],
      "Data Retrieval": [
-      0.0118,
-      -0.0505,
-      0.0758
+      0.0117,
+      -0.0517,
+      0.075
      ],
      "Documentation": [
-      0.0714,
-      -0.0204,
-      0.1531
+      0.0707,
+      -0.0202,
+      0.1515
      ]
     },
     "tools": {
@@ -646,39 +646,39 @@
       "document": 1.0
      },
      "clef_k5": {
-      "calls": 31.3,
-      "retrieve": 26.5,
-      "act": 3.7,
+      "calls": 31.2,
+      "retrieve": 26.4,
+      "act": 3.6,
       "document": 1.2
      }
     },
     "decisions": {
      "clef_k5__pplx12": {
-      "steps": 1096,
+      "steps": 1111,
       "steps_per_task": 11.1,
-      "share_distinct_strings": 0.984,
-      "share_semantically_distinct": 0.899,
+      "share_distinct_strings": 0.985,
+      "share_semantically_distinct": 0.897,
       "mean_unique": 4.73,
       "mean_max_p": 0.468,
-      "mean_entropy_norm": 0.803,
-      "pick_is_first_sample": 0.259,
+      "mean_entropy_norm": 0.804,
+      "pick_is_first_sample": 0.258,
       "decider_errors": 0,
-      "share_fit_shortened": 0.481,
+      "share_fit_shortened": 0.483,
       "share_fit_omitted": 0.002,
-      "mean_decide_s": 19.22
+      "mean_decide_s": 19.04
      },
      "clef_k5": {
-      "steps": 1171,
+      "steps": 1181,
       "steps_per_task": 11.8,
       "share_distinct_strings": 0.986,
-      "share_semantically_distinct": 0.893,
+      "share_semantically_distinct": 0.894,
       "mean_unique": 4.73,
-      "mean_max_p": 0.383,
+      "mean_max_p": 0.382,
       "mean_entropy_norm": 0.886,
-      "pick_is_first_sample": 0.21,
+      "pick_is_first_sample": 0.209,
       "decider_errors": 0,
       "share_fit_shortened": 0.435,
-      "share_fit_omitted": 0.01,
+      "share_fit_omitted": 0.009,
       "mean_decide_s": 4.7
      }
     }
@@ -697,8 +697,8 @@
     "mcnemar_p": 0.1435,
     "checkpoint_diff_ci": [
      -0.2468,
-     -0.3491,
-     -0.1487
+     -0.3492,
+     -0.1482
     ],
     "by_type_diff_ci": {
      "Action Execution": [
@@ -708,8 +708,8 @@
      ],
      "Clinical Reasoning": [
       -0.2354,
-      -0.3463,
-      -0.1279
+      -0.3446,
+      -0.1303
      ],
      "Data Retrieval": [
       -0.3367,
@@ -804,8 +804,8 @@
     "mcnemar_p": 0.0654,
     "checkpoint_diff_ci": [
      0.1746,
-     0.0562,
-     0.2873
+     0.0567,
+     0.2872
     ],
     "by_type_diff_ci": {
      "Action Execution": [
@@ -815,8 +815,8 @@
      ],
      "Clinical Reasoning": [
       0.1949,
-      0.0388,
-      0.3463
+      0.0415,
+      0.3483
      ],
      "Data Retrieval": [
       0.1122,
@@ -910,19 +910,19 @@
     "mcnemar_p": 0.0169,
     "checkpoint_diff_ci": [
      -0.2617,
-     -0.3718,
-     -0.1492
+     -0.373,
+     -0.151
     ],
     "by_type_diff_ci": {
      "Action Execution": [
       -0.1167,
       -0.25,
-      0.0167
+      0.0083
      ],
      "Clinical Reasoning": [
       -0.2303,
-      -0.3609,
-      -0.1
+      -0.3639,
+      -0.0986
      ],
      "Data Retrieval": [
       -0.3673,
@@ -932,7 +932,7 @@
      "Documentation": [
       -0.3265,
       -0.5102,
-      -0.1224
+      -0.1429
      ]
     },
     "tools": {
@@ -1017,7 +1017,7 @@
   "s1_tool/run3": 0,
   "llm_log_k5/run1": 100,
   "llm_tool/run1": 100,
-  "clef_k5__pplx12/run1": 99,
+  "clef_k5__pplx12/run1": 100,
   "s1_tool__pplx12/run1": 49
  },
  "run1_by_category": {
