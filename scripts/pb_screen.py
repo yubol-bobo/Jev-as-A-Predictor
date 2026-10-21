@@ -8,7 +8,7 @@ question ("is this order indicated for this patient?", Yes / No): a System One d
 and blind (order only); the LLM gives a probability after thinking. Aggregates only in results/.
 
   .venv/bin/python scripts/pb_screen.py build
-  S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_screen.py score [--blind] [--workers 4]
+  S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_screen.py score [--blind | --rich | --task] [--workers 4]
   .venv/bin/python scripts/pb_screen.py llm [--url http://127.0.0.1:8011/v1] [--workers 16]
   .venv/bin/python scripts/pb_screen.py report [--out results/pb_screen.json]
 Patient content stays under data/offline/pb_screen/.
@@ -157,17 +157,20 @@ def _answers(name):
                if p.exists() else {})
 
 
-def score(blind, workers, rich=False):
+def score(blind, workers, rich=False, task=False):
     name = os.environ.get("S1CLIN_DECIDER", "clef")
     url = os.environ.get("S1CLIN_DECIDER_URL") or DECIDER_URLS[name]
-    out, done = _answers(name + ("_blind" if blind else "") + ("_rich" if rich else ""))
+    out, done = _answers(name + ("_blind" if blind else "") + ("_rich" if rich else "") + ("_task" if task else ""))
     states = json.loads((OD / ("states_rich.json" if rich else "states.json")).read_text())
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
+    if rich:  # first the subset P6b is judged on: unplaced orders of tasks where the run missed a required order
+        missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
+        todo.sort(key=lambda q: not (q["task"] in missed and not q["placed"]))
     lock = threading.Lock()
     print(f"{out.name}: {len(todo)} to score", flush=True)
 
     def run(q):
-        instruction, steps = (BLIND, []) if blind else states[q["task"]]
+        instruction, steps = (BLIND, []) if blind else (states[q["task"]][0], []) if task else states[q["task"]]
         letters = ["A", "B"]
         random.Random(q["id"]).shuffle(letters)  # same letters for every decider
         payload = {"instruction": instruction, "steps": steps, "question": QUESTION.format(order=q["order"]),
@@ -227,6 +230,15 @@ def auroc(pos, neg):
     return sum((p > q) + 0.5 * (p == q) for p in pos for q in neg) / (len(pos) * len(neg))
 
 
+def _boot(per, n=2000):
+    """Percentile 95% CI of the mean over tasks, resampling tasks."""
+    ts, rng = list(per), random.Random(1)
+    if not ts:
+        return None
+    b = sorted(sum(per[t] for t in s) / len(s) for s in ([rng.choice(ts) for _ in ts] for _ in range(n)))
+    return [round(b[int(0.025 * n)], 4), round(b[int(0.975 * n) - 1], 4)]
+
+
 def report(path):
     qs = [json.loads(l) for l in (OD / "questions.jsonl").read_text().splitlines()]
     scorers = {f.stem[len("answers_"):]: _answers(f.stem[len("answers_"):])[1] for f in sorted(OD.glob("answers_*.jsonl"))}
@@ -239,7 +251,7 @@ def report(path):
     res = {"tasks": len(by_task), "orders": len(qs), "labels": dict(Counter(str(q["label"]) for q in qs)),
            "required_not_placed": sum(q["label"] == "required" and not q["placed"] for q in qs), "scorers": {}}
     for name, sc in scorers.items():
-        per, rec, times, unpl = {}, [], [], []
+        per, rec, times, unpl, unpl_t = {}, [], [], [], {}
         for t, tq in by_task.items():
             tq = [q for q in tq if q["id"] in sc and q["label"] != "forbidden"]
             a = auroc([sc[q["id"]] for q in tq if q["label"] == "required"], [sc[q["id"]] for q in tq if q["label"] is None])
@@ -250,6 +262,7 @@ def report(path):
                       [sc[q["id"]] for q in tq if q["label"] is None and not q["placed"]])
             if u is not None:
                 unpl.append(u)
+                unpl_t[t] = u
             un = sorted((q for q in tq if not q["placed"]), key=lambda q: -sc[q["id"]])
             miss = [q for q in un if q["label"] == "required"]
             if miss:
@@ -262,6 +275,7 @@ def report(path):
             "auroc_mean_per_task": round(sum(per.values()) / len(ts), 4) if ts else None,
             "ci95": [round(boot[50], 4), round(boot[1949], 4)] if boot else None,
             "auroc_unplaced_mean_per_task": round(sum(unpl) / len(unpl), 4) if unpl else None, "tasks_unplaced": len(unpl),
+            "unplaced_ci95": _boot(unpl_t), "unplaced_by_task": {t: round(v, 4) for t, v in sorted(unpl_t.items())},
             "recall_at5_required_not_placed": round(sum(rec) / len(rec), 4) if rec else None, "tasks_with_missed": len(rec),
             "median_s_per_question": sorted(a["s"] for a in ans.values())[len(ans) // 2] if ans else None,
             "mean_p": {lab: round(sum(sc[q["id"]] for q in qs if q["id"] in sc and str(q["label"]) == lab) /
@@ -280,13 +294,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["build", "build_rich", "score", "llm", "report"])
     ap.add_argument("--blind", action="store_true")
+    ap.add_argument("--task", action="store_true", help="score: the task instruction only, no trajectory")
     ap.add_argument("--rich", action="store_true", help="score: the rich states (P6b)")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--url", default="http://127.0.0.1:8011/v1")
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich), "llm": lambda: llm(a.url, a.workers),
+    {"build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task), "llm": lambda: llm(a.url, a.workers),
      "report": lambda: report(a.out)}[a.cmd]()
 
 

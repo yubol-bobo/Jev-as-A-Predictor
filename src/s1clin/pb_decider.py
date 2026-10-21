@@ -466,6 +466,7 @@ SCREEN_QUESTION = (
     "agent has already placed it)?")
 SCREEN_YES, SCREEN_NO = "Yes, the order is indicated", "No, the order is not indicated"
 SCREEN_STATE_CHARS = 28_000  # about 8k tokens for instruction, actions and results together
+SCREEN_BLIND = "A clinical task in an electronic health record. No further information is available."
 CREATE_ARGS = {"fhir_service_request_create": ("service", "code_display", "code_code"),
                "fhir_medication_request_create": ("medication", "medication_display", "medication_code")}
 CHECKLIST = (
@@ -504,6 +505,7 @@ class ScreenClient:
     already placed are dropped; a ranker scores the rest and the top M are shown to the LLM as a checklist, and the
     LLM's answer to that is executed instead of the FINISH. The LLM keeps the decision. Rankers: a System One model
     (P(Yes) to SCREEN_QUESTION on the short state, pointwise) or `freq` (how many candidates proposed it; control).
+    A ranker `<decider>-task` sees the task instruction only, `<decider>-blind` the order alone (P7').
     """
 
     def __init__(self, base, ranker: str, k: int, b: int, m: int, log_path: Path, seed: str):
@@ -523,8 +525,13 @@ class ScreenClient:
         if self.ranker == "freq":
             return [float(self.proposed[order_key(o)][1]) for o in orders]
         from concurrent.futures import ThreadPoolExecutor
+        decider, _, view = self.ranker.partition("-")
         instruction, steps = short_state(messages)
-        url = DECIDER_URLS[self.ranker]
+        if view == "task":
+            steps = []
+        elif view == "blind":
+            instruction, steps = SCREEN_BLIND, []
+        url = DECIDER_URLS[decider]
 
         def one(o):
             letters = ["A", "B"]

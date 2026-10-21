@@ -338,3 +338,27 @@ makes them indicated was never retrieved, or the rubric asks for what the chart 
   ≥ 0.10 above the own state (0.43). If it holds, missed orders are an information gap that a fast, wide reader can
   close (design: the System One model reads a chart dump, not the agent's trajectory); if not, the gap is not in
   what the agent read, and screening is dropped. P7 is on hold until P6b is read.
+
+## P6b verdict (2026-10-21 09:22): fails; more of the chart does not help, less does
+
+Unplaced-order AUROC with the rich state (other runs' retrieval added, ~18k tokens): pplx12 0.436 [0.29, 0.59]
+(own state 0.430), Clef 0.451 [0.30, 0.60] (own 0.396). Neither reaches 0.60 nor +0.10. The wide-reader design is
+dropped. Exploratory, seen before P6c was fixed: with **no information at all** (order text only, `--blind`),
+pplx12 ranks the missed required orders above unneeded unplaced ones, 0.628 [0.50, 0.76], 21 tasks; within
+ServiceRequests alone 0.61 (13 tasks), so not only a medication-vs-service split; recall@5 0.37 (random ~0.14).
+Clef blind 0.51. Ordering on unplaced orders: no information > own state ≈ rich state, for both models. Reading:
+the state pulls the System One model toward what the agent did (it learned to imitate agents), and what the agent
+did not do looks not indicated; its order prior, free of the trajectory, carries some of what the rubric wants.
+Full aggregates: `results/pb_screen.json` (with per-task unplaced AUROC and bootstrap CIs over tasks).
+
+- **P6c (short input, fixed 2026-10-21 09:35, before the data exist).** Same questions, the task instruction only,
+  no trajectory (`score --task`, a few hundred tokens: what a fast model does best). Scored by pplx12 and Clef.
+  Prediction: pplx12 task-only unplaced AUROC ≥ 0.60 with the CI's lower end above 0.5. Decision for P7′: the
+  ranker input is the task instruction if task-only ≥ blind (0.628), else the order alone if task-only fails and
+  blind stays as is; if task-only's CI includes 0.5 and is below blind, P7′ uses blind and is reported as testing
+  an order prior, not a reading of the task.
+- **P7′ (replaces P7, whose P6 condition failed; fixed 09:35).** Arm and analysis as P7 (K = 5, B = 8, M = 3,
+  54 tasks, run 1, paired with the pooled LLM runs and the `freq` control), the ranker being pplx12 on the short
+  input chosen by P6c (`--ranker pplx12-task` or `pplx12-blind`). The freq control does not depend on P6c and starts
+  first. Primary unchanged: required orders placed, screen − freq > 0 and screen − LLM > 0, claims only where the
+  CI excludes 0. Note: online, the pool is one run's proposals plus 8 forced samples, not the 5-run pool of P6.
