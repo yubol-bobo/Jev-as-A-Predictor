@@ -351,19 +351,19 @@ the state pulls the System One model toward what the agent did (it learned to im
 did not do looks not indicated; its order prior, free of the trajectory, carries some of what the rubric wants.
 Full aggregates: `results/pb_screen.json` (with per-task unplaced AUROC and bootstrap CIs over tasks).
 
-- **P6c (short input, fixed 2026-10-21 09:35, before the data exist).** Same questions, the task instruction only,
+- **P6c (short input, fixed 2026-10-21 09:24, before the data exist).** Same questions, the task instruction only,
   no trajectory (`score --task`, a few hundred tokens: what a fast model does best). Scored by pplx12 and Clef.
   Prediction: pplx12 task-only unplaced AUROC ≥ 0.60 with the CI's lower end above 0.5. Decision for P7′: the
   ranker input is the task instruction if task-only ≥ blind (0.628), else the order alone if task-only fails and
   blind stays as is; if task-only's CI includes 0.5 and is below blind, P7′ uses blind and is reported as testing
   an order prior, not a reading of the task.
-- **P7′ (replaces P7, whose P6 condition failed; fixed 09:35).** Arm and analysis as P7 (K = 5, B = 8, M = 3,
+- **P7′ (replaces P7, whose P6 condition failed; fixed 09:24).** Arm and analysis as P7 (K = 5, B = 8, M = 3,
   54 tasks, run 1, paired with the pooled LLM runs and the `freq` control), the ranker being pplx12 on the short
   input chosen by P6c (`--ranker pplx12-task` or `pplx12-blind`). The freq control does not depend on P6c and starts
   first. Primary unchanged: required orders placed, screen − freq > 0 and screen − LLM > 0, claims only where the
   CI excludes 0. Note: online, the pool is one run's proposals plus 8 forced samples, not the 5-run pool of P6.
 
-## P6c verdict (2026-10-21 09:50): holds; the short input is the System One model's best view
+## P6c verdict (2026-10-21 09:28): holds; the short input is the System One model's best view
 
 Task instruction only (a few hundred tokens, 0.39 s per question): pplx12 unplaced AUROC **0.652 [0.508, 0.786]**
 (21 tasks; own state 0.430, rich 0.436, blind 0.628), recall@5 of missed required orders 0.32 (random ~0.14);
@@ -374,5 +374,5 @@ and the model follows it. Decision as pre-registered: P7′ runs with `--ranker 
 the fact (exploratory, not part of P6c): Qwen thinking on the same task-only input, unplaced subset only
 (`pb_screen.py llm --task`), to separate "a System One model" from "a short input".
 
-P7′ started 09:40 (freq control, 8011) and 09:45 (pplx12-task; 8011 and a Qwen replica on GPU 3, port 8013, that
+P7′ started 09:24 (freq control, 8011) and 09:29 (pplx12-task; 8011 and a Qwen replica on GPU 3, port 8013, that
 replaced the Clef server), 12 workers each.
