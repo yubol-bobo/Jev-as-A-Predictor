@@ -86,7 +86,7 @@ Yubo Li \quad \pending{co-authors}\\[3pt]
 \mdseries Carnegie Mellon University\\
 \mdseries\texttt{yubol@andrew.cmu.edu}\\[3pt]
 }
-\date{20 October 2026}
+\date{21 October 2026}
 
 \begin{document}
 \maketitle
@@ -108,8 +108,9 @@ early gain on orders failed a pre-registered replication. What the System One mo
 of the gain on orders needs no patient state, a prior over the options, while the excess of premature finishing
 appears only when the model reads the state. We map where System One deciders are reliable (their confidence is
 informative; they help where the LLM's samples disagree; finishing is their blind spot), show that step-level answer
-keys measure decision style rather than outcome, and derive a division of labour in which the System One model
-decides only at order steps.
+keys measure decision style rather than outcome, and test online a division of labour in which the System One model
+decides only at order steps. It removes the harm of steering (notes and run length return to the LLM's level) but
+gains nothing on required orders, and it places 1.3 more orders per task that the rubric does not ask for.
 \end{abstract}
 
 \begin{figure*}[t]
@@ -160,7 +161,8 @@ We organise the study around three questions: how System One models perform in t
 how they should share the work with the reasoning LLM. The short answer: they are safe as selectors and harmful as
 steerers, they cannot do much better than the LLM because the LLM's errors are mostly not in the choice of the next
 turn, and what they bring instead is a shared bias toward committing, part prior and part misreading of the state,
-which tells us where to use them.
+which tells us where to use them. Confined to order steps, a System One model no longer harms the agent, but it does
+not improve it either, and its prior shows up as more orders.
 
 \paragraph{Findings.}
 \begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
@@ -187,9 +189,11 @@ which tells us where to use them.
   \item \textbf{Where a System One decider is reliable} (\S\ref{sec:boundaries}). Its confidence is informative; it
   helps where the LLM's five samples disagree and adds nothing where they agree; it is confidently wrong about when
   to finish.
-  \item \textbf{A narrower division of labour} (\S\ref{sec:gate}). Consulting the System One model only where a
-  proposal places an order keeps the decider where its prior helps and away from stopping, and overrules the LLM on
-  11\% of steps instead of 73\%. Its pre-registered online test is under way.
+  \item \textbf{A narrower division of labour removes the harm, not the ceiling} (\S\ref{sec:gate}). Consulting
+  the System One model only where a proposal places an order (11\% of steps instead of 73\%) brings notes and run
+  length back to the LLM's level, but required-order checkpoints do not rise ($+$5 points, $-$2 to $+$14; the
+  pre-registered prediction fails), and the agent places 1.3 more orders per task (0.8 to 1.9), nearly all outside
+  the rubric.
 \end{itemize}
 
 \section{Putting a System One model in the decision seat}\label{sec:protocol}
@@ -501,16 +505,48 @@ finish step overrules on 19\%; a gate by log-odds margin or by the LLM's self-co
 error further under cross-validation, because the exam's redundancy key rewards finishing over a note rewrite and the
 keys pull against each other. The exam cannot choose among these designs; whole runs must.
 
-\paragraph{Pre-registered online tests.} We fixed these tests before their data existed. P2$'$ is running at the
-time of writing, and we make no claim about the gate's online effect.
+\paragraph{Pre-registered online tests.} We fixed these tests before their data existed.
 \textbf{P1} replicated pplx-decider-v1.2 in \sel{} on the 24 tasks it had not run; prediction: more required-order
 checkpoints than the pooled LLM runs. It failed ($-$18 points [$-$36, $-$2], 16 tasks with such checkpoints;
 \S\ref{sec:select}).
-\textbf{P2$'$} runs the orders-only gate with pplx-decider-v1.2; prediction: the required-order gain of \sel{} (which
-P1 has since failed to replicate) without its loss of notes (notes within the LLM's run-to-run noise, $-$0.12 [$-$0.40, 0.15]); documentation not lower; task
-pass reported with its CI, claimed only if the CI excludes 0. The blind test P4 is done
-(\S\ref{sec:commit}); it supports the design: the gate keeps the decider where its preference is a useful prior
-(orders) and takes it away where reading the state misleads it (finishing).
+\textbf{P2$'$} ran the orders-only gate with pplx-decider-v1.2 on all 100 tasks; prediction: the required-order gain
+of \sel{} (which P1 has since failed to replicate) without its loss of notes (notes within the LLM's run-to-run noise);
+documentation not lower; task pass claimed only if its CI excludes 0. Table~\ref{tab:gate} gives the result. The
+primary prediction fails: required-order checkpoints $+$5 points [$-$2, 14]. The secondary ones hold: notes and steps
+return to the LLM's level, and documentation is not significantly lower. Task pass does not change. The design does
+what the blind test (P4, \S\ref{sec:commit}) predicts for its structure: away from finishing, the decider no longer
+stops the agent early. What it cannot do is pass the ceiling of \S\ref{sec:timing}.
+
+\begin{table*}[t]
+\centering\small
+\caption{Online, all 100 tasks: the orders-only gate and full steering in \sel{} (both pplx-decider-v1.2, one run), each
+minus the pooled LLM runs, with task-bootstrap 95\% CIs; the last column is the difference between two LLM runs
+(run-to-run noise). Required orders: the 54 tasks with such checkpoints.}\label{tab:gate}
+\begin{tabular}{lccc}
+\toprule
+& gate $-$ LLM & \sel{} $-$ LLM & LLM $-$ LLM \\
+\midrule
+required-order checkpoints & $+$0.05 [$-$0.02, 0.14] & $+$0.04 [$-$0.05, 0.14] & -- \\
+required orders placed & $+$0.03 [$-$0.05, 0.11] & $+$0.05 [$-$0.05, 0.15] & $+$0.05 [$-$0.01, 0.11] \\
+orders placed per task & $\mathbf{+1.28}$ [0.76, 1.89] & $+$0.26 [$-$0.35, 0.93] & $+$0.18 [$-$0.34, 0.71] \\
+\quad of which not in the rubric & $\mathbf{+1.13}$ [0.52, 1.79] & $+$0.21 [$-$0.70, 1.11] & $+$0.35 [$-$0.31, 1.02] \\
+notes written per task & $-$0.02 [$-$0.26, 0.24] & $\mathbf{-0.52}$ [$-$0.68, $-$0.37] & $-$0.12 [$-$0.40, 0.15] \\
+steps per task & $-$0.5 [$-$4.4, 3.9] & $\mathbf{-4.0}$ [$-$6.7, $-$1.5] & -- \\
+Documentation checkpoints & $-$0.03 [$-$0.10, 0.04] & $+$0.03 [$-$0.05, 0.12] & -- \\
+task pass & $-$0.04 [$-$0.13, 0.04] & $+$0.04 [$-$0.06, 0.14] & -- \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{The gate over-orders (not pre-registered).} The gated agent places 1.3 more orders per task than the LLM,
+and nearly all of them match no order in the rubric. Full steering does not show this, plausibly because it ends runs
+earlier and so gives the order prior fewer steps to act on; the gated agent runs as long as the LLM, and at every
+order step the decider prefers the ordering turn. This is the state-free part of the commitment bias, now visible as
+volume. PhysicianBench barely penalises it (one task forbids an order), but in practice extra orders cost money and
+can harm patients. We observed it after the fact; a pre-registered replication (a second gate run, P5) is running.
+An exploratory gate that also consults the decider at finish steps (margin 1.5, 22 tasks; not part of any test)
+brings the losses back: notes $-$0.62 [$-$1.02, $-$0.29], steps $-$6.7 [$-$12.9, $-$1.9]. The harm of steering
+sits at the finish step, as the blind test predicts.
 
 \section{Related work}
 
@@ -549,7 +585,9 @@ how much evidence is enough, when to stop, and writing the note. The System One 
 unreliably: committing to a concrete order once it is on the table. The design that follows consults the System One
 model at order steps only, and preferably where the LLM's samples disagree and the System One model is confident. The
 ceiling above bounds what it can gain; its value may lie less in outcome than in cost and in a stable, inspectable
-decision at the steps that commit.
+decision at the steps that commit. Online, the orders-only gate confirms both halves: it removes the harm of
+steering and leaves the ceiling where it was, and its prior shows up as extra orders, which a deployment would have
+to cap or review.
 
 \paragraph{Evaluating deciders inside agents.} Step-level keys built on an agent's own trajectory reward timing and
 style. Their offline gains overstated the online effect by an order of magnitude here, and even an online gain on 76
@@ -565,7 +603,7 @@ task); the orders-only gate needs proposals only where an order is on the table.
 
 We study one LLM and one benchmark. Clef shares its backbone with the LLM; the five other System One models are
 evaluated on the exam and, for one of them, online. Most online numbers come from one run per arm (the LLM has 2.15
-runs per task when pooled), and the online test of the gated design is incomplete. The benchmark barely penalises
+runs per task when pooled), and the gated design has one completed online run (the over-ordering it shows is not yet replicated). The benchmark barely penalises
 over-ordering, so a commitment bias costs little here and could cost more in practice. Our judge is the local LLM
 rather than the leaderboard's, so absolute scores are not comparable with the leaderboard, while every arm shares the
 judge. The System One models read a 32k-token view of states the LLM reads in full. Inpatient settings such as ClinEnv

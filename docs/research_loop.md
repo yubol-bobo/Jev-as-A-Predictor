@@ -230,3 +230,9 @@ full steering, does not stop early, so the prior has more steps to act on. Not c
   with the CI excluding 0 (point estimate ≥ +0.5), and orders not in the rubric higher with the CI excluding 0.
   Required-order checkpoints reported, no new prediction. Pooled gate runs 1+2 reported as the paper's gate estimate.
   Started on allocation 49531604 at ~03:00; tasks that do not finish before the job ends are resumed later.
+
+Exploratory, not a test: the gate1.5 arm (margin 1.5 at every order or FINISH point, the 22 tasks run by mistake on
+2026-10-20) -> `results/pb_gap_gate1.5_exploratory.json`: notes −0.62 [−1.02, −0.29], steps −6.7 [−12.9, −1.9],
+orders −0.13 [−0.71, 0.51], required-order checkpoints +0.08 [0.00, 0.19] (14 tasks). Gating at FINISH brings the note
+loss and the shortening back; consistent with P4 (the harm sits at the finish step). Paper updated (abstract, intro,
+findings, §4.7 with Table tab:gate, Discussion, Limitations).
