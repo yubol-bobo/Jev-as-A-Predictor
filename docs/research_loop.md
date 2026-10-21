@@ -468,3 +468,8 @@ needs no System One server.
   Table tab:gate) is re-done against run 3, and P7′ / P9 use run 3 as their LLM reference. If the CI includes 0 and
   the estimate is < +0.05, the P7′ arms' gain over the LLM is attributed to the screen arm itself (extra forced
   samples or the checklist turn) and is examined. Also reported: run 3 − P7′ freq arm (both today).
+D1 and P9 (resumed: 19 + 21 tasks left) started 16:56, Qwen task-only comparator resumed 17:05 (6 workers).
+Harness note: `fhir_document_reference_search_clinical_notes` (third_party/physicianbench/tools/fhir_api_functions.py:889)
+has a parameter named `type`, so its error path `raise type(e)(...)` fails with "'NoneType' object is not callable":
+when that search returns an HTTP error, the agent sees this message instead of the server's. It appears in 14-22% of
+tasks in every run (historical and today alike), so it is not the drift; left unchanged to keep runs comparable.
