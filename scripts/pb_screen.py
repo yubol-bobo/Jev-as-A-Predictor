@@ -259,7 +259,7 @@ def report(path):
     res = {"tasks": len(by_task), "orders": len(qs), "labels": dict(Counter(str(q["label"]) for q in qs)),
            "required_not_placed": sum(q["label"] == "required" and not q["placed"] for q in qs), "scorers": {}}
     for name, sc in scorers.items():
-        per, rec, times, unpl, unpl_t = {}, [], [], [], {}
+        per, rec, times, unpl, unpl_t, pl_t = {}, [], [], [], {}, {}
         for t, tq in by_task.items():
             tq = [q for q in tq if q["id"] in sc and q["label"] != "forbidden"]
             a = auroc([sc[q["id"]] for q in tq if q["label"] == "required"], [sc[q["id"]] for q in tq if q["label"] is None])
@@ -271,6 +271,10 @@ def report(path):
             if u is not None:
                 unpl.append(u)
                 unpl_t[t] = u
+            pa = auroc([sc[q["id"]] for q in tq if q["label"] == "required" and q["placed"]],
+                       [sc[q["id"]] for q in tq if q["label"] is None and q["placed"]])
+            if pa is not None:
+                pl_t[t] = pa
             un = sorted((q for q in tq if not q["placed"]), key=lambda q: -sc[q["id"]])
             miss = [q for q in un if q["label"] == "required"]
             if miss:
@@ -284,6 +288,8 @@ def report(path):
             "ci95": [round(boot[50], 4), round(boot[1949], 4)] if boot else None,
             "auroc_unplaced_mean_per_task": round(sum(unpl) / len(unpl), 4) if unpl else None, "tasks_unplaced": len(unpl),
             "unplaced_ci95": _boot(unpl_t), "unplaced_by_task": {t: round(v, 4) for t, v in sorted(unpl_t.items())},
+            "auroc_placed_mean_per_task": round(sum(pl_t.values()) / len(pl_t), 4) if pl_t else None,
+            "placed_ci95": _boot(pl_t), "tasks_placed": len(pl_t),
             "recall_at5_required_not_placed": round(sum(rec) / len(rec), 4) if rec else None, "tasks_with_missed": len(rec),
             "median_s_per_question": sorted(a["s"] for a in ans.values())[len(ans) // 2] if ans else None,
             "mean_p": {lab: round(sum(sc[q["id"]] for q in qs if q["id"] in sc and str(q["label"]) == lab) /

@@ -44,6 +44,12 @@
     "travel_parasitic_infection": 0.6842,
     "trd_refill_review": 0.2444
    },
+   "auroc_placed_mean_per_task": 0.6569,
+   "placed_ci95": [
+    0.5438,
+    0.7681
+   ],
+   "tasks_placed": 42,
    "recall_at5_required_not_placed": 0.1111,
    "tasks_with_missed": 21,
    "median_s_per_question": 3.651,
@@ -90,6 +96,12 @@
     "travel_parasitic_infection": 0.0526,
     "trd_refill_review": 0.1556
    },
+   "auroc_placed_mean_per_task": 0.5942,
+   "placed_ci95": [
+    0.4966,
+    0.6889
+   ],
+   "tasks_placed": 42,
    "recall_at5_required_not_placed": 0.2381,
    "tasks_with_missed": 21,
    "median_s_per_question": 0.317,
@@ -136,6 +148,12 @@
     "travel_parasitic_infection": 0.7895,
     "trd_refill_review": 0.2222
    },
+   "auroc_placed_mean_per_task": 0.6574,
+   "placed_ci95": [
+    0.5144,
+    0.7928
+   ],
+   "tasks_placed": 19,
    "recall_at5_required_not_placed": 0.1587,
    "tasks_with_missed": 21,
    "median_s_per_question": 11.722,
@@ -182,6 +200,12 @@
     "travel_parasitic_infection": 0.9211,
     "trd_refill_review": 0.9778
    },
+   "auroc_placed_mean_per_task": 0.763,
+   "placed_ci95": [
+    0.6615,
+    0.8557
+   ],
+   "tasks_placed": 42,
    "recall_at5_required_not_placed": 0.4048,
    "tasks_with_missed": 21,
    "median_s_per_question": 0.408,
@@ -223,6 +247,12 @@
     "svt_tuberous_sclerosis": 0.0833,
     "thrombocytopenia_immunotherapy": 0.8367
    },
+   "auroc_placed_mean_per_task": 0.6877,
+   "placed_ci95": [
+    0.5985,
+    0.7746
+   ],
+   "tasks_placed": 39,
    "recall_at5_required_not_placed": 0.0833,
    "tasks_with_missed": 16,
    "median_s_per_question": 40.807,
@@ -232,13 +262,47 @@
     "forbidden": 0.0
    }
   },
+  "llm_task": {
+   "scored": 282,
+   "tasks": 6,
+   "auroc_mean_per_task": 0.5363,
+   "ci95": [
+    0.3598,
+    0.749
+   ],
+   "auroc_unplaced_mean_per_task": 0.5363,
+   "tasks_unplaced": 6,
+   "unplaced_ci95": [
+    0.3598,
+    0.755
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.7202,
+    "alcohol_use_disorder": 0.3486,
+    "chronic_abdominal_workup": 0.375,
+    "chronic_urticaria_allergist": 1.0,
+    "dual_incontinence_workup": 0.4609,
+    "inflammatory_arthritis_serology": 0.3129
+   },
+   "auroc_placed_mean_per_task": null,
+   "placed_ci95": null,
+   "tasks_placed": 0,
+   "recall_at5_required_not_placed": 0.3889,
+   "tasks_with_missed": 6,
+   "median_s_per_question": 76.207,
+   "mean_p": {
+    "required": 0.7,
+    "None": 0.5758,
+    "forbidden": 0.0
+   }
+  },
   "pplx12": {
    "scored": 2102,
    "tasks": 52,
    "auroc_mean_per_task": 0.7365,
    "ci95": [
-    0.6589,
-    0.8063
+    0.6586,
+    0.8069
    ],
    "auroc_unplaced_mean_per_task": 0.4296,
    "tasks_unplaced": 21,
@@ -269,6 +333,12 @@
     "travel_parasitic_infection": 0.8684,
     "trd_refill_review": 0.5111
    },
+   "auroc_placed_mean_per_task": 0.6703,
+   "placed_ci95": [
+    0.5706,
+    0.7642
+   ],
+   "tasks_placed": 42,
    "recall_at5_required_not_placed": 0.1429,
    "tasks_with_missed": 21,
    "median_s_per_question": 4.203,
@@ -283,8 +353,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.566,
    "ci95": [
-    0.4863,
-    0.6437
+    0.4873,
+    0.6427
    ],
    "auroc_unplaced_mean_per_task": 0.6278,
    "tasks_unplaced": 21,
@@ -315,6 +385,12 @@
     "travel_parasitic_infection": 0.1053,
     "trd_refill_review": 0.4444
    },
+   "auroc_placed_mean_per_task": 0.6212,
+   "placed_ci95": [
+    0.5174,
+    0.7186
+   ],
+   "tasks_placed": 42,
    "recall_at5_required_not_placed": 0.3667,
    "tasks_with_missed": 21,
    "median_s_per_question": 0.322,
@@ -329,8 +405,8 @@
    "tasks": 22,
    "auroc_mean_per_task": 0.4573,
    "ci95": [
-    0.3154,
-    0.6003
+    0.3131,
+    0.6068
    ],
    "auroc_unplaced_mean_per_task": 0.4358,
    "tasks_unplaced": 21,
@@ -361,6 +437,12 @@
     "travel_parasitic_infection": 0.9737,
     "trd_refill_review": 0.7674
    },
+   "auroc_placed_mean_per_task": 1.0,
+   "placed_ci95": [
+    1.0,
+    1.0
+   ],
+   "tasks_placed": 1,
    "recall_at5_required_not_placed": 0.1905,
    "tasks_with_missed": 21,
    "median_s_per_question": 18.421,
@@ -375,8 +457,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.8038,
    "ci95": [
-    0.7323,
-    0.8704
+    0.7337,
+    0.8702
    ],
    "auroc_unplaced_mean_per_task": 0.6522,
    "tasks_unplaced": 21,
@@ -407,6 +489,12 @@
     "travel_parasitic_infection": 0.7368,
     "trd_refill_review": 0.7778
    },
+   "auroc_placed_mean_per_task": 0.8175,
+   "placed_ci95": [
+    0.7259,
+    0.8963
+   ],
+   "tasks_placed": 42,
    "recall_at5_required_not_placed": 0.3175,
    "tasks_with_missed": 21,
    "median_s_per_question": 0.385,
@@ -421,8 +509,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.9656,
    "ci95": [
-    0.9429,
-    0.9844
+    0.943,
+    0.9841
    ],
    "auroc_unplaced_mean_per_task": 0.8854,
    "tasks_unplaced": 21,
@@ -453,6 +541,12 @@
     "travel_parasitic_infection": 0.4605,
     "trd_refill_review": 0.9444
    },
+   "auroc_placed_mean_per_task": 0.9736,
+   "placed_ci95": [
+    0.9461,
+    0.9935
+   ],
+   "tasks_placed": 42,
    "recall_at5_required_not_placed": 0.7841,
    "tasks_with_missed": 21,
    "median_s_per_question": null,
