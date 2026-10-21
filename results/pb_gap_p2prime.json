@@ -9,169 +9,185 @@
    "gate0_orders_k5__pplx12/run1"
   ]
  },
- "paired_tasks": 56,
+ "paired_tasks": 75,
  "runs_per_task": {
-  "llm": 2.27,
+  "llm": 2.2,
   "decider": 1.0
  },
  "task_pass": {
-  "llm": 0.3958,
-  "decider": 0.3214,
+  "llm": 0.3822,
+  "decider": 0.32,
   "diff_ci": [
-   -0.0744,
-   -0.1994,
-   0.0536,
-   56
+   -0.0622,
+   -0.1667,
+   0.04,
+   75
   ]
  },
  "checkpoints": {
-  "AE: other action": {
-   "n_checkpoints": 13,
-   "llm": 0.8333,
-   "decider": 0.9167,
+  "AE: must not order": {
+   "n_checkpoints": 1,
+   "llm": 0.5,
+   "decider": 1.0,
    "diff_ci": [
-    0.0833,
+    0.5,
+    0.5,
+    0.5,
+    1
+   ]
+  },
+  "AE: other action": {
+   "n_checkpoints": 17,
+   "llm": 0.8571,
+   "decider": 0.9286,
+   "diff_ci": [
+    0.0714,
     0.0,
-    0.2083,
-    12
+    0.1786,
+    14
    ]
   },
   "AE: required order": {
-   "n_checkpoints": 44,
-   "llm": 0.7455,
-   "decider": 0.8125,
+   "n_checkpoints": 67,
+   "llm": 0.7447,
+   "decider": 0.8098,
    "diff_ci": [
-    0.067,
-    -0.0283,
-    0.189,
-    28
+    0.0652,
+    -0.0192,
+    0.1624,
+    39
    ]
   },
   "Clinical Reasoning": {
-   "n_checkpoints": 209,
-   "llm": 0.8423,
-   "decider": 0.8238,
+   "n_checkpoints": 271,
+   "llm": 0.8387,
+   "decider": 0.8247,
    "diff_ci": [
-    -0.0185,
-    -0.0777,
-    0.0373,
-    56
+    -0.014,
+    -0.0675,
+    0.0382,
+    75
    ]
   },
   "Data Retrieval": {
-   "n_checkpoints": 57,
-   "llm": 0.8571,
-   "decider": 0.8929,
+   "n_checkpoints": 77,
+   "llm": 0.8423,
+   "decider": 0.8874,
    "diff_ci": [
-    0.0357,
-    -0.0298,
-    0.0952,
-    56
+    0.045,
+    -0.009,
+    0.1014,
+    74
    ]
   },
   "Documentation": {
-   "n_checkpoints": 55,
-   "llm": 0.6758,
-   "decider": 0.5818,
+   "n_checkpoints": 74,
+   "llm": 0.6982,
+   "decider": 0.6081,
    "diff_ci": [
-    -0.0939,
-    -0.1939,
-    0.0,
-    55
+    -0.0901,
+    -0.1712,
+    -0.0113,
+    74
    ]
   }
  },
  "trajectory": {
   "steps": {
-   "llm": 34.9792,
-   "decider": 30.0893,
+   "llm": 35.0378,
+   "decider": 31.52,
    "diff_ci": [
-    -4.8899,
-    -9.2589,
-    -0.7381,
-    56
+    -3.5178,
+    -7.5,
+    0.7089,
+    75
    ]
   },
   "orders": {
-   "llm": 2.8333,
-   "decider": 4.1071,
+   "llm": 3.1356,
+   "decider": 4.16,
    "diff_ci": [
-    1.2738,
-    0.6935,
-    1.9286,
-    56
+    1.0244,
+    0.5533,
+    1.5578,
+    75
    ]
   },
   "required_placed": {
-   "llm": 0.6781,
-   "decider": 0.7202,
+   "llm": 0.6642,
+   "decider": 0.7179,
    "diff_ci": [
-    0.0422,
-    -0.0813,
-    0.1567,
-    28
+    0.0538,
+    -0.047,
+    0.1624,
+    39
    ]
   },
   "forbidden_placed": {
-   "llm": 0.0,
+   "llm": 0.5,
    "decider": 0.0,
-   "diff_ci": null
+   "diff_ci": [
+    -0.5,
+    -0.5,
+    -0.5,
+    1
+   ]
   },
   "unmatched_orders": {
-   "llm": 2.9524,
-   "decider": 4.6071,
+   "llm": 3.2542,
+   "decider": 4.45,
    "diff_ci": [
-    1.6548,
-    0.8155,
-    2.7262,
-    28
+    1.1958,
+    0.525,
+    2.0042,
+    40
    ]
   },
   "notes": {
-   "llm": 1.5804,
-   "decider": 1.625,
+   "llm": 1.5267,
+   "decider": 1.56,
    "diff_ci": [
-    0.0446,
-    -0.2887,
-    0.4077,
-    56
+    0.0333,
+    -0.2533,
+    0.3356,
+    75
    ]
   },
   "retrieve_before_first_action": {
-   "llm": 28.8988,
-   "decider": 23.1786,
+   "llm": 28.9711,
+   "decider": 24.7467,
    "diff_ci": [
-    -5.7202,
-    -9.6667,
-    -1.9077,
-    56
+    -4.2244,
+    -8.0867,
+    0.0822,
+    75
    ]
   }
  },
  "noise_llm_vs_llm_log": {
   "orders": [
-   0.2857,
-   -0.2679,
-   0.8929,
-   56
+   0.2267,
+   -0.4,
+   0.8267,
+   75
   ],
   "required_placed": [
-   0.0476,
-   -0.0208,
-   0.1399,
-   28
+   0.0684,
+   0.0021,
+   0.1538,
+   39
   ],
   "unmatched_orders": [
-   0.1786,
-   -0.6786,
-   1.1786,
-   28
+   0.15,
+   -0.625,
+   0.975,
+   40
   ],
   "notes": [
-   0.0357,
-   -0.3036,
-   0.4107,
-   56
+   0.0533,
+   -0.2133,
+   0.3333,
+   75
   ]
  }
 }
