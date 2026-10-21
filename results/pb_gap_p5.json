@@ -1,0 +1,177 @@
+{
+ "sides": {
+  "llm": [
+   "llm/run1",
+   "llm/run2",
+   "llm_log_k5/run1"
+  ],
+  "decider": [
+   "gate0_orders_k5__pplx12/run2"
+  ]
+ },
+ "paired_tasks": 25,
+ "runs_per_task": {
+  "llm": 2.52,
+  "decider": 1.0
+ },
+ "task_pass": {
+  "llm": 0.4,
+  "decider": 0.44,
+  "diff_ci": [
+   0.04,
+   -0.1133,
+   0.1933,
+   25
+  ]
+ },
+ "checkpoints": {
+  "AE: other action": {
+   "n_checkpoints": 4,
+   "llm": 0.875,
+   "decider": 1.0,
+   "diff_ci": [
+    0.125,
+    0.0,
+    0.375,
+    4
+   ]
+  },
+  "AE: required order": {
+   "n_checkpoints": 28,
+   "llm": 0.7891,
+   "decider": 0.8594,
+   "diff_ci": [
+    0.0703,
+    -0.0417,
+    0.2188,
+    16
+   ]
+  },
+  "Clinical Reasoning": {
+   "n_checkpoints": 89,
+   "llm": 0.897,
+   "decider": 0.892,
+   "diff_ci": [
+    -0.005,
+    -0.0489,
+    0.0333,
+    25
+   ]
+  },
+  "Data Retrieval": {
+   "n_checkpoints": 25,
+   "llm": 0.9,
+   "decider": 1.0,
+   "diff_ci": [
+    0.1,
+    0.0267,
+    0.2,
+    25
+   ]
+  },
+  "Documentation": {
+   "n_checkpoints": 25,
+   "llm": 0.7067,
+   "decider": 0.68,
+   "diff_ci": [
+    -0.0267,
+    -0.1533,
+    0.0933,
+    25
+   ]
+  }
+ },
+ "trajectory": {
+  "steps": {
+   "llm": 31.4667,
+   "decider": 25.16,
+   "diff_ci": [
+    -6.3067,
+    -11.58,
+    -1.7267,
+    25
+   ]
+  },
+  "orders": {
+   "llm": 3.4133,
+   "decider": 3.68,
+   "diff_ci": [
+    0.2667,
+    -0.7333,
+    1.2267,
+    25
+   ]
+  },
+  "required_placed": {
+   "llm": 0.7179,
+   "decider": 0.7865,
+   "diff_ci": [
+    0.0686,
+    -0.0417,
+    0.2214,
+    16
+   ]
+  },
+  "forbidden_placed": {
+   "llm": 0.0,
+   "decider": 0.0,
+   "diff_ci": null
+  },
+  "unmatched_orders": {
+   "llm": 3.2292,
+   "decider": 3.125,
+   "diff_ci": [
+    -0.1042,
+    -1.5,
+    1.3333,
+    16
+   ]
+  },
+  "notes": {
+   "llm": 1.6333,
+   "decider": 1.4,
+   "diff_ci": [
+    -0.2333,
+    -0.64,
+    0.1933,
+    25
+   ]
+  },
+  "retrieve_before_first_action": {
+   "llm": 24.86,
+   "decider": 18.64,
+   "diff_ci": [
+    -6.22,
+    -11.8333,
+    -1.2733,
+    25
+   ]
+  }
+ },
+ "noise_llm_vs_llm_log": {
+  "orders": [
+   0.24,
+   -0.76,
+   1.36,
+   25
+  ],
+  "required_placed": [
+   0.0521,
+   -0.0521,
+   0.1927,
+   16
+  ],
+  "unmatched_orders": [
+   -0.0625,
+   -1.4375,
+   1.5625,
+   16
+  ],
+  "notes": [
+   0.0,
+   -0.44,
+   0.44,
+   25
+  ]
+ }
+}
