@@ -236,3 +236,22 @@ Exploratory, not a test: the gate1.5 arm (margin 1.5 at every order or FINISH po
 orders −0.13 [−0.71, 0.51], required-order checkpoints +0.08 [0.00, 0.19] (14 tasks). Gating at FINISH brings the note
 loss and the shortening back; consistent with P4 (the harm sits at the finish step). Paper updated (abstract, intro,
 findings, §4.7 with Table tab:gate, Discussion, Limitations).
+
+## P5 result (2026-10-21 06:40): more orders replicates; "outside the rubric" does not reach significance alone
+
+Gate run 2 finished all 100 tasks (03:00–06:37) -> `results/pb_gap_p5.json`; runs 1+2 pooled ->
+`results/pb_gap_gate_pooled.json` (the paper's gate estimate, Table tab:gate).
+
+| | run 2 (P5) − LLM | runs 1+2 pooled − LLM |
+|---|---|---|
+| orders placed | **+0.61 [0.12, 1.13]** | **+0.95 [0.51, 1.44]** |
+| orders not in the rubric (55 tasks) | +0.35 [−0.29, 0.97] | **+0.74 [0.20, 1.31]** |
+| required-order checkpoints | +0.06 [−0.02, 0.16] | +0.06 [−0.01, 0.14] |
+| notes | −0.13 [−0.33, 0.09] | −0.07 [−0.26, 0.12] |
+| steps | −0.6 [−4.5, 3.7] | −0.5 [−3.9, 3.2] |
+| task pass | +0.02 [−0.07, 0.11] | −0.01 [−0.09, 0.06] |
+
+**Verdict: P5 half holds.** More orders replicates (≥ +0.5, CI excludes 0); more orders outside the rubric does not
+reach significance in run 2 alone (it does pooled). Smaller effect in run 2 (+0.61 vs +1.28): run-to-run variation of
+the gate itself is large. Required-order checkpoints still not above the LLM; notes and steps at the LLM's level in
+both runs. Paper updated (abstract, findings, §4.7, Table tab:gate pooled, Limitations).

@@ -1,0 +1,194 @@
+{
+ "sides": {
+  "llm": [
+   "llm/run1",
+   "llm/run2",
+   "llm_log_k5/run1"
+  ],
+  "decider": [
+   "gate0_orders_k5__pplx12/run1",
+   "gate0_orders_k5__pplx12/run2"
+  ]
+ },
+ "paired_tasks": 100,
+ "runs_per_task": {
+  "llm": 2.15,
+  "decider": 2.0
+ },
+ "task_pass": {
+  "llm": 0.4117,
+  "decider": 0.4,
+  "diff_ci": [
+   -0.0117,
+   -0.085,
+   0.06,
+   100
+  ]
+ },
+ "checkpoints": {
+  "AE: must not order": {
+   "n_checkpoints": 1,
+   "llm": 0.5,
+   "decider": 1.0,
+   "diff_ci": [
+    0.5,
+    0.5,
+    0.5,
+    1
+   ]
+  },
+  "AE: other action": {
+   "n_checkpoints": 21,
+   "llm": 0.8333,
+   "decider": 0.8889,
+   "diff_ci": [
+    0.0556,
+    0.0,
+    0.1389,
+    18
+   ]
+  },
+  "AE: required order": {
+   "n_checkpoints": 92,
+   "llm": 0.7569,
+   "decider": 0.8148,
+   "diff_ci": [
+    0.0579,
+    -0.0123,
+    0.1358,
+    54
+   ]
+  },
+  "Clinical Reasoning": {
+   "n_checkpoints": 355,
+   "llm": 0.8373,
+   "decider": 0.8469,
+   "diff_ci": [
+    0.0096,
+    -0.0306,
+    0.0534,
+    100
+   ]
+  },
+  "Data Retrieval": {
+   "n_checkpoints": 102,
+   "llm": 0.8266,
+   "decider": 0.8872,
+   "diff_ci": [
+    0.0606,
+    0.0185,
+    0.1027,
+    99
+   ]
+  },
+  "Documentation": {
+   "n_checkpoints": 99,
+   "llm": 0.6987,
+   "decider": 0.6717,
+   "diff_ci": [
+    -0.0269,
+    -0.0926,
+    0.0354,
+    99
+   ]
+  }
+ },
+ "trajectory": {
+  "steps": {
+   "llm": 36.2483,
+   "decider": 35.715,
+   "diff_ci": [
+    -0.5333,
+    -3.8733,
+    3.2433,
+    100
+   ]
+  },
+  "orders": {
+   "llm": 3.1567,
+   "decider": 4.105,
+   "diff_ci": [
+    0.9483,
+    0.505,
+    1.4417,
+    100
+   ]
+  },
+  "required_placed": {
+   "llm": 0.6834,
+   "decider": 0.7222,
+   "diff_ci": [
+    0.0388,
+    -0.0345,
+    0.1175,
+    54
+   ]
+  },
+  "forbidden_placed": {
+   "llm": 0.5,
+   "decider": 0.0,
+   "diff_ci": [
+    -0.5,
+    -0.5,
+    -0.5,
+    1
+   ]
+  },
+  "unmatched_orders": {
+   "llm": 3.1939,
+   "decider": 3.9364,
+   "diff_ci": [
+    0.7424,
+    0.2,
+    1.3061,
+    55
+   ]
+  },
+  "notes": {
+   "llm": 1.545,
+   "decider": 1.475,
+   "diff_ci": [
+    -0.07,
+    -0.2583,
+    0.1183,
+    100
+   ]
+  },
+  "retrieve_before_first_action": {
+   "llm": 30.2583,
+   "decider": 27.885,
+   "diff_ci": [
+    -2.3733,
+    -5.2433,
+    0.37,
+    100
+   ]
+  }
+ },
+ "noise_llm_vs_llm_log": {
+  "orders": [
+   0.18,
+   -0.34,
+   0.71,
+   100
+  ],
+  "required_placed": [
+   0.0494,
+   -0.0062,
+   0.1142,
+   54
+  ],
+  "unmatched_orders": [
+   0.3455,
+   -0.3091,
+   1.0182,
+   55
+  ],
+  "notes": [
+   -0.12,
+   -0.4,
+   0.15,
+   100
+  ]
+ }
+}
