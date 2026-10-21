@@ -255,3 +255,12 @@ Gate run 2 finished all 100 tasks (03:00–06:37) -> `results/pb_gap_p5.json`; r
 reach significance in run 2 alone (it does pooled). Smaller effect in run 2 (+0.61 vs +1.28): run-to-run variation of
 the gate itself is large. Required-order checkpoints still not above the LLM; notes and steps at the LLM's level in
 both runs. Paper updated (abstract, findings, §4.7, Table tab:gate pooled, Limitations).
+
+## Cycle 7 (2026-10-21 07:00, offline): can a pre-finish "pending order audit" recover the selection ceiling?
+
+Idea: before FINISH, place every order some candidate proposed but no executed turn placed (no System One needed).
+On llm_log_k5/run1 (100 tasks, rough string dedup): ~9.8 distinct proposed-but-unexecuted orders per task; about 33 of
+~980 match a required order that was not placed (the 13 required orders of pb_ceiling's offered-not-taken), about 3%.
+Requiring support from ≥ 2 candidates does not raise it (2 of 62). Upper bound on task pass: +4 of 54 tasks
+(pb_ceiling). Not pursued: it would add ~9 orders per task to recover ~0.1. Selection-side fixes are exhausted on this
+benchmark; the remaining gap is generation (19% of required orders never proposed).
