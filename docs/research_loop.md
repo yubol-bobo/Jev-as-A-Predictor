@@ -376,3 +376,13 @@ the fact (exploratory, not part of P6c): Qwen thinking on the same task-only inp
 
 P7′ started 09:24 (freq control, 8011) and 09:29 (pplx12-task; 8011 and a Qwen replica on GPU 3, port 8013, that
 replaced the Clef server), 12 workers each.
+
+**P7′ throughput (10:40).** One Qwen TP2 server plus one single-GPU replica carry 30 agents (K = 5 each): about
+5 steps per minute in total, so the 108 task-runs need ~6.5 h and will not finish in this allocation. Decision
+(made before any P7′ task finished): drivers run until ~14:45; the analysis is on the tasks finished in both arms
+(both drivers walk the same sorted task list, so the two arms cover nearly the same tasks), reported as interim;
+the rest resume in the next allocation (drivers skip finished tasks). Extra drivers (3 workers per arm) were pinned
+to the replica at 10:12. The Qwen task-only comparator is paused (209/919 answered) to give the agents the replica.
+Also from P6 data (exploratory): on orders the run *did* place, task-only beats the state as well, pplx12 0.82 vs
+0.67 and Clef 0.76 vs 0.66 (42 tasks), so "the trajectory makes the System One model worse" holds on both subsets
+and both models. Mechanism script for P7′: `scripts/pb_p7.py`.

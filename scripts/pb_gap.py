@@ -12,7 +12,7 @@ Checkpoints are split by the benchmark taxonomy, and Action Execution further in
 Trajectory measures from the executed tool calls: orders placed, required orders placed, forbidden orders placed,
 orders that match no grader, notes written, steps, retrieval before the first action.
 
-  .venv/bin/python scripts/pb_gap.py [--out results/pb_gap.json] [--decider-runs clef_k5__pplx12/run1]
+  .venv/bin/python scripts/pb_gap.py [--out results/pb_gap.json] [--decider-runs clef_k5__pplx12/run1] [--llm-runs ...]
 """
 
 import argparse
@@ -77,10 +77,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(REPO / "results/pb_gap.json"))
     ap.add_argument("--decider-runs", default=None, help="comma list replacing the decider side's runs")
+    ap.add_argument("--llm-runs", default=None, help="comma list replacing the LLM side's runs (e.g. a control arm)")
     ap.add_argument("--tasks", default=None, help="@file: only these tasks (e.g. results/p1_unseen_tasks.txt)")
     a = ap.parse_args()
     if a.decider_runs:
         SIDES["decider"] = a.decider_runs.split(",")
+    if a.llm_runs:
+        SIDES["llm"] = a.llm_runs.split(",")
     rng = random.Random(0)
     tasks = sorted(p.name for p in (JOBS / "llm/run1").iterdir() if p.is_dir())
     if a.tasks:
