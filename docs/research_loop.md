@@ -299,3 +299,20 @@ the blind test (P4) warns that the order preference is largely state-free, which
   screener reads the state; if not, the idea fails for the reason P4 found); (c) within 0.05 AUROC of the LLM at
   < 1/10 of its wall time. If (a) and (b) hold, the online test is: before FINISH, the screener's top orders not yet
   placed are shown to the LLM as a checklist, the LLM keeps the decision (so the commitment bias cannot over-order).
+
+## Allocation 49541996 (2026-10-21 07:19–15:19, w001): P6 running; P7 fixed
+
+P6 built (`scripts/pb_screen.py build`): 54 tasks, 2102 pool orders after merging variants by rubric spec, 104
+required (5%), median state 16.7k characters. Scoring started 07:31 (pplx12, Clef with the state; Qwen thinking).
+
+- **P7 (online screening checklist, fixed 2026-10-21 07:40, before any P6 result was read; run only if P6 (a) and
+  (b) hold).** Arm `screen` (`pb_run.py --arm screen`, `ScreenClient`): the LLM acts as in llm_log (K = 5 logged, the
+  first executed); at its first FINISH, the orders proposed by any candidate so far plus those in B = 8 extra
+  tool-forced samples are pooled, placed orders dropped, the rest ranked, and the top M = 3 shown to the LLM as a
+  checklist ("place any that are indicated, and only those"); the LLM's answer replaces the FINISH. Ranker: the
+  System One model with the higher state AUROC in P6. Control arm: the same checklist ranked by proposal frequency
+  (`--ranker freq`), so the nudge itself is controlled. Tasks: the 54 with required orders (`results/p7_tasks.txt`),
+  run 1, paired with the pooled LLM runs and with the control.
+  Primary: required orders placed, screen − freq > 0 and screen − LLM > 0 (CIs reported; claim only where the CI
+  excludes 0). Secondary: required-order checkpoints; orders placed (over-ordering: screen − LLM reported, a cost);
+  task pass reported, no claim unless its CI excludes 0.

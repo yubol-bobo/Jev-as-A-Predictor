@@ -71,7 +71,7 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
     from agent.tool_registry import ToolRegistry, register_all_tools
     from agent.trajectory import TrajectoryLogger
     from src.s1clin.pb_decider import (TOOL_QUESTION, ClefDecider, DeciderClient, FirstDecider, GatedDecider, LLMSelectDecider,
-                                       LLMToolClient, ToolChoiceClient)
+                                       LLMToolClient, ScreenClient, ToolChoiceClient)
 
     task_dir = PB / "tasks" / "v1" / task
     job_dir.mkdir(parents=True, exist_ok=True)
@@ -100,6 +100,9 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
             client = ToolChoiceClient(base, ClefDecider(question=TOOL_QUESTION), log_dir / "decisions.jsonl", seed)
         elif arm == "llm_tool":
             client = LLMToolClient(base, log_dir / "decisions.jsonl", seed)
+        elif arm == "screen":
+            client = ScreenClient(base, os.environ["S1CLIN_SCREEN_RANKER"], k, int(os.environ["S1CLIN_SCREEN_B"]),
+                                  int(os.environ["S1CLIN_SCREEN_M"]), log_dir / "decisions.jsonl", seed)
         elif arm == "gate":
             decider = GatedDecider(ClefDecider(), float(os.environ["S1CLIN_GATE_MARGIN"]),
                                    os.environ.get("S1CLIN_GATE_POINTS", "commit"))
@@ -144,7 +147,7 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arm", required=True, choices=["llm", "clef", "llm_select", "llm_log", "s1_tool", "llm_tool", "gate"])
+    ap.add_argument("--arm", required=True, choices=["llm", "clef", "llm_select", "llm_log", "s1_tool", "llm_tool", "gate", "screen"])
     ap.add_argument("--tasks", required=True, help="comma list, or @file with one task per line, or 'all'")
     ap.add_argument("--run", type=int, default=1)
     ap.add_argument("--k", type=int, default=5)
@@ -158,6 +161,9 @@ def main():
     ap.add_argument("--points", default="commit", choices=["commit", "orders"],
                     help="gate arm: where the decider may overrule (commit: an order or FINISH among the candidates; "
                          "orders: a service/medication order among them)")
+    ap.add_argument("--ranker", default="pplx12", help="screen arm: a System One decider, or freq (control)")
+    ap.add_argument("--b", type=int, default=8, help="screen arm: extra tool-forced samples at the first FINISH")
+    ap.add_argument("--m", type=int, default=3, help="screen arm: orders shown to the LLM")
     ap.add_argument("--one", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument("--port", type=int, help=argparse.SUPPRESS)
     a = ap.parse_args()
@@ -173,6 +179,9 @@ def main():
         arm_tag = f"gate{a.margin:g}{'' if a.points == 'commit' else '_' + a.points}_k{a.k}"
         os.environ["S1CLIN_GATE_MARGIN"] = str(a.margin)
         os.environ["S1CLIN_GATE_POINTS"] = a.points
+    if a.arm == "screen":
+        arm_tag = f"screen_{a.ranker}_b{a.b}m{a.m}_k{a.k}"
+        os.environ.update(S1CLIN_SCREEN_RANKER=a.ranker, S1CLIN_SCREEN_B=str(a.b), S1CLIN_SCREEN_M=str(a.m))
     if a.arm in ("clef", "s1_tool", "gate") and a.decider != "clef":
         arm_tag += f"__{a.decider}"
     os.environ["S1CLIN_DECIDER"] = a.decider  # inherited by the per-task processes (child_env copies os.environ)
@@ -208,7 +217,8 @@ def main():
             port, url = ports.get(), route(a.llm_url, t)
             cmd = [sys.executable, "-m", "src.s1clin.pb_run", "--one", "--arm", a.arm, "--tasks", t, "--run",
                    str(a.run), "--k", str(a.k), "--port", str(port), "--max-steps", str(a.max_steps),
-                   "--decider", a.decider, "--margin", str(a.margin), "--points", a.points]  # else the child's defaults
+                   "--decider", a.decider, "--margin", str(a.margin), "--points", a.points,
+                   "--ranker", a.ranker, "--b", str(a.b), "--m", str(a.m)]  # else the child's defaults
             t0 = time.time()
             try:
                 with open(jd / "runner.log", "w") as log:

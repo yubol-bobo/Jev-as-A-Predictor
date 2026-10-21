@@ -455,3 +455,129 @@ class LLMToolClient:
         return ChatResponse(content=chosen.message.content, tool_calls=calls, prompt_tokens=resp.prompt_tokens,
                             completion_tokens=resp.completion_tokens,
                             raw=SimpleNamespace(choices=[chosen], usage=resp.raw.usage))
+
+
+# ---------------------------------------------------------------- screening (research loop P7)
+
+SCREEN_QUESTION = (
+    "The state shows a clinical task assigned to an AI agent that works in an electronic health record through FHIR "
+    "tools, with the agent's actions and the information it has gathered so far. Consider this order for the "
+    "patient: {order}. Is this order indicated for this patient as part of completing the task (whether or not the "
+    "agent has already placed it)?")
+SCREEN_YES, SCREEN_NO = "Yes, the order is indicated", "No, the order is not indicated"
+SCREEN_STATE_CHARS = 28_000  # about 8k tokens for instruction, actions and results together
+CREATE_ARGS = {"fhir_service_request_create": ("service", "code_display", "code_code"),
+               "fhir_medication_request_create": ("medication", "medication_display", "medication_code")}
+CHECKLIST = (
+    "Before you finish: a screening model reviewed orders that came up while working on this task and flagged these "
+    "as possibly indicated for this patient and not yet placed:\n{items}\n"
+    "Check each against the chart and the task. Place any that are indicated, and only those, then finish.")
+
+
+def turn_orders(raw: str) -> list[tuple[str, str, str]]:
+    """(kind, display, code) of each order a rendered turn creates."""
+    return [(CREATE_ARGS[n][0], str(a.get(CREATE_ARGS[n][1], "") or ""), str(a.get(CREATE_ARGS[n][2], "") or ""))
+            for n, a in parse_turn(raw) if n in CREATE_ARGS]
+
+
+def order_key(o) -> tuple:
+    return (o[0], re.sub(r"\W+", " ", o[1].lower()).strip() or o[2])
+
+
+def render_order(o) -> str:
+    return f"{'MedicationRequest' if o[0] == 'medication' else 'ServiceRequest'}: {o[1] or '?'}" + (
+        f" (code {o[2]})" if o[2] else "")
+
+
+def short_state(messages, budget: int = SCREEN_STATE_CHARS):
+    """Instruction and steps with each tool result cut so the whole fits about `budget` characters."""
+    instruction, steps = history_steps(messages)
+    n = sum(len(s["results"]) for s in steps) or 1
+    cap = max(300, (budget - len(instruction) - sum(len(s["action"]) for s in steps)) // n)
+    return instruction, [{"action": s["action"][:2000],
+                          "results": [r if len(r) <= cap else r[:cap] + " [...]" for r in s["results"]]} for s in steps]
+
+
+class ScreenClient:
+    """Arm screen (P7): the LLM acts as in llm_log (K samples logged, the first executed). At its first FINISH, the
+    orders proposed by any candidate so far, plus those in B extra samples that must call a tool, are pooled; orders
+    already placed are dropped; a ranker scores the rest and the top M are shown to the LLM as a checklist, and the
+    LLM's answer to that is executed instead of the FINISH. The LLM keeps the decision. Rankers: a System One model
+    (P(Yes) to SCREEN_QUESTION on the short state, pointwise) or `freq` (how many candidates proposed it; control).
+    """
+
+    def __init__(self, base, ranker: str, k: int, b: int, m: int, log_path: Path, seed: str):
+        self.base, self.ranker, self.k, self.b, self.m = base, ranker, k, b, m
+        self.model_id = f"{base.model_id}+screen[{ranker}]@k{k}b{b}m{m}"
+        self.log_path, self.seed, self.step, self.done = Path(log_path), seed, 0, False
+        self.msglog = MessageLog(Path(log_path).with_suffix(".messages.jsonl"))
+        self.proposed, self.placed = {}, set()  # order key -> [order, count]; keys of executed orders
+
+    def _note(self, turns, executed):
+        for t in turns:
+            for o in turn_orders(t):
+                self.proposed.setdefault(order_key(o), [o, 0])[1] += 1
+        self.placed |= {order_key(o) for o in turn_orders(executed)}
+
+    def _score(self, messages, orders):
+        if self.ranker == "freq":
+            return [float(self.proposed[order_key(o)][1]) for o in orders]
+        from concurrent.futures import ThreadPoolExecutor
+        instruction, steps = short_state(messages)
+        url = DECIDER_URLS[self.ranker]
+
+        def one(o):
+            letters = ["A", "B"]
+            random.Random(f"{self.seed}|{order_key(o)}").shuffle(letters)
+            r = requests.post(url, timeout=600, json={
+                "instruction": instruction, "steps": steps, "question": SCREEN_QUESTION.format(order=render_order(o)),
+                "options": {letters[0]: SCREEN_YES, letters[1]: SCREEN_NO}})
+            r.raise_for_status()
+            return r.json()["distribution"][letters[0]]
+        with ThreadPoolExecutor(4) as ex:
+            return list(ex.map(one, orders))
+
+    def chat(self, messages, tools=None, temperature=None, parallel_tool_calls=True, reasoning_effort=None, **kw):
+        self.step += 1
+        n_messages, epoch = self.msglog.sync(messages)
+        common = dict(tools=tools, temperature=temperature, parallel_tool_calls=parallel_tool_calls,
+                      reasoning_effort=reasoning_effort)
+        resp = self.base.chat(messages, n=self.k, **common)
+        choices = resp.raw.choices
+        renderings = [render_turn(c.message.content, c.message.tool_calls)[:MAX_CANDIDATE_CHARS] for c in choices]
+        chosen, rec = choices[0], {"step": self.step, "n_samples": len(choices), "candidates": renderings,
+                                   "n_messages": n_messages, "msg_epoch": epoch, "pick": 0, "q": QUESTION_VERSION,
+                                   "prompt_tokens": resp.prompt_tokens, "completion_tokens": resp.completion_tokens}
+        self._note(renderings, renderings[0])
+        if not chosen.message.tool_calls and not self.done:
+            self.done = True
+            t0, screen = time.time(), {"ranker": self.ranker}
+            try:
+                extra = self.base.chat(messages, n=self.b, tool_choice="required", **common).raw.choices
+                ext = [render_turn(c.message.content, c.message.tool_calls)[:MAX_CANDIDATE_CHARS] for c in extra]
+                self._note(ext, "")
+                pool = [o for key, (o, _) in self.proposed.items() if key not in self.placed]
+                scores = self._score(messages, pool) if pool else []
+                ranked = sorted(zip(scores, pool), key=lambda x: -x[0])[:self.m]
+                screen.update(pool=len(pool), extra_orders=sum(len(turn_orders(t)) for t in ext),
+                              flagged=[{"order": render_order(o), "score": round(s, 4)} for s, o in ranked])
+                if ranked:
+                    items = "\n".join(f"{i + 1}. {render_order(o)}" for i, (s, o) in enumerate(ranked))
+                    note = CHECKLIST.format(items=items)
+                    r2 = self.base.chat(messages + [{"role": "user", "content": note}], **common)
+                    chosen = r2.raw.choices[0]
+                    if chosen.message.tool_calls:  # keep the reason visible to later steps
+                        chosen.message.content = ("[Pre-finish review of flagged orders]\n" + note + "\n\n" +
+                                                  (chosen.message.content or "")).strip()
+                    screen["answer"] = render_turn(chosen.message.content, chosen.message.tool_calls)[:MAX_CANDIDATE_CHARS]
+                    self._note([], screen["answer"])
+            except Exception as e:  # screening failure: the LLM's own FINISH stands
+                screen["error"] = repr(e)[:500]
+            screen["s"] = round(time.time() - t0, 2)
+            rec["screen"] = screen
+        with self.log_path.open("a") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        from agent.llm_client import ChatResponse
+        return ChatResponse(content=chosen.message.content, tool_calls=chosen.message.tool_calls,
+                            prompt_tokens=resp.prompt_tokens, completion_tokens=resp.completion_tokens,
+                            raw=SimpleNamespace(choices=[chosen], usage=resp.raw.usage))
