@@ -157,12 +157,15 @@ def _answers(name):
                if p.exists() else {})
 
 
-def score(blind, workers, rich=False, task=False):
+def score(blind, workers, rich=False, task=False, subset=False):
     name = os.environ.get("S1CLIN_DECIDER", "clef")
     url = os.environ.get("S1CLIN_DECIDER_URL") or DECIDER_URLS[name]
     out, done = _answers(name + ("_blind" if blind else "") + ("_rich" if rich else "") + ("_task" if task else ""))
     states = json.loads((OD / ("states_rich.json" if rich else "states.json")).read_text())
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
+    if subset:  # G1: only the orders the placed / unplaced AUROCs are computed on
+        missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
+        todo = [q for q in todo if q["placed"] or q["task"] in missed]
     if rich:  # first the subset P6b is judged on: unplaced orders of tasks where the run missed a required order
         missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
         todo.sort(key=lambda q: not (q["task"] in missed and not q["placed"]))
@@ -300,13 +303,15 @@ def main():
     ap.add_argument("cmd", choices=["build", "build_rich", "score", "llm", "report"])
     ap.add_argument("--blind", action="store_true")
     ap.add_argument("--task", action="store_true", help="score: the task instruction only, no trajectory")
+    ap.add_argument("--subset", action="store_true", help="score: placed orders and the unplaced orders of tasks "
+                    "with a missed required order (G1)")
     ap.add_argument("--rich", action="store_true", help="score: the rich states (P6b)")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--url", default="http://127.0.0.1:8011/v1")
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task), "llm": lambda: llm(a.url, a.workers, a.task),
+    {"build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset), "llm": lambda: llm(a.url, a.workers, a.task),
      "report": lambda: report(a.out)}[a.cmd]()
 
 

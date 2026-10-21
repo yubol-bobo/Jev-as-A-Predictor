@@ -486,3 +486,22 @@ placed orders), then rank. Not applied to P9, which runs as fixed.
   (`pb_prior.py score --placed`, `report --placed`). Same 26 tasks, pool and target as P8. Prediction: top-3
   coverage of open specs ≥ 0.40 and above P8's 0.31 (paired by task). If it holds, P9b runs online with this ranker
   (the placed list taken from the run itself); if not, the variant problem is left to the LLM. Runs when a GPU frees.
+
+## Research program from here (2026-10-21 18:30): where and how System One models belong in a clinical agent loop
+
+The user's goal: a paper on System One models in clinical agent loops that every reader learns from. Working thesis,
+to be confirmed or cut by the tests below: (1) the decision seat does not help, because deciding is not the
+bottleneck (11% selectable, 19% never proposed; P1, P2′, P5); (2) System One models are better priors than readers:
+the agent's trajectory anchors them on what the agent did (P6, P6c); (3) their useful role is a fast, cheap screener
+on short inputs, paired with LLM generation, because the LLM can name most of what it misses from the task text
+alone (P8). Lines of work, each pre-registered: G1 generality over all six System One models; G2 placed-aware
+screening (P8b offline, then P9b online); D1 baseline drift; G3 cost (latency per judgment, System One vs LLM).
+
+- **G1 (generality, fixed 2026-10-21 18:30, before any of these scores).** d3, linne, amos and decider31b score the
+  P6 questions on the subset the two AUROCs are computed on (placed orders, and unplaced orders of the 21 tasks with
+  a missed required order; 1,323 questions; `pb_screen.py score --subset`), once with the own state and once with
+  the task instruction only (`--task`). With pplx12 and Clef: six models. Prediction: task-only > state on the
+  unplaced AUROC for ≥ 5 of 6 models, and on the placed AUROC for ≥ 5 of 6; mean task − state difference on unplaced
+  ≥ +0.10. If it holds, "the trajectory anchors System One models" is a property of the model class (claim in the
+  paper); if 3-4 of 6, it is model-dependent (reported as such); ≤ 2, the claim is dropped. The Qwen comparator
+  (task-only, running) says whether the LLM shares it. Runs when D1 and P9 free the GPUs (4 models in parallel).
