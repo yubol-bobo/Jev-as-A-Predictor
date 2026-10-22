@@ -88,5 +88,65 @@
    0.7216,
    0.7991
   ]
+ },
+ "linne": {
+  "state": 0.3657,
+  "retrieval": 0.6193,
+  "nonotes": {
+   "auroc": 0.3493,
+   "minus_state": -0.0164,
+   "ci95": [
+    -0.0745,
+    0.0379
+   ],
+   "share_of_retr_recovery": -0.065,
+   "tasks": 21,
+   "placed": 0.6648
+  },
+  "noorders": {
+   "auroc": 0.5114,
+   "minus_state": 0.1456,
+   "ci95": [
+    0.0462,
+    0.2667
+   ],
+   "share_of_retr_recovery": 0.574,
+   "tasks": 21,
+   "placed": 0.7194
+  },
+  "placed_state_retr": [
+   0.6584,
+   0.7863
+  ]
+ },
+ "decider31b": {
+  "state": 0.3954,
+  "retrieval": 0.6433,
+  "nonotes": {
+   "auroc": 0.3904,
+   "minus_state": -0.0051,
+   "ci95": [
+    -0.0389,
+    0.0281
+   ],
+   "share_of_retr_recovery": -0.02,
+   "tasks": 21,
+   "placed": 0.6364
+  },
+  "noorders": {
+   "auroc": 0.5641,
+   "minus_state": 0.1687,
+   "ci95": [
+    0.0702,
+    0.2781
+   ],
+   "share_of_retr_recovery": 0.68,
+   "tasks": 21,
+   "placed": 0.7285
+  },
+  "placed_state_retr": [
+   0.6521,
+   0.7524
+  ]
  }
 }

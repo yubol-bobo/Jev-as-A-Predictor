@@ -710,3 +710,18 @@ the run does show: Qwen leaves 29% unanswered (median 44 s per answered question
   instruction where a System One model cannot); reported: warned − state and the share of the task-only gain it
   recovers. Caveat from G6-LLM: the commonly answered subset may carry little anchoring; if state and task-only
   differ by < 0.05 there, the comparison is not interpretable.
+
+## G6-ext verdict (2026-10-22 07:25): holds for decider31b, narrowly misses for linne; the pattern is the same
+
+`results/pb_g6_paired.json` (now 5 models). Unplaced AUROC, state -> no notes / no orders (paired Δ vs state), share
+of the retrieval-only recovery:
+
+| model | state | no notes | no orders | retrieval-only | share: no notes / no orders |
+|---|---|---|---|---|---|
+| linne | 0.37 | 0.35 (−0.02 [−0.07, 0.04]) | 0.51 (+0.15 [0.05, 0.27]) | 0.62 | −0.07 / 0.57 |
+| decider31b | 0.40 | 0.39 (−0.01 [−0.04, 0.03]) | 0.56 (+0.17 [0.07, 0.28]) | 0.64 | −0.02 / 0.68 |
+
+Pre-registered: no-orders share ≥ 0.6 and no-notes share ≤ 0.4 for both. decider31b meets it; linne meets the notes
+part and misses the orders threshold by 0.03. Across all five models the orders carry 0.57-0.83 of the recovery and
+the notes −0.07-0.04 (removing the orders alone: +0.15 to +0.18, every CI excludes 0; removing the notes alone: no
+CI excludes 0).
