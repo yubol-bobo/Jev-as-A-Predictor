@@ -700,7 +700,7 @@ near a third of the missed orders at a 3-5 item budget.
 state, retrieval-only and no-orders runs all answered (7 tasks with a computable AUROC) there is no anchoring to
 recover: state 0.54, retrieval-only 0.55 (+0.02 [−0.04, 0.08]), no-orders 0.52 (−0.02 [−0.10, 0.05]), and the
 System One models show none either on the same questions (pplx12 0.54 / 0.55, d3 0.47 / 0.43, amos 0.57 / 0.57,
-state / retrieval-only). Requiring an answer from all three Qwen runs keeps the tasks with short trajectories, where
-the agent's orders do not anchor. The prediction can be neither confirmed nor refuted; the share is undefined. What the
-run does show: Qwen's unanswered rate stays at 29% (median 44 s per answered question), so the LLM-as-checker loses
-most often on exactly the long trajectories where anchoring is strongest.
+state / retrieval-only). Requiring an answer from all three Qwen runs keeps a subset of tasks on which the agent's
+orders happen not to anchor (not a length effect: answered and unanswered questions come from states of similar
+length, median ~18.7k characters). The prediction can be neither confirmed nor refuted; the share is undefined. What
+the run does show: Qwen leaves 29% unanswered (median 44 s per answered question), which itself limits it as a checker.
