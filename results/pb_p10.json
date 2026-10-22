@@ -1,0 +1,110 @@
+{
+ "top3": {
+  "name_drop": {
+   "coverage": 0.3077,
+   "ci95": [
+    0.1538,
+    0.5
+   ],
+   "variant_share": 0.3462,
+   "tasks": 26
+  },
+  "factorized": {
+   "coverage": 0.1538,
+   "ci95": [
+    0.0385,
+    0.2885
+   ],
+   "variant_share": 0.0128,
+   "tasks": 26
+  },
+  "dedup_only": {
+   "coverage": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "variant_share": 0.0,
+   "tasks": 26
+  },
+  "factorized_minus_name_drop": {
+   "mean": -0.1538,
+   "ci95": [
+    -0.3077,
+    -0.0192
+   ]
+  }
+ },
+ "top5": {
+  "name_drop": {
+   "coverage": 0.3462,
+   "ci95": [
+    0.1538,
+    0.5385
+   ],
+   "variant_share": 0.3538,
+   "tasks": 26
+  },
+  "factorized": {
+   "coverage": 0.2949,
+   "ci95": [
+    0.141,
+    0.4551
+   ],
+   "variant_share": 0.0077,
+   "tasks": 26
+  },
+  "dedup_only": {
+   "coverage": 0.0385,
+   "ci95": [
+    0.0,
+    0.1154
+   ],
+   "variant_share": 0.0,
+   "tasks": 26
+  },
+  "factorized_minus_name_drop": {
+   "mean": -0.0513,
+   "ci95": [
+    -0.2244,
+    0.109
+   ]
+  }
+ },
+ "top8": {
+  "name_drop": {
+   "coverage": 0.359,
+   "ci95": [
+    0.1795,
+    0.5513
+   ],
+   "variant_share": 0.3125,
+   "tasks": 26
+  },
+  "factorized": {
+   "coverage": 0.3718,
+   "ci95": [
+    0.2051,
+    0.5513
+   ],
+   "variant_share": 0.0192,
+   "tasks": 26
+  },
+  "dedup_only": {
+   "coverage": 0.0513,
+   "ci95": [
+    0.0,
+    0.141
+   ],
+   "variant_share": 0.0,
+   "tasks": 26
+  },
+  "factorized_minus_name_drop": {
+   "mean": 0.0128,
+   "ci95": [
+    -0.1923,
+    0.2115
+   ]
+  }
+ }
+}

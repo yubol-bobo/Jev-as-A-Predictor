@@ -34,7 +34,8 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(REPO), str(REPO / "scripts")]
 from pb_offline_orders import matches, orders_in, required_orders  # noqa: E402
 from pb_screen import JOBS, NO, OD, QUESTION, STATE_RUN, YES, norm, render_order  # noqa: E402
-from src.s1clin.pb_decider import DECIDER_URLS, parse_turn, turn_kind  # noqa: E402
+from src.s1clin.pb_decider import (DECIDER_URLS, DEDUP_INSTRUCTION, DEDUP_NO, DEDUP_QUESTION, DEDUP_YES,  # noqa: E402
+                                   parse_turn, turn_kind)
 
 N_SAMPLES = 8
 GEN_PROMPT = (
@@ -49,12 +50,6 @@ PLACED_QUESTION = (
     "indicated as part of completing the task and still missing, that is, not the same as or equivalent to an order "
     "already placed?")
 PLACED_YES, PLACED_NO = "Yes, indicated and still missing", "No, not indicated or already placed"
-# P10, the factorized screen: whether a candidate repeats a placed order is asked on its own, without the task text,
-# so the agent's orders never enter the indication judgment (G6: they anchor it)
-DEDUP_INSTRUCTION = "Compare a candidate clinical order with the orders already placed for the same patient."
-DEDUP_QUESTION = ("Candidate order: {order}. Is it the same as, or equivalent to (the same laboratory test, imaging "
-                  "study, referral or consult, procedure, or drug), one of the orders already placed?")
-DEDUP_YES, DEDUP_NO = "Yes, it repeats an order already placed", "No, it is a new order"
 LINE = re.compile(r"(ServiceRequest|MedicationRequest)\s*:\s*(.+?)(?:\s*\(code\s*([^)]*)\))?\s*$")
 
 

@@ -33,6 +33,9 @@ reading the agent's work is the wrong input.**
 5. **Honest limit: closing the loop online is not solved.** In-run screening (P7′) and a task-prior checklist (P9)
    did not raise required-order checkpoints (+0.04 / +0.045, n.s.): the in-run pool rarely holds the missed orders,
    and a 3-5 item list from the task prior covers about a third of them; the agent mostly declines to act on it.
+   Next: O1 (pre-registered, `research_loop.md`), the factorized checklist: indication from the task text, the
+   repeat check from the placed orders alone, asked separately (offline the repeat judge separates variants from
+   missed orders at AUROC 0.93; an 8-item filtered list covers 0.55 of the missed orders vs 0.36).
 
 ## Design rules for practitioners (Discussion)
 - Do not put an S1 model in the decision seat for open-ended clinical work; use it at commitment points at most.

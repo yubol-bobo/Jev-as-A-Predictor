@@ -759,3 +759,33 @@ what the agent already did, and the indication judgment cannot be given the plac
   specs and the share of top-3 slots that repeat a met spec. Prediction: factorized top-3 coverage ≥ 0.39 (P8
   0.31) and variant share ≤ 0.20 (P8 0.35). If it holds, P10 becomes the list of the next online arm (O1 below); if
   it fails, the dedup belongs to the LLM and O1 tests the uptake side only.
+
+## P10 verdict (2026-10-22 08:20): fails on coverage; the repeat judge itself works
+
+`results/pb_p10.json` (26 tasks). Factorized ranking (P(indicated | task) × (1 − P(repeat))) vs the P8 name-drop
+ranking: top-3 coverage of the open specs 0.15 vs 0.31 (−0.15 [−0.31, −0.02]); top-5 0.29 vs 0.35; top-8 0.37 vs
+0.36. Variant share of the top-3 slots 0.01 vs 0.35. Pre-registered (coverage ≥ 0.39 and variant share ≤ 0.20): the
+variant part holds, the coverage part fails, so P10 fails. Diagnosis (exploratory): the repeat judgment is accurate
+(pplx12 from the placed orders alone: mean P(repeat) 0.74 for variants of met specs, 0.12 for the missed specs, 0.16
+for other items; per-task AUROC variants vs missed 0.93), but the product reorders the near-tied top of the
+indication ranking by small differences in P(repeat), and generic high-indication items take the slots. A hard
+filter instead of the product (drop P(repeat) ≥ 0.5, rank the rest by indication; chosen after seeing P10, so
+exploratory): top-3 0.27, top-5 0.27, **top-8 0.55 vs 0.36 (+0.19 [0.01, 0.38])**, variant share 0.06, random 8
+from the filtered pool 0.28. The separation of the two judgments works; what a 3-5 item list cannot do is cover
+more than about a third of the missed orders.
+
+- **O1 (online, the next allocation; fixed 2026-10-22 08:25, before any run).** The factorized checklist at the
+  agent's first FINISH, on all 54 tasks of llm_log_k5/run3 (`results/o1_tasks.txt`; not selected on a past miss).
+  Arms, both `pb_run --arm screen --b 0 --m 8 --tasks @results/o1_tasks.txt --run 1`:
+  A `--ranker prior-pplx12-dedup`: the task-prior pool (built before the run from the task text alone, ranked by
+  pplx12 P(indicated | task)), minus the run's placed orders by name, minus every item that pplx12, given only the
+  run's placed orders, judges a repeat (P ≥ 0.5); the top 8 are shown with the P9 checklist text; the LLM decides.
+  B `--ranker prior-random-dedup`: the same pool and repeat filter, 8 at random (control for the ranking).
+  Reference: llm_log_k5/run3 (no checklist; D1 found no drift), with the historical LLM runs as a check.
+  Primary: required-order checkpoints per task, A − run3, paired over 54 tasks; prediction ≥ +0.05 with the 95% CI
+  excluding 0. Secondary: A − B ≥ +0.03; uptake (shown items placed) and the share of shown items that repeat a placed
+  order (≤ 0.10 online); harms A − run3: not-in-rubric orders ≤ +1.0, no increase in forbidden orders, task pass not
+  lower by more than 0.05. Reading: A > run3 with A ≈ B means the gain comes from the separated repeat check and the
+  list, not the indication ranking (the System One role is then the repeat judge); A > B as well means both System One
+  judgments matter. O1 uses m = 8 and the hard filter from the P10 exploration; the online outcome is new data.
+  Smoke test first: 2 tasks, check `screen.pool`, `pool_after_dedup`, `flagged` and the screening time per FINISH.

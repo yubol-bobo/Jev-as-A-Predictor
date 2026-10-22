@@ -473,6 +473,13 @@ CHECKLIST = (
     "Before you finish: a screening model reviewed orders that came up while working on this task and flagged these "
     "as possibly indicated for this patient and not yet placed:\n{items}\n"
     "Check each against the chart and the task. Place any that are indicated, and only those, then finish.")
+# P10 / O1, the factorized screen: whether a candidate repeats a placed order is asked on its own, from the placed
+# orders alone, so the agent's orders never enter the indication judgment (G6: they anchor it)
+DEDUP_INSTRUCTION = "Compare a candidate clinical order with the orders already placed for the same patient."
+DEDUP_QUESTION = ("Candidate order: {order}. Is it the same as, or equivalent to (the same laboratory test, imaging "
+                  "study, referral or consult, procedure, or drug), one of the orders already placed?")
+DEDUP_YES, DEDUP_NO = "Yes, it repeats an order already placed", "No, it is a new order"
+DEDUP_DECIDER, DEDUP_MAX = "pplx12", 0.5  # items with P(repeat) >= DEDUP_MAX are dropped
 
 
 def turn_orders(raw: str) -> list[tuple[str, str, str]]:
@@ -512,6 +519,8 @@ class ScreenClient:
     A ranker `prior-<decider>` (P9) skips the pooling: the pool is the task-prior list built before the run from the
     task text alone (scripts/pb_prior.py export), already ranked by the decider; `prior-random` shuffles it (control).
     Orders the run has placed are dropped and the top M shown. With B = 0 no extra samples are drawn.
+    A suffix `-dedup` (O1: `prior-pplx12-dedup`, `prior-random-dedup`) also drops every pool item that DEDUP_DECIDER,
+    given only the run's placed orders, judges a repeat of one of them (P10).
     """
 
     def __init__(self, base, ranker: str, k: int, b: int, m: int, log_path: Path, seed: str):
@@ -520,28 +529,54 @@ class ScreenClient:
         self.log_path, self.seed, self.step, self.done = Path(log_path), seed, 0, False
         self.msglog = MessageLog(Path(log_path).with_suffix(".messages.jsonl"))
         self.proposed, self.placed = {}, set()  # order key -> [order, count]; keys of executed orders
+        self.placed_orders = []  # executed orders, first of each key
 
     def _note(self, turns, executed):
         for t in turns:
             for o in turn_orders(t):
                 self.proposed.setdefault(order_key(o), [o, 0])[1] += 1
-        self.placed |= {order_key(o) for o in turn_orders(executed)}
+        for o in turn_orders(executed):
+            if order_key(o) not in self.placed:
+                self.placed.add(order_key(o))
+                self.placed_orders.append(o)
 
     def _prior(self):
-        name = self.ranker.partition("-")[2]
+        parts = self.ranker.split("-")
+        name, dedup = parts[1], parts[-1] == "dedup"
         table = json.loads((PRIOR_DIR / "prior_ranked_pplx12.json").read_text())
         pool = [((k, d, c), p) for k, d, c, p in table.get(self.seed.split("|")[0], [])
                 if order_key((k, d, c)) not in self.placed]
         self.prior_pool = len(pool)
+        if dedup and pool:
+            repeat = self._repeat([o for o, _ in pool])
+            pool = [x for x, r in zip(pool, repeat) if r < DEDUP_MAX]
+        self.prior_dedup = len(pool)
         if name == "random":
             random.Random(f"{self.seed}|prior").shuffle(pool)
         return [(p, o) for o, p in pool[:self.m]]
+
+    def _repeat(self, orders):
+        """P(repeats an order the run has placed), from the placed orders alone (no task text, no trajectory)."""
+        from concurrent.futures import ThreadPoolExecutor
+        placed = "\n".join(map(render_order, self.placed_orders)) or "(none)"
+
+        def one(o):
+            letters = ["A", "B"]
+            random.Random(f"dedup|{self.seed}|{order_key(o)}").shuffle(letters)
+            r = requests.post(DECIDER_URLS[DEDUP_DECIDER], timeout=600, json={
+                "instruction": DEDUP_INSTRUCTION, "steps": [{"action": "Orders already placed", "results": [placed]}],
+                "question": DEDUP_QUESTION.format(order=render_order(o)),
+                "options": {letters[0]: DEDUP_YES, letters[1]: DEDUP_NO}})
+            r.raise_for_status()
+            return r.json()["distribution"][letters[0]]
+        with ThreadPoolExecutor(8) as ex:
+            return list(ex.map(one, orders))
 
     def _rank(self, messages, common, screen):
         """The top M (score, order) pairs of the pool; the pool and flagged orders go into `screen`."""
         if self.ranker.startswith("prior-"):
             ranked = self._prior()
-            screen["pool"] = self.prior_pool
+            screen.update(pool=self.prior_pool, pool_after_dedup=self.prior_dedup)
         else:
             extra = self.base.chat(messages, n=self.b, tool_choice="required", **common).raw.choices
             ext = [render_turn(c.message.content, c.message.tool_calls)[:MAX_CANDIDATE_CHARS] for c in extra]
