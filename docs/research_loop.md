@@ -538,3 +538,21 @@ below chance (0.37-0.43); with the task text alone, all six rank them above (0.5
 agent's trajectory anchors System One models on what the agent did; given the task alone they are useful priors.
 The task-only judgment is also 7-20x faster (0.2-0.6 s per question vs 3.7-8.7 s with the state; Qwen thinking 41 s
 with the state). LLM side: the Qwen task-only comparator is at 427 / 919 (interim unplaced 0.62, not read yet).
+
+## P8b verdict (2026-10-22 03:05): fails, in the direction G1 predicts
+
+`results/pb_prior_placed.json`. With the base run's placed orders in the input and the question "indicated and
+still missing", pplx12's top-3 coverage of open specs falls from 0.31 to **0.15 [0.04, 0.31]** (random 0.11); top-5
+0.35 -> 0.21, top-5 − random +0.03 [−0.10, 0.18]. Showing the System One model what the agent did makes it worse
+again, even when the question is about what is missing. P9b is not run. Duplicate removal, if pursued, belongs
+outside the System One model (code-level matching or the LLM).
+
+- **G4 (causal anchoring, fixed 2026-10-22 03:10, before any counterfactual score).** For each unplaced order in
+  the 21 tasks with a missed required order (919 questions), the own state plus one fabricated final step in which
+  the agent places exactly that order (`fhir_service_request_create` / `fhir_medication_request_create` with the
+  order's display and code, a generic "created" result); nothing about the patient changes, and the question still
+  says "whether or not the agent has already placed it" (`pb_screen.py score --cf`). Models: pplx12 and d3 (state
+  scores exist). Prediction: mean P(Yes) rises by ≥ 0.15 for required and for unneeded orders alike (the shift is
+  label-blind), and the unplaced AUROC does not improve by more than 0.05. If so, the anchoring is causal: the
+  System One judgment follows the agent's action, not the patient. If P(Yes) moves < 0.05, anchoring is not
+  imitation of the agent's orders but something else in the trajectory (length, retrieval noise), to be probed next.
