@@ -582,3 +582,16 @@ salience does not explain why they score below chance.
   not the agent"; if retrieval-only also exceeds task-only by ≥ 0.05, chart data adds information once the agent's
   decisions are removed. If retrieval-only stays near the state, the agent's choice of what to retrieve is itself
   the anchor (the chart as the agent filtered it).
+
+## D1 verdict (2026-10-22 04:10): no drift; the P7′ "gain" was task-subset noise; the gate stands
+
+`results/pb_gap_d1_run3_vs_hist.json` and re-baselines. llm_log_k5/run3 (today's setup, 54 tasks) − the pooled
+historical LLM runs: required-order checkpoints −0.004 [−0.094, 0.083], task pass −0.02 [−0.12, 0.07], orders
+−0.01 [−0.56, 0.57], notes −0.16 [−0.44, 0.12]. As pre-registered (CI includes 0, estimate < +0.05) there is no
+drift. On the ~30 tasks P7′ had finished, the historical runs happen to sit low (0.68-0.73 vs run 3's 0.79-0.83);
+against run 3 the P7′ arms are +0.04 [−0.06, 0.15] (freq) and +0.04 [−0.06, 0.16] (pplx12-task) on required-order
+checkpoints, with more orders (+1.8 / +1.1) and notes (+1.1 / +0.8): the pre-finish checklist makes the agent keep
+working, it does not make it place what was missed. Gate (both runs) vs run 3 on the 54 tasks: orders +0.89
+[0.28, 1.57], required-order checkpoints +0.06 [−0.02, 0.15], the same as against the historical runs (+0.88,
++0.06): Table tab:gate stands. Files: `pb_gap_p7freq_vs_run3.json`, `pb_gap_p7_vs_run3.json`,
+`pb_gap_gate_vs_run3.json`, `pb_gap_gate_vs_hist_p7tasks.json`.
