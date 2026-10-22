@@ -636,7 +636,7 @@ at 0.2-0.6 s per judgment vs ~80 s (about 150-350x less time), which is what mak
   Prediction: on questions all three Qwen runs answer, retrieval-only ≥ state + 0.10 (state 0.46, task-only 0.62).
   If it holds, "strip the agent's decisions" is a rule for any judge, not only for System One models.
 
-## G6 verdict (2026-10-22 06:05): the agent's orders are the anchor; its notes are not
+## G6 verdict (2026-10-22 06:01): the agent's orders are the anchor; its notes are not
 
 `results/pb_g6_paired.json` (unplaced AUROC, 21 tasks, paired by task vs the state):
 
@@ -653,7 +653,7 @@ so it anchors only once the orders themselves are gone). Placed AUROC moves the 
 state 0.67-0.72). Reading: the System One model takes the agent's set of orders as the reference for what the task
 needs, so whatever the agent never ordered looks unneeded: the checker inherits the agent's blind spot.
 
-## G5-LLM verdict (2026-10-22 06:05): holds on the pre-registered point estimate, with low power
+## G5-LLM verdict (2026-10-22 06:01): holds on the pre-registered point estimate, with low power
 
 `results/pb_g5_llm.json`. Qwen thinking with the retrieval-only state answered 636 of 919 (the rest ran out of the
 8,192-token budget, as in its other runs). On the 538 questions all three Qwen runs answered (10 tasks with a
@@ -664,13 +664,13 @@ decisions helps the LLM judge as it helps the System One models; on these questi
 task text alone (0.71-0.79) beat every Qwen input (≤ 0.68) at a median 0.2-0.6 s vs 41-69 s per judgment, and they
 always return an answer, while Qwen fails to answer 17-31% of the questions within its budget.
 
-- **G6-ext and G6-LLM (fixed 2026-10-22 06:10, before any score).** (a) linne and decider31b score the no-notes and
+- **G6-ext and G6-LLM (fixed 2026-10-22 06:02, before any score).** (a) linne and decider31b score the no-notes and
   no-orders states (generality of G6). Prediction: no-orders share ≥ 0.6 and no-notes share ≤ 0.4 for both. (b) Qwen
   thinking scores the no-orders state (`pb_screen.py llm --drop orders`), same prompt and budget. Prediction: on
   questions all of its state, retrieval-only and no-orders runs answer, no-orders achieves ≥ 0.6 of the
   retrieval-only gain over the state. If it holds, "the agent's orders anchor the judge" holds for the LLM too.
 
-**Plan conformity (exploratory, 06:20, existing scores; `results/pb_plan_sim.json`).** For each unplaced order, its
+**Plan conformity (exploratory, 06:03, existing scores; `results/pb_plan_sim.json`).** For each unplaced order, its
 lexical similarity to the agent's placed orders (max token Jaccard of the names). Missed required orders are less like
 the agent's orders than the unneeded candidates are (mean 0.26 vs 0.34; similarity as a scorer: unplaced AUROC 0.41).
 With the state, P(Yes) tracks that similarity within task: Spearman 0.28-0.38 for the five System One models and 0.47
@@ -679,3 +679,17 @@ for Qwen; with the task text only 0.05 (amos 0.16; Qwen 0.05); without the order
 did, and because the missed orders are by definition unlike the agent's plan, they land below chance: the judge
 inherits the agent's blind spot. Caveats: lexical similarity only; the unneeded candidates come from runs' proposals,
 so they are agent-adjacent by construction (as an in-run pool would be).
+
+**Lexical dedup of the task-prior pool (exploratory, 06:04).** Dropping pool items whose name resembles a placed
+order (token Jaccard ≥ 0.75 / 0.5 / 0.34) before the pplx12 ranking leaves top-3 coverage of the open specs at 0.35 /
+0.27 / 0.27 (no dedup 0.31): missed orders often resemble placed ones by name (another test from the same family),
+so name-based dedup removes them too. P9's failure is not fixed by a cheaper dedup; the task-prior route is capped
+near a third of the missed orders at a 3-5 item budget.
+
+- **G7 (can an instruction undo the anchoring? fixed 2026-10-22 06:05, before any score).** The state, with a
+  debiasing sentence before the question ("Agents like this one often overlook orders that the task requires, so the
+  orders it has placed may be incomplete. Judge the order from the task and the patient's data, not from whether it
+  resembles what the agent has done."; `pb_screen.py score --warn`, unplaced subset, 919). Models pplx12, d3, amos.
+  Prediction: the warning recovers < 0.25 of the retrieval-only gain over the state in ≥ 2 of 3 models (anchoring is
+  in the input, not fixable by telling the model). If it recovers ≥ 0.6, the cheap remedy is an instruction and the
+  design rule weakens to "warn the checker".

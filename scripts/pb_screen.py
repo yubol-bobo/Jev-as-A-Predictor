@@ -46,6 +46,9 @@ QUESTION = (
     "patient: {order}. Is this order indicated for this patient as part of completing the task (whether or not the "
     "agent has already placed it)?")
 YES, NO = "Yes, the order is indicated", "No, the order is not indicated"
+WARN = ("Agents like this one often overlook orders that the task requires, so the orders it has placed may be "
+        "incomplete. Judge the order from the task and the patient's data, not from whether it resembles what the agent "
+        "has done. ")  # G7: the debiasing instruction placed before the question
 LLM_PROMPT = (
     "{state}\n\n---\nConsider this order for the patient: {order}.\nIs this order indicated for this patient as part "
     "of completing the task (whether or not the agent has already placed it)? Think it through, then end your reply "
@@ -196,14 +199,15 @@ def retrieval_only(steps):
     return [st for st in steps if not DECISION_TOOL.search(st["action"])]
 
 
-def score(blind, workers, rich=False, task=False, subset=False, cf=False, retrieval=False, drop=None):
+def score(blind, workers, rich=False, task=False, subset=False, cf=False, retrieval=False, drop=None, warn=False):
     name = os.environ.get("S1CLIN_DECIDER", "clef")
     url = os.environ.get("S1CLIN_DECIDER_URL") or DECIDER_URLS[name]
     out, done = _answers(name + ("_blind" if blind else "") + ("_rich" if rich else "") + ("_task" if task else "") +
-                         ("_cf" if cf else "") + ("_retr" if retrieval else "") + (f"_no{drop}" if drop else ""))
+                         ("_cf" if cf else "") + ("_retr" if retrieval else "") + (f"_no{drop}" if drop else "") +
+                         ("_warn" if warn else ""))
     states = json.loads((OD / ("states_rich.json" if rich else "states.json")).read_text())
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
-    if cf:  # G4: the unplaced orders of the tasks with a missed required order
+    if cf or warn:  # G4, G7: the unplaced orders of the tasks with a missed required order
         missed = missed_tasks()
         todo = [q for q in todo if q["task"] in missed and not q["placed"]]
     if subset:  # G1: only the orders the placed / unplaced AUROCs are computed on
@@ -225,7 +229,8 @@ def score(blind, workers, rich=False, task=False, subset=False, cf=False, retrie
             steps = without(steps, {"notes": NOTE_TOOL, "orders": ORDER_TOOL}[drop])
         letters = ["A", "B"]
         random.Random(q["id"]).shuffle(letters)  # same letters for every decider
-        payload = {"instruction": instruction, "steps": steps, "question": QUESTION.format(order=q["order"]),
+        payload = {"instruction": instruction, "steps": steps,
+                   "question": (WARN if warn else "") + QUESTION.format(order=q["order"]),
                    "options": {letters[0]: YES, letters[1]: NO}}
         t = time.time()
         try:
@@ -396,6 +401,7 @@ def main():
     ap.add_argument("--task", action="store_true", help="score: the task instruction only, no trajectory")
     ap.add_argument("--drop", choices=["notes", "orders"], help="score/llm: the state without the agent's notes or orders (G6)")
     ap.add_argument("--retrieval", action="store_true", help="score: the state without agent decisions (G5)")
+    ap.add_argument("--warn", action="store_true", help="score: the state with a debiasing instruction (G7)")
     ap.add_argument("--cf", action="store_true", help="score: the state plus a fabricated step placing the order (G4)")
     ap.add_argument("--subset", action="store_true", help="score: placed orders and the unplaced orders of tasks "
                     "with a missed required order (G1)")
@@ -405,7 +411,7 @@ def main():
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval, a.drop), "llm": lambda: llm(a.url, a.workers, a.task, a.retrieval, a.drop),
+    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval, a.drop, a.warn), "llm": lambda: llm(a.url, a.workers, a.task, a.retrieval, a.drop),
      "report": lambda: report(a.out)}[a.cmd]()
 
 
