@@ -567,3 +567,18 @@ fails on magnitude. Following the agent's own orders explains part of the anchor
 missed required orders already score below unneeded ones before any fabricated step: 0.62 vs 0.69 for pplx12).
 Next (exploratory, existing scores): whether the trajectory steers the judgment toward what the agent looked at
 (salience), i.e. whether P(Yes) with the state tracks how much the order's terms appear in the trajectory.
+
+**Salience (exploratory, 03:55).** With the state, P(Yes) tracks how many of the order's terms appear in the
+trajectory twice as strongly as task-only P(Yes) (within-task Spearman 0.25-0.38 vs 0.13-0.19, 6/6 models). But
+missed required orders appear in the trajectory slightly more than unneeded ones (term overlap 0.53 vs 0.46), so
+salience does not explain why they score below chance.
+
+- **G5 (what in the trajectory anchors, fixed 2026-10-22 04:00, before any score).** A third input: the
+  retrieval-only state, the own state minus every step that contains an agent decision (any `*_create` call:
+  orders, appointments, messages; `write_file`: notes), so the chart data the agent retrieved stays and its orders
+  and written plan go (`pb_screen.py score --retrieval --subset`). Models: pplx12, d3, amos. Predictions: unplaced
+  AUROC with retrieval-only ≥ state + 0.15 and ≥ task-only − 0.05, for ≥ 2 of 3 models. Reading: if it holds, what
+  anchors is the agent's own decisions, not the chart, and the design rule is "give the System One model the chart,
+  not the agent"; if retrieval-only also exceeds task-only by ≥ 0.05, chart data adds information once the agent's
+  decisions are removed. If retrieval-only stays near the state, the agent's choice of what to retrieve is itself
+  the anchor (the chart as the agent filtered it).

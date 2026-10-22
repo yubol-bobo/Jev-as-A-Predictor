@@ -173,11 +173,19 @@ def placed_step(instruction, steps, order):
     return {"action": action, "results": [result]}
 
 
-def score(blind, workers, rich=False, task=False, subset=False, cf=False):
+DECISION_TOOL = re.compile(r"^(\w+_create|write_file)\(", re.M)
+
+
+def retrieval_only(steps):
+    """G5: the steps without any agent decision (orders, appointments, messages, notes): the chart data retrieved."""
+    return [st for st in steps if not DECISION_TOOL.search(st["action"])]
+
+
+def score(blind, workers, rich=False, task=False, subset=False, cf=False, retrieval=False):
     name = os.environ.get("S1CLIN_DECIDER", "clef")
     url = os.environ.get("S1CLIN_DECIDER_URL") or DECIDER_URLS[name]
     out, done = _answers(name + ("_blind" if blind else "") + ("_rich" if rich else "") + ("_task" if task else "") +
-                         ("_cf" if cf else ""))
+                         ("_cf" if cf else "") + ("_retr" if retrieval else ""))
     states = json.loads((OD / ("states_rich.json" if rich else "states.json")).read_text())
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
     if cf:  # G4: the unplaced orders of the tasks with a missed required order
@@ -196,6 +204,8 @@ def score(blind, workers, rich=False, task=False, subset=False, cf=False):
         instruction, steps = (BLIND, []) if blind else (states[q["task"]][0], []) if task else states[q["task"]]
         if cf:
             steps = steps + [placed_step(instruction, steps, q["order"])]
+        if retrieval:
+            steps = retrieval_only(steps)
         letters = ["A", "B"]
         random.Random(q["id"]).shuffle(letters)  # same letters for every decider
         payload = {"instruction": instruction, "steps": steps, "question": QUESTION.format(order=q["order"]),
@@ -363,6 +373,7 @@ def main():
     ap.add_argument("cmd", choices=["build", "build_rich", "score", "llm", "report", "cf"])
     ap.add_argument("--blind", action="store_true")
     ap.add_argument("--task", action="store_true", help="score: the task instruction only, no trajectory")
+    ap.add_argument("--retrieval", action="store_true", help="score: the state without agent decisions (G5)")
     ap.add_argument("--cf", action="store_true", help="score: the state plus a fabricated step placing the order (G4)")
     ap.add_argument("--subset", action="store_true", help="score: placed orders and the unplaced orders of tasks "
                     "with a missed required order (G1)")
@@ -372,7 +383,7 @@ def main():
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf), "llm": lambda: llm(a.url, a.workers, a.task),
+    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval), "llm": lambda: llm(a.url, a.workers, a.task),
      "report": lambda: report(a.out)}[a.cmd]()
 
 
