@@ -556,3 +556,14 @@ outside the System One model (code-level matching or the LLM).
   label-blind), and the unplaced AUROC does not improve by more than 0.05. If so, the anchoring is causal: the
   System One judgment follows the agent's action, not the patient. If P(Yes) moves < 0.05, anchoring is not
   imitation of the agent's orders but something else in the trajectory (length, retrieval noise), to be probed next.
+
+## G4 verdict (2026-10-22 03:45): partial; a causal, label-blind shift, smaller than predicted
+
+`results/pb_g4.json` (919 unplaced orders, 21 tasks). One fabricated step placing the order, nothing else changed:
+mean P(Yes) rises for required orders by +0.098 [0.056, 0.145] (pplx12) and +0.104 [0.066, 0.147] (d3), for
+unneeded orders by +0.071 [0.063, 0.079] and +0.077 [0.069, 0.085]; unplaced AUROC 0.43 -> 0.44 (pplx12), 0.39 ->
+0.42 (d3). The shift is causal and label-blind, as predicted, but below the pre-registered +0.15: the prediction
+fails on magnitude. Following the agent's own orders explains part of the anchoring, not all of it (with the state,
+missed required orders already score below unneeded ones before any fabricated step: 0.62 vs 0.69 for pplx12).
+Next (exploratory, existing scores): whether the trajectory steers the judgment toward what the agent looked at
+(salience), i.e. whether P(Yes) with the state tracks how much the order's terms appear in the trajectory.

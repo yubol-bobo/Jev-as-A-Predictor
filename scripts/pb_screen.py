@@ -157,12 +157,32 @@ def _answers(name):
                if p.exists() else {})
 
 
-def score(blind, workers, rich=False, task=False, subset=False):
+ORDER_TEXT = re.compile(r"^(MedicationRequest|ServiceRequest): (.*?)(?: \(code (.*)\))?$")
+
+
+def placed_step(instruction, steps, order):
+    """G4: a fabricated final step in which the agent places `order`; nothing about the patient changes."""
+    m = ORDER_TEXT.match(order)
+    kind = "medication" if m[1] == "MedicationRequest" else "service"
+    tool = next(t for t, (k, _, _) in CREATE.items() if k == kind)
+    _, display_arg, code_arg = CREATE[tool]
+    pid = re.search(r'patient(?:_reference)?="(?:Patient/)?([^"]+)"', " ".join(st["action"] for st in steps) + instruction)
+    args = {"patient_reference": f"Patient/{pid[1] if pid else 'unknown'}", code_arg: m[3] or "", display_arg: m[2]}
+    action = f"{tool}(" + ", ".join(f"{k}={json.dumps(v, ensure_ascii=False)}" for k, v in args.items()) + ")"
+    result = json.dumps(dict(resourceType=m[1], id="new", status="active", intent="order"))  # a constant stub
+    return {"action": action, "results": [result]}
+
+
+def score(blind, workers, rich=False, task=False, subset=False, cf=False):
     name = os.environ.get("S1CLIN_DECIDER", "clef")
     url = os.environ.get("S1CLIN_DECIDER_URL") or DECIDER_URLS[name]
-    out, done = _answers(name + ("_blind" if blind else "") + ("_rich" if rich else "") + ("_task" if task else ""))
+    out, done = _answers(name + ("_blind" if blind else "") + ("_rich" if rich else "") + ("_task" if task else "") +
+                         ("_cf" if cf else ""))
     states = json.loads((OD / ("states_rich.json" if rich else "states.json")).read_text())
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
+    if cf:  # G4: the unplaced orders of the tasks with a missed required order
+        missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
+        todo = [q for q in todo if q["task"] in missed and not q["placed"]]
     if subset:  # G1: only the orders the placed / unplaced AUROCs are computed on
         missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
         todo = [q for q in todo if q["placed"] or q["task"] in missed]
@@ -174,6 +194,8 @@ def score(blind, workers, rich=False, task=False, subset=False):
 
     def run(q):
         instruction, steps = (BLIND, []) if blind else (states[q["task"]][0], []) if task else states[q["task"]]
+        if cf:
+            steps = steps + [placed_step(instruction, steps, q["order"])]
         letters = ["A", "B"]
         random.Random(q["id"]).shuffle(letters)  # same letters for every decider
         payload = {"instruction": instruction, "steps": steps, "question": QUESTION.format(order=q["order"]),
@@ -304,11 +326,44 @@ def report(path):
     print(json.dumps(res, indent=1))
 
 
+def cf_report(path, models=("pplx12", "d3")):
+    """G4: P(Yes) with the state vs the state plus a fabricated step placing the order, paired by question."""
+    qs = {q["id"]: q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines())}
+    res = {}
+    for m in models:
+        a, b = (_answers(m)[1], _answers(m + "_cf")[1])
+        ids = [i for i in b if i in a]
+        out = {"questions": len(ids)}
+        for lab in ("required", "None"):
+            d = [b[i]["p"] - a[i]["p"] for i in ids if str(qs[i]["label"]) == lab]
+            if d:
+                rng = random.Random(0)
+                bs = sorted(sum(rng.choice(d) for _ in d) / len(d) for _ in range(2000))
+                out[lab] = {"n": len(d), "p_state": round(sum(a[i]["p"] for i in ids if str(qs[i]["label"]) == lab) / len(d), 4),
+                            "p_cf": round(sum(b[i]["p"] for i in ids if str(qs[i]["label"]) == lab) / len(d), 4),
+                            "delta": round(sum(d) / len(d), 4), "ci95": [round(bs[50], 4), round(bs[1949], 4)]}
+        for tag, sc in (("state", a), ("cf", b)):
+            u = []
+            by = defaultdict(list)
+            for i in ids:
+                by[qs[i]["task"]].append(i)
+            for t, ii in by.items():
+                x = auroc([sc[i]["p"] for i in ii if qs[i]["label"] == "required"],
+                          [sc[i]["p"] for i in ii if qs[i]["label"] is None])
+                if x is not None:
+                    u.append(x)
+            out[f"auroc_unplaced_{tag}"] = round(sum(u) / len(u), 4) if u else None
+        res[m] = out
+    Path(path).write_text(json.dumps(res, indent=1))
+    print(json.dumps(res, indent=1))
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "build_rich", "score", "llm", "report"])
+    ap.add_argument("cmd", choices=["build", "build_rich", "score", "llm", "report", "cf"])
     ap.add_argument("--blind", action="store_true")
     ap.add_argument("--task", action="store_true", help="score: the task instruction only, no trajectory")
+    ap.add_argument("--cf", action="store_true", help="score: the state plus a fabricated step placing the order (G4)")
     ap.add_argument("--subset", action="store_true", help="score: placed orders and the unplaced orders of tasks "
                     "with a missed required order (G1)")
     ap.add_argument("--rich", action="store_true", help="score: the rich states (P6b)")
@@ -317,7 +372,7 @@ def main():
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset), "llm": lambda: llm(a.url, a.workers, a.task),
+    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf), "llm": lambda: llm(a.url, a.workers, a.task),
      "report": lambda: report(a.out)}[a.cmd]()
 
 

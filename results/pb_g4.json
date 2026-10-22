@@ -1,0 +1,52 @@
+{
+ "pplx12": {
+  "questions": 919,
+  "required": {
+   "n": 29,
+   "p_state": 0.6184,
+   "p_cf": 0.7168,
+   "delta": 0.0983,
+   "ci95": [
+    0.056,
+    0.1454
+   ]
+  },
+  "None": {
+   "n": 890,
+   "p_state": 0.6945,
+   "p_cf": 0.7652,
+   "delta": 0.0707,
+   "ci95": [
+    0.0625,
+    0.079
+   ]
+  },
+  "auroc_unplaced_state": 0.4296,
+  "auroc_unplaced_cf": 0.4437
+ },
+ "d3": {
+  "questions": 919,
+  "required": {
+   "n": 29,
+   "p_state": 0.5778,
+   "p_cf": 0.682,
+   "delta": 0.1041,
+   "ci95": [
+    0.0659,
+    0.1465
+   ]
+  },
+  "None": {
+   "n": 890,
+   "p_state": 0.6661,
+   "p_cf": 0.7434,
+   "delta": 0.0773,
+   "ci95": [
+    0.0693,
+    0.0852
+   ]
+  },
+  "auroc_unplaced_state": 0.3911,
+  "auroc_unplaced_cf": 0.4249
+ }
+}
