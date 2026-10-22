@@ -1,0 +1,92 @@
+{
+ "pplx12": {
+  "state": 0.4296,
+  "retrieval": 0.6406,
+  "nonotes": {
+   "auroc": 0.4306,
+   "minus_state": 0.001,
+   "ci95": [
+    -0.0416,
+    0.0284
+   ],
+   "share_of_retr_recovery": 0.005,
+   "tasks": 21,
+   "placed": 0.673
+  },
+  "noorders": {
+   "auroc": 0.6039,
+   "minus_state": 0.1743,
+   "ci95": [
+    0.0611,
+    0.3026
+   ],
+   "share_of_retr_recovery": 0.826,
+   "tasks": 21,
+   "placed": 0.7373
+  },
+  "placed_state_retr": [
+   0.6703,
+   0.7779
+  ]
+ },
+ "d3": {
+  "state": 0.3911,
+  "retrieval": 0.6321,
+  "nonotes": {
+   "auroc": 0.4006,
+   "minus_state": 0.0094,
+   "ci95": [
+    -0.0204,
+    0.0376
+   ],
+   "share_of_retr_recovery": 0.039,
+   "tasks": 21,
+   "placed": 0.6908
+  },
+  "noorders": {
+   "auroc": 0.5697,
+   "minus_state": 0.1785,
+   "ci95": [
+    0.0459,
+    0.3264
+   ],
+   "share_of_retr_recovery": 0.741,
+   "tasks": 21,
+   "placed": 0.8115
+  },
+  "placed_state_retr": [
+   0.6673,
+   0.8333
+  ]
+ },
+ "amos": {
+  "state": 0.4153,
+  "retrieval": 0.6655,
+  "nonotes": {
+   "auroc": 0.4144,
+   "minus_state": -0.0009,
+   "ci95": [
+    -0.0322,
+    0.0262
+   ],
+   "share_of_retr_recovery": -0.004,
+   "tasks": 21,
+   "placed": 0.7428
+  },
+  "noorders": {
+   "auroc": 0.5936,
+   "minus_state": 0.1783,
+   "ci95": [
+    0.056,
+    0.3163
+   ],
+   "share_of_retr_recovery": 0.713,
+   "tasks": 21,
+   "placed": 0.8276
+  },
+  "placed_state_retr": [
+   0.7216,
+   0.7991
+  ]
+ }
+}

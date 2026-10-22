@@ -1,0 +1,49 @@
+{
+ "questions_common": 538,
+ "tasks": 10,
+ "valid": {
+  "llm": 1748,
+  "llm_task": 759,
+  "llm_retr": 636
+ },
+ "auroc": {
+  "llm": 0.5204,
+  "llm_task": 0.6802,
+  "llm_retr": 0.6402,
+  "pplx12": 0.4737,
+  "pplx12_retr": 0.6242,
+  "pplx12_task": 0.709,
+  "d3": 0.4174,
+  "d3_retr": 0.5484,
+  "d3_task": 0.7711,
+  "amos": 0.4957,
+  "amos_retr": 0.6468,
+  "amos_task": 0.7861
+ },
+ "llm_retr_minus_llm": {
+  "delta": 0.1198,
+  "ci95": [
+   -0.0047,
+   0.2625
+  ]
+ },
+ "llm_retr_minus_llm_task": {
+  "delta": -0.04,
+  "ci95": [
+   -0.1872,
+   0.0668
+  ]
+ },
+ "llm_task_minus_llm": {
+  "delta": 0.1598,
+  "ci95": [
+   0.0056,
+   0.3246
+  ]
+ },
+ "median_s": {
+  "llm": 40.807,
+  "llm_task": 68.95,
+  "llm_retr": 49.358
+ }
+}

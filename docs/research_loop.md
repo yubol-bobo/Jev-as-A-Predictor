@@ -635,3 +635,47 @@ at 0.2-0.6 s per judgment vs ~80 s (about 150-350x less time), which is what mak
   retrieval-only state (`pb_screen.py llm --retrieval`), same prompt and budget as its state and task-only runs.
   Prediction: on questions all three Qwen runs answer, retrieval-only ≥ state + 0.10 (state 0.46, task-only 0.62).
   If it holds, "strip the agent's decisions" is a rule for any judge, not only for System One models.
+
+## G6 verdict (2026-10-22 06:05): the agent's orders are the anchor; its notes are not
+
+`results/pb_g6_paired.json` (unplaced AUROC, 21 tasks, paired by task vs the state):
+
+| model | state | no notes | no orders | retrieval-only | share of recovery: no notes / no orders |
+|---|---|---|---|---|---|
+| pplx12 | 0.43 | 0.43 (+0.00 [−0.04, 0.03]) | 0.60 (+0.17 [0.06, 0.30]) | 0.64 | 0.01 / 0.83 |
+| d3 | 0.39 | 0.40 (+0.01 [−0.02, 0.04]) | 0.57 (+0.18 [0.05, 0.33]) | 0.63 | 0.04 / 0.74 |
+| amos | 0.42 | 0.41 (−0.00 [−0.03, 0.03]) | 0.59 (+0.18 [0.06, 0.32]) | 0.67 | −0.00 / 0.71 |
+
+By the pre-registered rule (one type ≥ 0.6, the other ≤ 0.4, in ≥ 2 of 3 models) the orders (every `*_create` step:
+orders, appointments, messages) are the main anchor, in 3 of 3 models. Removing the agent's notes alone changes
+nothing; the remaining 17-29% of the retrieval-only recovery appears only when both go (the note restates the orders,
+so it anchors only once the orders themselves are gone). Placed AUROC moves the same way (no orders 0.74-0.83 vs
+state 0.67-0.72). Reading: the System One model takes the agent's set of orders as the reference for what the task
+needs, so whatever the agent never ordered looks unneeded: the checker inherits the agent's blind spot.
+
+## G5-LLM verdict (2026-10-22 06:05): holds on the pre-registered point estimate, with low power
+
+`results/pb_g5_llm.json`. Qwen thinking with the retrieval-only state answered 636 of 919 (the rest ran out of the
+8,192-token budget, as in its other runs). On the 538 questions all three Qwen runs answered (10 tasks with a
+computable AUROC): state 0.52, retrieval-only 0.64, task-only 0.68; retrieval − state +0.12 [−0.005, 0.26] (the
+prediction, ≥ +0.10, holds on the point estimate; the CI touches 0), task − state +0.16 [0.01, 0.32]. The System One
+models on the same questions: state 0.42-0.50 -> retrieval 0.55-0.65 -> task 0.71-0.79. Stripping the agent's
+decisions helps the LLM judge as it helps the System One models; on these questions the System One models with the
+task text alone (0.71-0.79) beat every Qwen input (≤ 0.68) at a median 0.2-0.6 s vs 41-69 s per judgment, and they
+always return an answer, while Qwen fails to answer 17-31% of the questions within its budget.
+
+- **G6-ext and G6-LLM (fixed 2026-10-22 06:10, before any score).** (a) linne and decider31b score the no-notes and
+  no-orders states (generality of G6). Prediction: no-orders share ≥ 0.6 and no-notes share ≤ 0.4 for both. (b) Qwen
+  thinking scores the no-orders state (`pb_screen.py llm --drop orders`), same prompt and budget. Prediction: on
+  questions all of its state, retrieval-only and no-orders runs answer, no-orders achieves ≥ 0.6 of the
+  retrieval-only gain over the state. If it holds, "the agent's orders anchor the judge" holds for the LLM too.
+
+**Plan conformity (exploratory, 06:20, existing scores; `results/pb_plan_sim.json`).** For each unplaced order, its
+lexical similarity to the agent's placed orders (max token Jaccard of the names). Missed required orders are less like
+the agent's orders than the unneeded candidates are (mean 0.26 vs 0.34; similarity as a scorer: unplaced AUROC 0.41).
+With the state, P(Yes) tracks that similarity within task: Spearman 0.28-0.38 for the five System One models and 0.47
+for Qwen; with the task text only 0.05 (amos 0.16; Qwen 0.05); without the orders 0.18-0.19; retrieval-only
+0.13-0.21. So a judge that reads the trajectory scores an order by how much it looks like what the agent already
+did, and because the missed orders are by definition unlike the agent's plan, they land below chance: the judge
+inherits the agent's blind spot. Caveats: lexical similarity only; the unneeded candidates come from runs' proposals,
+so they are agent-adjacent by construction (as an in-run pool would be).

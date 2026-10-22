@@ -242,15 +242,17 @@ def score(blind, workers, rich=False, task=False, subset=False, cf=False, retrie
         list(ex.map(run, todo))
 
 
-def llm(url, workers, task=False, retrieval=False):
-    out, done = _answers("llm_task" if task else "llm_retr" if retrieval else "llm")
+def llm(url, workers, task=False, retrieval=False, drop=None):
+    out, done = _answers("llm_task" if task else "llm_retr" if retrieval else f"llm_no{drop}" if drop else "llm")
     states = json.loads((OD / "states.json").read_text())
     if task:  # the task instruction only (P6c control)
         states = {t: (v[0], []) for t, v in states.items()}
     if retrieval:  # G5 for the LLM: the state without the agent's decisions
         states = {t: (v[0], retrieval_only(v[1])) for t, v in states.items()}
+    if drop:  # G6 for the LLM
+        states = {t: (v[0], without(v[1], {"notes": NOTE_TOOL, "orders": ORDER_TOOL}[drop])) for t, v in states.items()}
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
-    if task or retrieval:  # only the subset the unplaced AUROC is computed on: unplaced orders of tasks with a missed one
+    if task or retrieval or drop:  # only the subset the unplaced AUROC is computed on: unplaced orders of tasks with a missed one
         missed = missed_tasks()
         todo = [q for q in todo if q["task"] in missed and not q["placed"]]
     lock = threading.Lock()
@@ -392,7 +394,7 @@ def main():
     ap.add_argument("cmd", choices=["build", "build_rich", "score", "llm", "report", "cf"])
     ap.add_argument("--blind", action="store_true")
     ap.add_argument("--task", action="store_true", help="score: the task instruction only, no trajectory")
-    ap.add_argument("--drop", choices=["notes", "orders"], help="score: the state without the agent's notes or orders (G6)")
+    ap.add_argument("--drop", choices=["notes", "orders"], help="score/llm: the state without the agent's notes or orders (G6)")
     ap.add_argument("--retrieval", action="store_true", help="score: the state without agent decisions (G5)")
     ap.add_argument("--cf", action="store_true", help="score: the state plus a fabricated step placing the order (G4)")
     ap.add_argument("--subset", action="store_true", help="score: placed orders and the unplaced orders of tasks "
@@ -403,7 +405,7 @@ def main():
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval, a.drop), "llm": lambda: llm(a.url, a.workers, a.task, a.retrieval),
+    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval, a.drop), "llm": lambda: llm(a.url, a.workers, a.task, a.retrieval, a.drop),
      "report": lambda: report(a.out)}[a.cmd]()
 
 

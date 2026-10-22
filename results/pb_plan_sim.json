@@ -1,0 +1,90 @@
+{
+ "questions": 919,
+ "plan_sim_mean": {
+  "required": 0.2585,
+  "None": 0.3357
+ },
+ "share_sim_gt0": {
+  "required": 0.8966,
+  "None": 0.8652
+ },
+ "plan_sim_auroc_unplaced": 0.409,
+ "spearman_p_vs_plan_sim": {
+  "pplx12": {
+   "mean_within_task": 0.294,
+   "tasks": 19
+  },
+  "pplx12_task": {
+   "mean_within_task": 0.047,
+   "tasks": 19
+  },
+  "pplx12_retr": {
+   "mean_within_task": 0.136,
+   "tasks": 19
+  },
+  "pplx12_noorders": {
+   "mean_within_task": 0.175,
+   "tasks": 19
+  },
+  "d3": {
+   "mean_within_task": 0.284,
+   "tasks": 19
+  },
+  "d3_task": {
+   "mean_within_task": 0.055,
+   "tasks": 19
+  },
+  "d3_retr": {
+   "mean_within_task": 0.128,
+   "tasks": 19
+  },
+  "d3_noorders": {
+   "mean_within_task": 0.192,
+   "tasks": 19
+  },
+  "amos": {
+   "mean_within_task": 0.299,
+   "tasks": 19
+  },
+  "amos_task": {
+   "mean_within_task": 0.155,
+   "tasks": 19
+  },
+  "amos_retr": {
+   "mean_within_task": 0.169,
+   "tasks": 19
+  },
+  "amos_noorders": {
+   "mean_within_task": 0.183,
+   "tasks": 19
+  },
+  "linne": {
+   "mean_within_task": 0.377,
+   "tasks": 19
+  },
+  "linne_task": {
+   "mean_within_task": 0.052,
+   "tasks": 19
+  },
+  "decider31b": {
+   "mean_within_task": 0.378,
+   "tasks": 19
+  },
+  "decider31b_task": {
+   "mean_within_task": 0.048,
+   "tasks": 19
+  },
+  "llm": {
+   "mean_within_task": 0.468,
+   "tasks": 19
+  },
+  "llm_task": {
+   "mean_within_task": 0.045,
+   "tasks": 18
+  },
+  "llm_retr": {
+   "mean_within_task": 0.207,
+   "tasks": 18
+  }
+ }
+}
