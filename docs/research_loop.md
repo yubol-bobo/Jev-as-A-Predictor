@@ -595,3 +595,29 @@ working, it does not make it place what was missed. Gate (both runs) vs run 3 on
 [0.28, 1.57], required-order checkpoints +0.06 [−0.02, 0.15], the same as against the historical runs (+0.88,
 +0.06): Table tab:gate stands. Files: `pb_gap_p7freq_vs_run3.json`, `pb_gap_p7_vs_run3.json`,
 `pb_gap_gate_vs_run3.json`, `pb_gap_gate_vs_hist_p7tasks.json`.
+
+## G5 verdict (2026-10-22 04:40): holds; the agent's decisions are the anchor, not the chart
+
+`results/pb_screen.json`, paired `results/pb_g5_paired.json`. Unplaced AUROC, state -> retrieval-only (agent
+decisions removed) -> task-only; paired Δ retrieval − state and retrieval − task (95% CI):
+
+| model | state | retrieval-only | task-only | retr − state | retr − task | placed: state / retr / task |
+|---|---|---|---|---|---|---|
+| pplx12 | 0.43 | 0.64 | 0.65 | +0.21 [0.07, 0.37] | −0.01 [−0.13, 0.07] | 0.67 / 0.78 / 0.82 |
+| d3 | 0.39 | 0.63 | 0.73 | +0.24 [0.10, 0.40] | −0.10 [−0.21, −0.02] | 0.67 / 0.83 / 0.86 |
+| amos | 0.42 | 0.67 | 0.69 | +0.25 [0.11, 0.41] | −0.02 [−0.14, 0.06] | 0.72 / 0.80 / 0.83 |
+| linne (ext.) | 0.37 | 0.62 | 0.61 | +0.25 [0.14, 0.38] | +0.01 [−0.10, 0.11] | 0.66 / 0.79 / 0.77 |
+| decider31b (ext.) | 0.40 | 0.64 | 0.57 | +0.25 [0.13, 0.37] | +0.08 [−0.03, 0.19] | 0.65 / 0.75 / 0.74 |
+
+Pre-registered (pplx12, d3, amos): retrieval ≥ state + 0.15 for 3/3; retrieval ≥ task − 0.05 for 2/3 (d3 misses).
+Holds; the two extension models agree. Removing only the agent's decisions (164 of 729 steps: orders, appointments,
+messages, notes) recovers the whole anchoring loss; the chart the agent retrieved does not mislead the System One
+model, and it adds little beyond the task text either. Design rule for the paper: give the System One model the
+chart, not the agent. With G4 (one fabricated order: +0.07-0.10, label-blind), placing an order is part of the
+anchor but not all of it.
+
+- **G6 (which decisions anchor, fixed 2026-10-22 04:45, before any score).** Two more inputs: the state without the
+  agent's notes only (`write_file` steps removed, orders kept) and without its orders only (`*_create` steps removed,
+  notes kept). Models pplx12, d3, amos; unplaced AUROC. Reported: the share of the retrieval-only recovery that each
+  removal achieves. No directional prediction is made; a share ≥ 0.6 for one type and ≤ 0.4 for the other, in ≥ 2 of
+  3 models, names that type as the main anchor; otherwise both contribute.

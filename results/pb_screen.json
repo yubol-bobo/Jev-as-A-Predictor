@@ -59,13 +59,65 @@
     "forbidden": 0.0
    }
   },
+  "amos_retr": {
+   "scored": 1323,
+   "tasks": 47,
+   "auroc_mean_per_task": 0.7622,
+   "ci95": [
+    0.6744,
+    0.8429
+   ],
+   "auroc_unplaced_mean_per_task": 0.6655,
+   "tasks_unplaced": 21,
+   "unplaced_ci95": [
+    0.5196,
+    0.7971
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.7342,
+    "alcohol_use_disorder": 0.7419,
+    "chronic_abdominal_workup": 1.0,
+    "chronic_urticaria_allergist": 1.0,
+    "dual_incontinence_workup": 0.7132,
+    "incidental_pulmonary_findings": 1.0,
+    "inflammatory_arthritis_serology": 0.4326,
+    "lipid_statin_management": 1.0,
+    "liver_enzymes_pregnancy": 0.4625,
+    "mds_iron_overload": 0.0,
+    "mgus_cryoglobulinemia_workup": 0.0952,
+    "new_onset_afib_young": 0.6622,
+    "opioid_use_disorder": 0.9,
+    "osteoarthritis_nsaid_intolerant": 0.0556,
+    "osteoporosis_metabolic_workup": 0.7961,
+    "pcp_rash_workup": 0.3077,
+    "peripheral_neuropathy_workup": 0.9444,
+    "svt_tuberous_sclerosis": 0.4231,
+    "thrombocytopenia_immunotherapy": 0.9158,
+    "travel_parasitic_infection": 0.9474,
+    "trd_refill_review": 0.8444
+   },
+   "auroc_placed_mean_per_task": 0.7991,
+   "placed_ci95": [
+    0.7039,
+    0.8804
+   ],
+   "tasks_placed": 42,
+   "recall_at5_required_not_placed": 0.3492,
+   "tasks_with_missed": 21,
+   "median_s_per_question": 2.641,
+   "mean_p": {
+    "required": 0.7298,
+    "None": 0.5325,
+    "forbidden": 0.0
+   }
+  },
   "amos_task": {
    "scored": 1323,
    "tasks": 47,
    "auroc_mean_per_task": 0.8315,
    "ci95": [
-    0.7588,
-    0.898
+    0.7555,
+    0.9018
    ],
    "auroc_unplaced_mean_per_task": 0.6902,
    "tasks_unplaced": 21,
@@ -116,8 +168,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.7127,
    "ci95": [
-    0.6405,
-    0.7839
+    0.6381,
+    0.7848
    ],
    "auroc_unplaced_mean_per_task": 0.3959,
    "tasks_unplaced": 21,
@@ -168,8 +220,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.5561,
    "ci95": [
-    0.4762,
-    0.6407
+    0.4767,
+    0.6377
    ],
    "auroc_unplaced_mean_per_task": 0.5081,
    "tasks_unplaced": 21,
@@ -220,8 +272,8 @@
    "tasks": 35,
    "auroc_mean_per_task": 0.6312,
    "ci95": [
-    0.5211,
-    0.7295
+    0.5287,
+    0.729
    ],
    "auroc_unplaced_mean_per_task": 0.451,
    "tasks_unplaced": 21,
@@ -272,8 +324,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.7243,
    "ci95": [
-    0.6408,
-    0.7951
+    0.6479,
+    0.7946
    ],
    "auroc_unplaced_mean_per_task": 0.6252,
    "tasks_unplaced": 21,
@@ -324,8 +376,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.6137,
    "ci95": [
-    0.5161,
-    0.7072
+    0.5159,
+    0.7029
    ],
    "auroc_unplaced_mean_per_task": 0.3911,
    "tasks_unplaced": 21,
@@ -371,13 +423,114 @@
     "forbidden": 0.0
    }
   },
+  "d3_cf": {
+   "scored": 919,
+   "tasks": 21,
+   "auroc_mean_per_task": 0.4249,
+   "ci95": [
+    0.2796,
+    0.5788
+   ],
+   "auroc_unplaced_mean_per_task": 0.4249,
+   "tasks_unplaced": 21,
+   "unplaced_ci95": [
+    0.2799,
+    0.5798
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.9009,
+    "alcohol_use_disorder": 0.129,
+    "chronic_abdominal_workup": 1.0,
+    "chronic_urticaria_allergist": 0.1,
+    "dual_incontinence_workup": 0.5735,
+    "incidental_pulmonary_findings": 0.125,
+    "inflammatory_arthritis_serology": 0.4348,
+    "lipid_statin_management": 0.0769,
+    "liver_enzymes_pregnancy": 0.4375,
+    "mds_iron_overload": 0.0,
+    "mgus_cryoglobulinemia_workup": 0.0952,
+    "new_onset_afib_young": 0.0811,
+    "opioid_use_disorder": 1.0,
+    "osteoarthritis_nsaid_intolerant": 0.1111,
+    "osteoporosis_metabolic_workup": 0.8947,
+    "pcp_rash_workup": 0.1538,
+    "peripheral_neuropathy_workup": 0.2716,
+    "svt_tuberous_sclerosis": 0.3462,
+    "thrombocytopenia_immunotherapy": 0.7327,
+    "travel_parasitic_infection": 0.9474,
+    "trd_refill_review": 0.5111
+   },
+   "auroc_placed_mean_per_task": null,
+   "placed_ci95": null,
+   "tasks_placed": 0,
+   "recall_at5_required_not_placed": 0.1825,
+   "tasks_with_missed": 21,
+   "median_s_per_question": 4.716,
+   "mean_p": {
+    "required": 0.682,
+    "None": 0.7434,
+    "forbidden": 0.0
+   }
+  },
+  "d3_retr": {
+   "scored": 1323,
+   "tasks": 47,
+   "auroc_mean_per_task": 0.7842,
+   "ci95": [
+    0.7023,
+    0.8622
+   ],
+   "auroc_unplaced_mean_per_task": 0.6321,
+   "tasks_unplaced": 21,
+   "unplaced_ci95": [
+    0.4926,
+    0.7636
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.7387,
+    "alcohol_use_disorder": 0.7177,
+    "chronic_abdominal_workup": 1.0,
+    "chronic_urticaria_allergist": 1.0,
+    "dual_incontinence_workup": 0.8971,
+    "incidental_pulmonary_findings": 1.0,
+    "inflammatory_arthritis_serology": 0.5043,
+    "lipid_statin_management": 1.0,
+    "liver_enzymes_pregnancy": 0.45,
+    "mds_iron_overload": 0.0,
+    "mgus_cryoglobulinemia_workup": 0.0952,
+    "new_onset_afib_young": 0.6486,
+    "opioid_use_disorder": 0.8,
+    "osteoarthritis_nsaid_intolerant": 0.1111,
+    "osteoporosis_metabolic_workup": 0.7895,
+    "pcp_rash_workup": 0.3077,
+    "peripheral_neuropathy_workup": 0.3951,
+    "svt_tuberous_sclerosis": 0.1923,
+    "thrombocytopenia_immunotherapy": 0.901,
+    "travel_parasitic_infection": 0.9474,
+    "trd_refill_review": 0.7778
+   },
+   "auroc_placed_mean_per_task": 0.8333,
+   "placed_ci95": [
+    0.7466,
+    0.9053
+   ],
+   "tasks_placed": 42,
+   "recall_at5_required_not_placed": 0.3016,
+   "tasks_with_missed": 21,
+   "median_s_per_question": 2.617,
+   "mean_p": {
+    "required": 0.8396,
+    "None": 0.6337,
+    "forbidden": 0.0
+   }
+  },
   "d3_task": {
    "scored": 1323,
    "tasks": 47,
    "auroc_mean_per_task": 0.845,
    "ci95": [
-    0.7699,
-    0.9122
+    0.769,
+    0.9121
    ],
    "auroc_unplaced_mean_per_task": 0.7323,
    "tasks_unplaced": 21,
@@ -428,8 +581,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.5857,
    "ci95": [
-    0.4785,
-    0.6869
+    0.4771,
+    0.6845
    ],
    "auroc_unplaced_mean_per_task": 0.3954,
    "tasks_unplaced": 21,
@@ -475,13 +628,65 @@
     "forbidden": 0.0
    }
   },
+  "decider31b_retr": {
+   "scored": 1323,
+   "tasks": 47,
+   "auroc_mean_per_task": 0.711,
+   "ci95": [
+    0.6191,
+    0.8021
+   ],
+   "auroc_unplaced_mean_per_task": 0.6433,
+   "tasks_unplaced": 21,
+   "unplaced_ci95": [
+    0.5013,
+    0.7697
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.8874,
+    "alcohol_use_disorder": 0.4798,
+    "chronic_abdominal_workup": 0.45,
+    "chronic_urticaria_allergist": 1.0,
+    "dual_incontinence_workup": 0.8676,
+    "incidental_pulmonary_findings": 1.0,
+    "inflammatory_arthritis_serology": 0.7315,
+    "lipid_statin_management": 1.0,
+    "liver_enzymes_pregnancy": 0.3937,
+    "mds_iron_overload": 0.0,
+    "mgus_cryoglobulinemia_workup": 0.0794,
+    "new_onset_afib_young": 0.4324,
+    "opioid_use_disorder": 1.0,
+    "osteoarthritis_nsaid_intolerant": 0.5556,
+    "osteoporosis_metabolic_workup": 0.8158,
+    "pcp_rash_workup": 0.1538,
+    "peripheral_neuropathy_workup": 0.7469,
+    "svt_tuberous_sclerosis": 0.9231,
+    "thrombocytopenia_immunotherapy": 0.896,
+    "travel_parasitic_infection": 0.9079,
+    "trd_refill_review": 0.1889
+   },
+   "auroc_placed_mean_per_task": 0.7524,
+   "placed_ci95": [
+    0.6508,
+    0.8445
+   ],
+   "tasks_placed": 42,
+   "recall_at5_required_not_placed": 0.327,
+   "tasks_with_missed": 21,
+   "median_s_per_question": 0.286,
+   "mean_p": {
+    "required": 0.7732,
+    "None": 0.6257,
+    "forbidden": 0.0
+   }
+  },
   "decider31b_task": {
    "scored": 1323,
    "tasks": 47,
    "auroc_mean_per_task": 0.6908,
    "ci95": [
-    0.5969,
-    0.7814
+    0.5982,
+    0.7826
    ],
    "auroc_unplaced_mean_per_task": 0.5676,
    "tasks_unplaced": 21,
@@ -532,8 +737,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.5827,
    "ci95": [
-    0.4773,
-    0.6826
+    0.4809,
+    0.6805
    ],
    "auroc_unplaced_mean_per_task": 0.3657,
    "tasks_unplaced": 21,
@@ -579,13 +784,65 @@
     "forbidden": 0.0
    }
   },
+  "linne_retr": {
+   "scored": 1323,
+   "tasks": 47,
+   "auroc_mean_per_task": 0.7182,
+   "ci95": [
+    0.6175,
+    0.811
+   ],
+   "auroc_unplaced_mean_per_task": 0.6193,
+   "tasks_unplaced": 21,
+   "unplaced_ci95": [
+    0.4868,
+    0.7405
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.7477,
+    "alcohol_use_disorder": 0.7258,
+    "chronic_abdominal_workup": 0.5,
+    "chronic_urticaria_allergist": 1.0,
+    "dual_incontinence_workup": 0.8529,
+    "incidental_pulmonary_findings": 1.0,
+    "inflammatory_arthritis_serology": 0.8848,
+    "lipid_statin_management": 1.0,
+    "liver_enzymes_pregnancy": 0.4875,
+    "mds_iron_overload": 0.0,
+    "mgus_cryoglobulinemia_workup": 0.0794,
+    "new_onset_afib_young": 0.5676,
+    "opioid_use_disorder": 1.0,
+    "osteoarthritis_nsaid_intolerant": 0.2222,
+    "osteoporosis_metabolic_workup": 0.5789,
+    "pcp_rash_workup": 0.3077,
+    "peripheral_neuropathy_workup": 0.5556,
+    "svt_tuberous_sclerosis": 0.3846,
+    "thrombocytopenia_immunotherapy": 0.8812,
+    "travel_parasitic_infection": 0.7632,
+    "trd_refill_review": 0.4667
+   },
+   "auroc_placed_mean_per_task": 0.7863,
+   "placed_ci95": [
+    0.6833,
+    0.8736
+   ],
+   "tasks_placed": 42,
+   "recall_at5_required_not_placed": 0.2349,
+   "tasks_with_missed": 21,
+   "median_s_per_question": 4.464,
+   "mean_p": {
+    "required": 0.7805,
+    "None": 0.5679,
+    "forbidden": 0.0
+   }
+  },
   "linne_task": {
    "scored": 1323,
    "tasks": 47,
    "auroc_mean_per_task": 0.7299,
    "ci95": [
-    0.6321,
-    0.8258
+    0.6256,
+    0.8211
    ],
    "auroc_unplaced_mean_per_task": 0.6097,
    "tasks_unplaced": 21,
@@ -636,8 +893,8 @@
    "tasks": 49,
    "auroc_mean_per_task": 0.7021,
    "ci95": [
-    0.6216,
-    0.7775
+    0.6197,
+    0.7764
    ],
    "auroc_unplaced_mean_per_task": 0.4081,
    "tasks_unplaced": 16,
@@ -679,40 +936,47 @@
    }
   },
   "llm_task": {
-   "scored": 427,
-   "tasks": 10,
-   "auroc_mean_per_task": 0.6198,
+   "scored": 759,
+   "tasks": 17,
+   "auroc_mean_per_task": 0.5857,
    "ci95": [
-    0.4761,
-    0.7678
+    0.4281,
+    0.7232
    ],
-   "auroc_unplaced_mean_per_task": 0.6198,
-   "tasks_unplaced": 10,
+   "auroc_unplaced_mean_per_task": 0.5857,
+   "tasks_unplaced": 17,
    "unplaced_ci95": [
-    0.482,
-    0.7775
+    0.4352,
+    0.727
    ],
    "unplaced_by_task": {
-    "adrenal_incidentaloma": 0.7202,
-    "alcohol_use_disorder": 0.3486,
-    "chronic_abdominal_workup": 0.375,
+    "adrenal_incidentaloma": 0.7238,
+    "alcohol_use_disorder": 0.3652,
+    "chronic_abdominal_workup": 0.5,
     "chronic_urticaria_allergist": 1.0,
-    "dual_incontinence_workup": 0.4609,
+    "dual_incontinence_workup": 0.4485,
     "incidental_pulmonary_findings": 1.0,
-    "inflammatory_arthritis_serology": 0.3618,
-    "lipid_statin_management": 0.8333,
-    "liver_enzymes_pregnancy": 0.5,
-    "mgus_cryoglobulinemia_workup": 0.598
+    "inflammatory_arthritis_serology": 0.4888,
+    "lipid_statin_management": 0.8462,
+    "liver_enzymes_pregnancy": 0.4539,
+    "mds_iron_overload": 0.0,
+    "mgus_cryoglobulinemia_workup": 0.5984,
+    "opioid_use_disorder": 1.0,
+    "osteoarthritis_nsaid_intolerant": 0.0,
+    "osteoporosis_metabolic_workup": 0.4667,
+    "peripheral_neuropathy_workup": 0.7364,
+    "svt_tuberous_sclerosis": 0.3667,
+    "thrombocytopenia_immunotherapy": 0.9628
    },
    "auroc_placed_mean_per_task": null,
    "placed_ci95": null,
    "tasks_placed": 0,
-   "recall_at5_required_not_placed": 0.4333,
-   "tasks_with_missed": 10,
-   "median_s_per_question": 80.594,
+   "recall_at5_required_not_placed": 0.3725,
+   "tasks_with_missed": 17,
+   "median_s_per_question": 68.95,
    "mean_p": {
-    "required": 0.7513,
-    "None": 0.6178,
+    "required": 0.7625,
+    "None": 0.615,
     "forbidden": 0.0
    }
   },
@@ -721,8 +985,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.7365,
    "ci95": [
-    0.6607,
-    0.8109
+    0.6642,
+    0.8073
    ],
    "auroc_unplaced_mean_per_task": 0.4296,
    "tasks_unplaced": 21,
@@ -773,8 +1037,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.566,
    "ci95": [
-    0.4888,
-    0.6444
+    0.4836,
+    0.6431
    ],
    "auroc_unplaced_mean_per_task": 0.6278,
    "tasks_unplaced": 21,
@@ -820,13 +1084,114 @@
     "forbidden": 0.0
    }
   },
+  "pplx12_cf": {
+   "scored": 919,
+   "tasks": 21,
+   "auroc_mean_per_task": 0.4437,
+   "ci95": [
+    0.3043,
+    0.6019
+   ],
+   "auroc_unplaced_mean_per_task": 0.4437,
+   "tasks_unplaced": 21,
+   "unplaced_ci95": [
+    0.2936,
+    0.6001
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.8784,
+    "alcohol_use_disorder": 0.1774,
+    "chronic_abdominal_workup": 1.0,
+    "chronic_urticaria_allergist": 0.05,
+    "dual_incontinence_workup": 0.6176,
+    "incidental_pulmonary_findings": 0.125,
+    "inflammatory_arthritis_serology": 0.4533,
+    "lipid_statin_management": 0.0769,
+    "liver_enzymes_pregnancy": 0.4625,
+    "mds_iron_overload": 0.0,
+    "mgus_cryoglobulinemia_workup": 0.0952,
+    "new_onset_afib_young": 0.027,
+    "opioid_use_disorder": 1.0,
+    "osteoarthritis_nsaid_intolerant": 0.1667,
+    "osteoporosis_metabolic_workup": 0.8684,
+    "pcp_rash_workup": 0.1538,
+    "peripheral_neuropathy_workup": 0.2593,
+    "svt_tuberous_sclerosis": 0.4615,
+    "thrombocytopenia_immunotherapy": 0.8663,
+    "travel_parasitic_infection": 1.0,
+    "trd_refill_review": 0.5778
+   },
+   "auroc_placed_mean_per_task": null,
+   "placed_ci95": null,
+   "tasks_placed": 0,
+   "recall_at5_required_not_placed": 0.1825,
+   "tasks_with_missed": 21,
+   "median_s_per_question": 4.717,
+   "mean_p": {
+    "required": 0.7168,
+    "None": 0.7652,
+    "forbidden": 0.0
+   }
+  },
+  "pplx12_retr": {
+   "scored": 1323,
+   "tasks": 47,
+   "auroc_mean_per_task": 0.7434,
+   "ci95": [
+    0.6503,
+    0.833
+   ],
+   "auroc_unplaced_mean_per_task": 0.6406,
+   "tasks_unplaced": 21,
+   "unplaced_ci95": [
+    0.4971,
+    0.771
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.7297,
+    "alcohol_use_disorder": 0.5806,
+    "chronic_abdominal_workup": 1.0,
+    "chronic_urticaria_allergist": 1.0,
+    "dual_incontinence_workup": 0.8676,
+    "incidental_pulmonary_findings": 1.0,
+    "inflammatory_arthritis_serology": 0.6272,
+    "lipid_statin_management": 0.8462,
+    "liver_enzymes_pregnancy": 0.4875,
+    "mds_iron_overload": 0.0,
+    "mgus_cryoglobulinemia_workup": 0.0952,
+    "new_onset_afib_young": 0.6216,
+    "opioid_use_disorder": 1.0,
+    "osteoarthritis_nsaid_intolerant": 0.0556,
+    "osteoporosis_metabolic_workup": 0.7434,
+    "pcp_rash_workup": 0.3462,
+    "peripheral_neuropathy_workup": 0.8642,
+    "svt_tuberous_sclerosis": 0.1731,
+    "thrombocytopenia_immunotherapy": 0.8713,
+    "travel_parasitic_infection": 0.6316,
+    "trd_refill_review": 0.9111
+   },
+   "auroc_placed_mean_per_task": 0.7779,
+   "placed_ci95": [
+    0.671,
+    0.8702
+   ],
+   "tasks_placed": 42,
+   "recall_at5_required_not_placed": 0.3111,
+   "tasks_with_missed": 21,
+   "median_s_per_question": 2.606,
+   "mean_p": {
+    "required": 0.8537,
+    "None": 0.675,
+    "forbidden": 0.0
+   }
+  },
   "pplx12_rich": {
    "scored": 929,
    "tasks": 22,
    "auroc_mean_per_task": 0.4573,
    "ci95": [
-    0.3151,
-    0.5993
+    0.3182,
+    0.6022
    ],
    "auroc_unplaced_mean_per_task": 0.4358,
    "tasks_unplaced": 21,
@@ -877,8 +1242,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.8038,
    "ci95": [
-    0.7309,
-    0.8676
+    0.7354,
+    0.8695
    ],
    "auroc_unplaced_mean_per_task": 0.6522,
    "tasks_unplaced": 21,
@@ -929,8 +1294,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.9656,
    "ci95": [
-    0.942,
-    0.9838
+    0.943,
+    0.9842
    ],
    "auroc_unplaced_mean_per_task": 0.8854,
    "tasks_unplaced": 21,
