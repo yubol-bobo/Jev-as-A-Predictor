@@ -725,3 +725,21 @@ Pre-registered: no-orders share ≥ 0.6 and no-notes share ≤ 0.4 for both. dec
 part and misses the orders threshold by 0.03. Across all five models the orders carry 0.57-0.83 of the recovery and
 the notes −0.07-0.04 (removing the orders alone: +0.15 to +0.18, every CI excludes 0; removing the notes alone: no
 CI excludes 0).
+
+## G7 / G7-LLM verdict (2026-10-22 07:45): holds; an instruction does not undo the anchoring
+
+`results/pb_g7.json`. Unplaced AUROC, state -> state with the debiasing sentence (paired Δ), share of the
+remedy's gain recovered (System One: retrieval-only; Qwen: task-only on the 564 questions all three of its runs
+answered, 11 tasks, where task-only is +0.18 over the state, so the comparison is interpretable):
+
+| model | state | warned | Δ | remedy | share |
+|---|---|---|---|---|---|
+| pplx12 | 0.43 | 0.43 | +0.00 [−0.02, 0.03] | 0.64 | 0.02 |
+| d3 | 0.39 | 0.39 | +0.00 [−0.01, 0.02] | 0.63 | 0.01 |
+| amos | 0.42 | 0.43 | +0.02 [−0.01, 0.05] | 0.67 | 0.06 |
+| Qwen (thinking) | 0.53 | 0.54 | +0.02 [−0.09, 0.11] | 0.71 | 0.08 |
+
+Pre-registered (< 0.25 in ≥ 2 of 3 System One models): holds, 3 of 3. The models do read the sentence: mean P(Yes)
+rises by +0.01-0.03 for both required and unneeded orders (Qwen +0.06 / +0.02), but the ranking does not change.
+Telling the checker that the agent may have missed orders does not let it find them; what it reads has to change.
+Qwen has 225 of 919 unanswered with the warning (24%).

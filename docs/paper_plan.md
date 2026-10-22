@@ -23,7 +23,10 @@ reading the agent's work is the wrong input.**
    - Causal: one fabricated step placing an order raises P(Yes) by +0.07-0.10 regardless of the label (G4).
    - Mechanism: with the trajectory, scores follow similarity to the agent's orders (Spearman 0.28-0.47; task-only
      0.05); missed orders are unlike the agent's plan (AUROC 0.41), so they land below chance (`pb_plan_sim.json`).
-   - Pending: G7 (can an instruction undo it?), G6-ext (linne, decider31b), G6-LLM.
+   - Not instruction-fixable: a debiasing sentence ("the agent may have missed orders; judge independently")
+     recovers 1-6% of the gap for S1 models and 8% for Qwen thinking (G7, `pb_g7.json`): the input must change.
+   - G6 generality: across 5 models orders carry 57-83% of the recovery, notes ~0 (linne 0.57 just under the bar).
+     G6-LLM untestable (Qwen's commonly answered questions show no anchoring).
 4. **The S1 advantage is that the remedy is cheap.** Task-only S1 judgments take 0.2-0.6 s and always answer; Qwen
    takes 41-69 s and fails to answer 17-31% within an 8k budget; on common questions task-only S1 (0.66-0.79) matches
    or beats every Qwen input. That is what makes screening hundreds of candidate orders per task affordable.

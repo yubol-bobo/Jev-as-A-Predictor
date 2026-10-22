@@ -1,0 +1,74 @@
+{
+ "pplx12": {
+  "questions": 919,
+  "tasks": 21,
+  "auroc": {
+   "pplx12": 0.4296,
+   "pplx12_retr": 0.6406,
+   "pplx12_warn": 0.4337
+  },
+  "pplx12_warn_minus_pplx12": {
+   "delta": 0.0041,
+   "ci95": [
+    -0.022,
+    0.0315
+   ]
+  },
+  "share_of_gain": 0.019,
+  "valid_warn": 919
+ },
+ "d3": {
+  "questions": 919,
+  "tasks": 21,
+  "auroc": {
+   "d3": 0.3911,
+   "d3_retr": 0.6321,
+   "d3_warn": 0.3922
+  },
+  "d3_warn_minus_d3": {
+   "delta": 0.0011,
+   "ci95": [
+    -0.0132,
+    0.0183
+   ]
+  },
+  "share_of_gain": 0.005,
+  "valid_warn": 919
+ },
+ "amos": {
+  "questions": 919,
+  "tasks": 21,
+  "auroc": {
+   "amos": 0.4153,
+   "amos_retr": 0.6655,
+   "amos_warn": 0.431
+  },
+  "amos_warn_minus_amos": {
+   "delta": 0.0157,
+   "ci95": [
+    -0.0112,
+    0.0497
+   ]
+  },
+  "share_of_gain": 0.063,
+  "valid_warn": 919
+ },
+ "llm": {
+  "questions": 564,
+  "tasks": 11,
+  "auroc": {
+   "llm": 0.5281,
+   "llm_task": 0.7106,
+   "llm_warn": 0.5434
+  },
+  "llm_warn_minus_llm": {
+   "delta": 0.0152,
+   "ci95": [
+    -0.0904,
+    0.1126
+   ]
+  },
+  "share_of_gain": 0.084,
+  "valid_warn": 694
+ }
+}
