@@ -704,7 +704,7 @@ state / retrieval-only). Requiring an answer from all three Qwen runs keeps a su
 orders happen not to anchor (not a length effect: answered and unanswered questions come from states of similar
 length, median ~18.7k characters). The prediction can be neither confirmed nor refuted; the share is undefined. What
 the run does show: Qwen leaves 29% unanswered (median 44 s per answered question), which itself limits it as a checker.
-- **G7-LLM (fixed 2026-10-22 06:40, before the run).** Qwen thinking scores the unplaced subset with the state and
+- **G7-LLM (fixed 2026-10-22 06:37, before the run).** Qwen thinking scores the unplaced subset with the state and
   the same debiasing sentence before the question (`pb_screen.py llm --warn`), same budget. Compared on questions its
   state, task-only and warned runs all answer. No directional prediction (a reasoning model may follow the
   instruction where a System One model cannot); reported: warned − state and the share of the task-only gain it
