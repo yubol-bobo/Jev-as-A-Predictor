@@ -247,8 +247,9 @@ def score(blind, workers, rich=False, task=False, subset=False, cf=False, retrie
         list(ex.map(run, todo))
 
 
-def llm(url, workers, task=False, retrieval=False, drop=None):
-    out, done = _answers("llm_task" if task else "llm_retr" if retrieval else f"llm_no{drop}" if drop else "llm")
+def llm(url, workers, task=False, retrieval=False, drop=None, warn=False):
+    out, done = _answers("llm_task" if task else "llm_retr" if retrieval else f"llm_no{drop}" if drop else
+                         "llm_warn" if warn else "llm")
     states = json.loads((OD / "states.json").read_text())
     if task:  # the task instruction only (P6c control)
         states = {t: (v[0], []) for t, v in states.items()}
@@ -257,10 +258,11 @@ def llm(url, workers, task=False, retrieval=False, drop=None):
     if drop:  # G6 for the LLM
         states = {t: (v[0], without(v[1], {"notes": NOTE_TOOL, "orders": ORDER_TOOL}[drop])) for t, v in states.items()}
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
-    if task or retrieval or drop:  # only the subset the unplaced AUROC is computed on: unplaced orders of tasks with a missed one
+    if task or retrieval or drop or warn:  # only the subset the unplaced AUROC is computed on: unplaced orders of tasks with a missed one
         missed = missed_tasks()
         todo = [q for q in todo if q["task"] in missed and not q["placed"]]
     lock = threading.Lock()
+    prompt = LLM_PROMPT.replace("---\nConsider", "---\n" + WARN + "Consider") if warn else LLM_PROMPT
     print(f"{out.name}: {len(todo)} to score", flush=True)
 
     def text(task):
@@ -274,7 +276,7 @@ def llm(url, workers, task=False, retrieval=False, drop=None):
         try:
             r = requests.post(f"{url}/chat/completions", timeout=1800, json={
                 "model": "qwen3.8-27b", "max_tokens": 8192,
-                "messages": [{"role": "user", "content": LLM_PROMPT.format(state=text(q["task"]), order=q["order"])}]})
+                "messages": [{"role": "user", "content": prompt.format(state=text(q["task"]), order=q["order"])}]})
             r.raise_for_status()
             m = r.json()
             c = m["choices"][0]["message"]["content"] or ""
@@ -401,7 +403,7 @@ def main():
     ap.add_argument("--task", action="store_true", help="score: the task instruction only, no trajectory")
     ap.add_argument("--drop", choices=["notes", "orders"], help="score/llm: the state without the agent's notes or orders (G6)")
     ap.add_argument("--retrieval", action="store_true", help="score: the state without agent decisions (G5)")
-    ap.add_argument("--warn", action="store_true", help="score: the state with a debiasing instruction (G7)")
+    ap.add_argument("--warn", action="store_true", help="score/llm: the state with a debiasing instruction (G7)")
     ap.add_argument("--cf", action="store_true", help="score: the state plus a fabricated step placing the order (G4)")
     ap.add_argument("--subset", action="store_true", help="score: placed orders and the unplaced orders of tasks "
                     "with a missed required order (G1)")
@@ -411,7 +413,7 @@ def main():
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval, a.drop, a.warn), "llm": lambda: llm(a.url, a.workers, a.task, a.retrieval, a.drop),
+    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval, a.drop, a.warn), "llm": lambda: llm(a.url, a.workers, a.task, a.retrieval, a.drop, a.warn),
      "report": lambda: report(a.out)}[a.cmd]()
 
 
