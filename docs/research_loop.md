@@ -517,3 +517,24 @@ random checklist +0.01 [−0.11, 0.14]. Mechanism: the pplx12 checklist holds an
 random one 1.32: the top-ranked items are mostly orders already placed under another name, which the LLM rightly
 declines (interim note above). The ranking signal of P8 survives online only weakly, and the slots are spent on
 duplicates. Next: P8b (placed-aware ranking) decides whether P9b is worth running.
+
+## G1 verdict (2026-10-22 03:00): holds; the trajectory anchors every System One model tested
+
+`results/pb_screen.json`, paired per-task differences `results/pb_g1_paired.json`. AUROC (required vs not, per
+task), own state -> task instruction only; unplaced orders (21 tasks with a missed required order) / placed (42):
+
+| model | unplaced: state -> task (paired Δ, 95% CI) | placed: state -> task (paired Δ, 95% CI) | s/question (state, task) |
+|---|---|---|---|
+| pplx12 | 0.43 -> 0.65 (+0.22 [0.08, 0.38]) | 0.67 -> 0.82 (+0.15 [0.05, 0.25]) | 4.2, 0.39 |
+| Clef | 0.40 -> 0.63 (+0.23 [0.09, 0.39]) | 0.66 -> 0.76 (+0.11 [0.00, 0.21]) | 3.7, 0.41 |
+| d3 | 0.39 -> 0.73 (+0.34 [0.19, 0.50]) | 0.67 -> 0.86 (+0.20 [0.11, 0.30]) | 4.5, 0.39 |
+| linne | 0.37 -> 0.61 (+0.24 [0.11, 0.38]) | 0.66 -> 0.77 (+0.11 [0.01, 0.22]) | 8.7, 0.60 |
+| amos | 0.42 -> 0.69 (+0.27 [0.14, 0.43]) | 0.72 -> 0.83 (+0.11 [0.04, 0.19]) | 4.6, 0.39 |
+| decider31b | 0.40 -> 0.57 (+0.17 [0.04, 0.31]) | 0.65 -> 0.74 (+0.09 [−0.01, 0.19]) | 0.34, 0.22 |
+
+Pre-registered criteria: task > state on unplaced for 6/6 (≥ 5 required), on placed for 6/6 (≥ 5); mean
+difference on unplaced +0.25 (≥ +0.10 required). Holds. With the state, all six rank the orders the agent missed
+below chance (0.37-0.43); with the task text alone, all six rank them above (0.57-0.73). Claim for the paper: the
+agent's trajectory anchors System One models on what the agent did; given the task alone they are useful priors.
+The task-only judgment is also 7-20x faster (0.2-0.6 s per question vs 3.7-8.7 s with the state; Qwen thinking 41 s
+with the state). LLM side: the Qwen task-only comparator is at 427 / 919 (interim unplaced 0.62, not read yet).

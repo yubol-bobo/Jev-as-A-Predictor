@@ -1,0 +1,110 @@
+{
+ "pplx12": {
+  "unplaced": {
+   "tasks": 21,
+   "task_minus_state": 0.2226,
+   "ci95": [
+    0.0811,
+    0.3765
+   ]
+  },
+  "placed": {
+   "tasks": 42,
+   "task_minus_state": 0.1472,
+   "ci95": [
+    0.0487,
+    0.2489
+   ]
+  }
+ },
+ "clef": {
+  "unplaced": {
+   "tasks": 21,
+   "task_minus_state": 0.2293,
+   "ci95": [
+    0.0919,
+    0.3866
+   ]
+  },
+  "placed": {
+   "tasks": 42,
+   "task_minus_state": 0.1062,
+   "ci95": [
+    0.0039,
+    0.2072
+   ]
+  }
+ },
+ "d3": {
+  "unplaced": {
+   "tasks": 21,
+   "task_minus_state": 0.3412,
+   "ci95": [
+    0.1939,
+    0.5008
+   ]
+  },
+  "placed": {
+   "tasks": 42,
+   "task_minus_state": 0.1973,
+   "ci95": [
+    0.1087,
+    0.2965
+   ]
+  }
+ },
+ "linne": {
+  "unplaced": {
+   "tasks": 21,
+   "task_minus_state": 0.244,
+   "ci95": [
+    0.1065,
+    0.3845
+   ]
+  },
+  "placed": {
+   "tasks": 42,
+   "task_minus_state": 0.1148,
+   "ci95": [
+    0.0082,
+    0.2221
+   ]
+  }
+ },
+ "amos": {
+  "unplaced": {
+   "tasks": 21,
+   "task_minus_state": 0.2749,
+   "ci95": [
+    0.1363,
+    0.4323
+   ]
+  },
+  "placed": {
+   "tasks": 42,
+   "task_minus_state": 0.1118,
+   "ci95": [
+    0.0352,
+    0.1938
+   ]
+  }
+ },
+ "decider31b": {
+  "unplaced": {
+   "tasks": 21,
+   "task_minus_state": 0.1722,
+   "ci95": [
+    0.0391,
+    0.3111
+   ]
+  },
+  "placed": {
+   "tasks": 42,
+   "task_minus_state": 0.0904,
+   "ci95": [
+    -0.0088,
+    0.1921
+   ]
+  }
+ }
+}
