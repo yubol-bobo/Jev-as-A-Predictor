@@ -1,0 +1,40 @@
+{
+ "screen_prior-pplx12_b0m3_k5/run1": {
+  "tasks": 25,
+  "screened": 24,
+  "pool": 66.5,
+  "flagged": 3.0,
+  "flagged_required": 1.542,
+  "answer_orders": 0.417,
+  "answer_required": 0.125,
+  "screen_s": 176.429,
+  "tasks_with_flagged_required": 17,
+  "tasks_with_answer_required": 2,
+  "specs": 2.875,
+  "open_before": 1.25,
+  "flagged_open": 0.292,
+  "closed_after": 0.167,
+  "closed_by_flag": 0.167,
+  "tasks_with_flagged_open": 5,
+  "tasks_closed_by_flag": 3
+ },
+ "screen_prior-random_b0m3_k5/run1": {
+  "tasks": 25,
+  "screened": 25,
+  "pool": 66.6,
+  "flagged": 3.0,
+  "flagged_required": 0.44,
+  "answer_orders": 1.32,
+  "answer_required": 0.12,
+  "screen_s": 341.446,
+  "tasks_with_flagged_required": 10,
+  "tasks_with_answer_required": 3,
+  "specs": 2.88,
+  "open_before": 1.48,
+  "flagged_open": 0.16,
+  "closed_after": 0.16,
+  "closed_by_flag": 0.12,
+  "tasks_with_flagged_open": 4,
+  "tasks_closed_by_flag": 3
+ }
+}

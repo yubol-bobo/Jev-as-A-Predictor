@@ -505,3 +505,15 @@ screening (P8b offline, then P9b online); D1 baseline drift; G3 cost (latency pe
   ≥ +0.10. If it holds, "the trajectory anchors System One models" is a property of the model class (claim in the
   paper); if 3-4 of 6, it is model-dependent (reported as such); ≤ 2, the claim is dropped. The Qwen comparator
   (task-only, running) says whether the LLM shares it. Runs when D1 and P9 free the GPUs (4 models in parallel).
+
+## P9 verdict (2026-10-22 01:45, 24 tasks paired, 25 per arm): fails
+
+The previous allocation's processes stopped at ~19:40 (session end); 25 of 26 tasks per arm had finished.
+`results/pb_gap_p9_vs_random.json`, `pb_gap_p9_vs_llm.json`, `pb_gap_p9random_vs_llm.json`, `pb_p9_mechanism.json`.
+**Primary, prior-pplx12 − prior-random: required-order checkpoints +0.045 [−0.07, 0.19]**; task pass +0.13 [−0.04,
+0.29]; steps +6.0 [1.3, 11.3], notes −0.67 [−1.17, −0.17]. Versus llm/run1-2: pplx12 checklist +0.07 [−0.09, 0.24],
+random checklist +0.01 [−0.11, 0.14]. Mechanism: the pplx12 checklist holds an open required order 0.29 per task
+(random 0.16) and closes one in 3 tasks (random 3); after the pplx12 checklist the LLM places 0.42 orders, after the
+random one 1.32: the top-ranked items are mostly orders already placed under another name, which the LLM rightly
+declines (interim note above). The ranking signal of P8 survives online only weakly, and the slots are spent on
+duplicates. Next: P8b (placed-aware ranking) decides whether P9b is worth running.
