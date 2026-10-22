@@ -11,6 +11,8 @@ FINISH. Aggregates only in results/.
   S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_prior.py score [--placed] [--workers 4]
   .venv/bin/python scripts/pb_prior.py report [--out results/pb_prior.json]
   .venv/bin/python scripts/pb_prior.py export   (-> prior_ranked_pplx12.json, read by pb_run --ranker prior-pplx12)
+  S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_prior.py dedup [--workers 4]   (P10)
+  .venv/bin/python scripts/pb_prior.py factorized   (-> results/pb_p10.json)
 Patient content stays under data/offline/pb_screen/.
 """
 
@@ -47,6 +49,12 @@ PLACED_QUESTION = (
     "indicated as part of completing the task and still missing, that is, not the same as or equivalent to an order "
     "already placed?")
 PLACED_YES, PLACED_NO = "Yes, indicated and still missing", "No, not indicated or already placed"
+# P10, the factorized screen: whether a candidate repeats a placed order is asked on its own, without the task text,
+# so the agent's orders never enter the indication judgment (G6: they anchor it)
+DEDUP_INSTRUCTION = "Compare a candidate clinical order with the orders already placed for the same patient."
+DEDUP_QUESTION = ("Candidate order: {order}. Is it the same as, or equivalent to (the same laboratory test, imaging "
+                  "study, referral or consult, procedure, or drug), one of the orders already placed?")
+DEDUP_YES, DEDUP_NO = "Yes, it repeats an order already placed", "No, it is a new order"
 LINE = re.compile(r"(ServiceRequest|MedicationRequest)\s*:\s*(.+?)(?:\s*\(code\s*([^)]*)\))?\s*$")
 
 
@@ -139,6 +147,78 @@ def score(workers, placed=False):
         list(ex.map(run, todo))
 
 
+def dedup(workers):
+    """P10: P(the candidate repeats a placed order) for every item of the whole pool, given only the placed orders."""
+    name = os.environ.get("S1CLIN_DECIDER", "pplx12")
+    path, lock = OD / f"prior_dedup_{name}.jsonl", threading.Lock()
+    done = {(x["task"], x["order"]) for x in map(json.loads, path.read_text().splitlines())} if path.exists() else set()
+    info = tasks()
+    todo = [(t, o) for t, pool in pools(drop=False).items() if info[t][2] for o in pool if (t, render_order(o)) not in done]
+    print(f"{path.name}: {len(todo)} to score", flush=True)
+
+    def run(item):
+        t, o = item
+        letters = ["A", "B"]
+        random.Random(f"dedup|{t}|{render_order(o)}").shuffle(letters)
+        try:
+            r = requests.post(DECIDER_URLS[name], timeout=600, json={
+                "instruction": DEDUP_INSTRUCTION,
+                "steps": [{"action": "Orders already placed", "results": ["\n".join(map(render_order, info[t][4])) or "(none)"]}],
+                "question": DEDUP_QUESTION.format(order=render_order(o)),
+                "options": {letters[0]: DEDUP_YES, letters[1]: DEDUP_NO}})
+            r.raise_for_status()
+            p = r.json()["distribution"][letters[0]]
+        except Exception as e:
+            p = None
+            print(repr(e)[:200], flush=True)
+        with lock, open(path, "a") as f:
+            f.write(json.dumps({"task": t, "order": render_order(o), "p": p}, ensure_ascii=False) + "\n")
+
+    with ThreadPoolExecutor(workers) as ex:
+        list(ex.map(run, todo))
+
+
+def factorized(path, name="pplx12"):
+    """P10 report: top-m coverage of the open specs when the whole pool is ranked by P(indicated | task) x
+    (1 - P(repeats a placed order)), vs the name-drop ranking of P8, a random m, and an oracle that drops every item
+    matching an already-met spec; plus the share of top-m slots that repeat a met spec."""
+    info, full = tasks(), pools(drop=False)
+    ind = {(x["task"], x["order"]): x["p"] for x in map(json.loads, (OD / f"prior_scores_{name}.jsonl").read_text().splitlines())}
+    dup = {(x["task"], x["order"]): x["p"] for x in map(json.loads, (OD / f"prior_dedup_{name}.jsonl").read_text().splitlines())}
+    rankers = {
+        "name_drop": lambda t, items, placed: sorted((o for o in items if norm(o) not in placed), key=lambda o: -ind[(t, render_order(o))]),
+        "factorized": lambda t, items, placed: sorted(items, key=lambda o: -ind[(t, render_order(o))] * (1 - dup[(t, render_order(o))])),
+        "dedup_only": lambda t, items, placed: sorted(items, key=lambda o: dup[(t, render_order(o))]),
+    }
+    res = {}
+    for m in (3, 5, 8):
+        out = {}
+        for rk, f in rankers.items():
+            cov, var, ts = [], [], []
+            for t, (_, specs, open_, placed_names, _) in info.items():
+                if not open_ or t not in full:
+                    continue
+                items = full[t]
+                if any((t, render_order(o)) not in ind or ind[(t, render_order(o))] is None or
+                       dup.get((t, render_order(o))) is None for o in items):
+                    continue
+                met = [i for i in range(len(specs)) if i not in open_]
+                top = f(t, items, placed_names)[:m]
+                cov.append(len({i for o in top for i in open_ if matches(specs[i], *o)}) / len(open_))
+                var.append(sum(any(matches(specs[i], *o) for i in met) for o in top) / max(1, len(top)))
+                ts.append(t)
+            out[rk] = {"coverage": round(sum(cov) / len(cov), 4), "ci95": boot(cov), "variant_share": round(sum(var) / len(var), 4),
+                       "tasks": len(ts)}
+            out[rk]["_cov"] = dict(zip(ts, cov))
+        d = [out["factorized"]["_cov"][t] - out["name_drop"]["_cov"][t] for t in out["factorized"]["_cov"]]
+        out["factorized_minus_name_drop"] = {"mean": round(sum(d) / len(d), 4), "ci95": boot(d)}
+        for v in out.values():
+            v.pop("_cov", None)
+        res[f"top{m}"] = out
+    Path(path).write_text(json.dumps(res, indent=1))
+    print(json.dumps(res, indent=1))
+
+
 def export(name="pplx12"):
     """The online arm's input (P9): per task, the whole pool (nothing dropped) ranked by the decider, best first."""
     sc = {(x["task"], x["order"]): x["p"] for x in map(json.loads, (OD / f"prior_scores_{name}.jsonl").read_text().splitlines())}
@@ -192,7 +272,7 @@ def report(path, name="pplx12"):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["gen", "score", "report", "export"])
+    ap.add_argument("cmd", choices=["gen", "score", "report", "export", "dedup", "factorized"])
     ap.add_argument("--url", default="http://127.0.0.1:8013/v1")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", default=str(REPO / "results/pb_prior.json"))
@@ -200,7 +280,8 @@ def main():
     a = ap.parse_args()
     os.umask(0o077)
     {"gen": lambda: gen(a.url, a.workers), "score": lambda: score(a.workers, a.placed),
-     "report": lambda: report(a.out, "pplx12_placed" if a.placed else "pplx12"), "export": export}[a.cmd]()
+     "report": lambda: report(a.out, "pplx12_placed" if a.placed else "pplx12"), "export": export,
+     "dedup": lambda: dedup(a.workers), "factorized": lambda: factorized(REPO / "results/pb_p10.json")}[a.cmd]()
 
 
 if __name__ == "__main__":

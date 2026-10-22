@@ -743,3 +743,19 @@ Pre-registered (< 0.25 in ≥ 2 of 3 System One models): holds, 3 of 3. The mode
 rises by +0.01-0.03 for both required and unneeded orders (Qwen +0.06 / +0.02), but the ranking does not change.
 Telling the checker that the agent may have missed orders does not let it find them; what it reads has to change.
 Qwen has 225 of 919 unanswered with the warning (24%).
+
+## Toward the next online test (2026-10-22 08:17)
+
+Why P9 failed, in numbers (existing scores, 26 tasks): in the pplx12-ranked task-prior list, 35% of the top-3 slots
+(31% of the top-8) are variants of required orders the agent had already placed; top-m coverage of the missed specs
+is 0.31 / 0.35 / 0.36 / 0.40 at m = 3 / 5 / 8 / 10 (random 0.11 / 0.17 / 0.26 / 0.31). The list spends its slots on
+what the agent already did, and the indication judgment cannot be given the placed orders without being anchored
+(P8b, G6). The design that follows from G6: ask the two questions separately.
+
+- **P10 (factorized screen, offline; fixed 2026-10-22 08:17, before any score).** Each item of the whole task-prior
+  pool gets a second, separate System One judgment: given only the placed orders (no task text), "is this candidate
+  the same as or equivalent to one of the orders already placed?" (`pb_prior.py dedup`, pplx12). Ranking:
+  P(indicated | task) × (1 − P(repeat)). Compared with the P8 ranking (name-based drop): top-3 coverage of the open
+  specs and the share of top-3 slots that repeat a met spec. Prediction: factorized top-3 coverage ≥ 0.39 (P8
+  0.31) and variant share ≤ 0.20 (P8 0.35). If it holds, P10 becomes the list of the next online arm (O1 below); if
+  it fails, the dedup belongs to the LLM and O1 tests the uptake side only.

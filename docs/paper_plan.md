@@ -48,4 +48,4 @@ reading the agent's work is the wrong input.**
 ## Open questions for the user
 - Retitle? The current title fits claims 1-2 only. Candidates: "Fresh Eyes: System One Models as Checkers for
   Clinical Agents", or keep "Who Decides?" with a subtitle on checking.
-- Co-author names (`\pending{co-authors}`).
+- Co-authors: Yubo Li, Rema Krishnan (set 2026-10-22; affiliation line to confirm).
