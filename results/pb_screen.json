@@ -59,13 +59,45 @@
     "forbidden": 0.0
    }
   },
+  "amos_nonotes": {
+   "scored": 35,
+   "tasks": 2,
+   "auroc_mean_per_task": 0.9231,
+   "ci95": [
+    0.8462,
+    1.0
+   ],
+   "auroc_unplaced_mean_per_task": 0.9565,
+   "tasks_unplaced": 1,
+   "unplaced_ci95": [
+    0.9565,
+    0.9565
+   ],
+   "unplaced_by_task": {
+    "adrenal_incidentaloma": 0.9565
+   },
+   "auroc_placed_mean_per_task": 0.8333,
+   "placed_ci95": [
+    0.6667,
+    1.0
+   ],
+   "tasks_placed": 2,
+   "recall_at5_required_not_placed": 1.0,
+   "tasks_with_missed": 1,
+   "median_s_per_question": 3.285,
+   "mean_p": {
+    "required": 0.8416,
+    "None": 0.569,
+    "forbidden": 0.0
+   }
+  },
   "amos_retr": {
    "scored": 1323,
    "tasks": 47,
    "auroc_mean_per_task": 0.7622,
    "ci95": [
-    0.6744,
-    0.8429
+    0.6741,
+    0.8421
    ],
    "auroc_unplaced_mean_per_task": 0.6655,
    "tasks_unplaced": 21,
@@ -116,8 +148,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.8315,
    "ci95": [
-    0.7555,
-    0.9018
+    0.7584,
+    0.9031
    ],
    "auroc_unplaced_mean_per_task": 0.6902,
    "tasks_unplaced": 21,
@@ -168,8 +200,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.7127,
    "ci95": [
-    0.6381,
-    0.7848
+    0.637,
+    0.784
    ],
    "auroc_unplaced_mean_per_task": 0.3959,
    "tasks_unplaced": 21,
@@ -220,8 +252,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.5561,
    "ci95": [
-    0.4767,
-    0.6377
+    0.4745,
+    0.6342
    ],
    "auroc_unplaced_mean_per_task": 0.5081,
    "tasks_unplaced": 21,
@@ -272,8 +304,8 @@
    "tasks": 35,
    "auroc_mean_per_task": 0.6312,
    "ci95": [
-    0.5287,
-    0.729
+    0.5257,
+    0.732
    ],
    "auroc_unplaced_mean_per_task": 0.451,
    "tasks_unplaced": 21,
@@ -324,8 +356,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.7243,
    "ci95": [
-    0.6479,
-    0.7946
+    0.6468,
+    0.8004
    ],
    "auroc_unplaced_mean_per_task": 0.6252,
    "tasks_unplaced": 21,
@@ -376,8 +408,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.6137,
    "ci95": [
-    0.5159,
-    0.7029
+    0.5208,
+    0.7046
    ],
    "auroc_unplaced_mean_per_task": 0.3911,
    "tasks_unplaced": 21,
@@ -428,8 +460,8 @@
    "tasks": 21,
    "auroc_mean_per_task": 0.4249,
    "ci95": [
-    0.2796,
-    0.5788
+    0.2813,
+    0.5715
    ],
    "auroc_unplaced_mean_per_task": 0.4249,
    "tasks_unplaced": 21,
@@ -477,8 +509,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.7842,
    "ci95": [
-    0.7023,
-    0.8622
+    0.699,
+    0.8662
    ],
    "auroc_unplaced_mean_per_task": 0.6321,
    "tasks_unplaced": 21,
@@ -529,8 +561,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.845,
    "ci95": [
-    0.769,
-    0.9121
+    0.7715,
+    0.9111
    ],
    "auroc_unplaced_mean_per_task": 0.7323,
    "tasks_unplaced": 21,
@@ -581,8 +613,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.5857,
    "ci95": [
-    0.4771,
-    0.6845
+    0.4825,
+    0.6888
    ],
    "auroc_unplaced_mean_per_task": 0.3954,
    "tasks_unplaced": 21,
@@ -633,8 +665,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.711,
    "ci95": [
-    0.6191,
-    0.8021
+    0.617,
+    0.8018
    ],
    "auroc_unplaced_mean_per_task": 0.6433,
    "tasks_unplaced": 21,
@@ -685,8 +717,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.6908,
    "ci95": [
-    0.5982,
-    0.7826
+    0.5964,
+    0.7819
    ],
    "auroc_unplaced_mean_per_task": 0.5676,
    "tasks_unplaced": 21,
@@ -737,8 +769,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.5827,
    "ci95": [
-    0.4809,
-    0.6805
+    0.4831,
+    0.6804
    ],
    "auroc_unplaced_mean_per_task": 0.3657,
    "tasks_unplaced": 21,
@@ -789,8 +821,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.7182,
    "ci95": [
-    0.6175,
-    0.811
+    0.6223,
+    0.8065
    ],
    "auroc_unplaced_mean_per_task": 0.6193,
    "tasks_unplaced": 21,
@@ -841,8 +873,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.7299,
    "ci95": [
-    0.6256,
-    0.8211
+    0.6294,
+    0.8176
    ],
    "auroc_unplaced_mean_per_task": 0.6097,
    "tasks_unplaced": 21,
@@ -893,8 +925,8 @@
    "tasks": 49,
    "auroc_mean_per_task": 0.7021,
    "ci95": [
-    0.6197,
-    0.7764
+    0.6251,
+    0.7801
    ],
    "auroc_unplaced_mean_per_task": 0.4081,
    "tasks_unplaced": 16,
@@ -940,8 +972,8 @@
    "tasks": 17,
    "auroc_mean_per_task": 0.5857,
    "ci95": [
-    0.4281,
-    0.7232
+    0.4347,
+    0.7257
    ],
    "auroc_unplaced_mean_per_task": 0.5857,
    "tasks_unplaced": 17,
@@ -985,8 +1017,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.7365,
    "ci95": [
-    0.6642,
-    0.8073
+    0.6632,
+    0.8026
    ],
    "auroc_unplaced_mean_per_task": 0.4296,
    "tasks_unplaced": 21,
@@ -1037,8 +1069,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.566,
    "ci95": [
-    0.4836,
-    0.6431
+    0.4841,
+    0.6396
    ],
    "auroc_unplaced_mean_per_task": 0.6278,
    "tasks_unplaced": 21,
@@ -1089,8 +1121,8 @@
    "tasks": 21,
    "auroc_mean_per_task": 0.4437,
    "ci95": [
-    0.3043,
-    0.6019
+    0.3034,
+    0.6051
    ],
    "auroc_unplaced_mean_per_task": 0.4437,
    "tasks_unplaced": 21,
@@ -1138,8 +1170,8 @@
    "tasks": 47,
    "auroc_mean_per_task": 0.7434,
    "ci95": [
-    0.6503,
-    0.833
+    0.6456,
+    0.8306
    ],
    "auroc_unplaced_mean_per_task": 0.6406,
    "tasks_unplaced": 21,
@@ -1190,8 +1222,8 @@
    "tasks": 22,
    "auroc_mean_per_task": 0.4573,
    "ci95": [
-    0.3182,
-    0.6022
+    0.3145,
+    0.5905
    ],
    "auroc_unplaced_mean_per_task": 0.4358,
    "tasks_unplaced": 21,
@@ -1242,8 +1274,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.8038,
    "ci95": [
-    0.7354,
-    0.8695
+    0.7329,
+    0.8703
    ],
    "auroc_unplaced_mean_per_task": 0.6522,
    "tasks_unplaced": 21,
@@ -1294,8 +1326,8 @@
    "tasks": 52,
    "auroc_mean_per_task": 0.9656,
    "ci95": [
-    0.943,
-    0.9842
+    0.942,
+    0.984
    ],
    "auroc_unplaced_mean_per_task": 0.8854,
    "tasks_unplaced": 21,

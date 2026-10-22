@@ -621,3 +621,13 @@ anchor but not all of it.
   notes kept). Models pplx12, d3, amos; unplaced AUROC. Reported: the share of the retrieval-only recovery that each
   removal achieves. No directional prediction is made; a share ≥ 0.6 for one type and ≤ 0.4 for the other, in ≥ 2 of
   3 models, names that type as the main anchor; otherwise both contribute.
+
+## The LLM is anchored too (Qwen task-only comparator, complete 2026-10-22 04:50; control added after P6c)
+
+Qwen3.8-27B with thinking, task text only, unplaced subset: 759 of 919 questions answered (the rest ran out of the
+8,192-token budget without a "P=" line, as in the state run). On the 674 questions both Qwen runs answered (15 tasks
+with a computable AUROC): **state 0.46 -> task-only 0.62, paired +0.17 [0.07, 0.27]**. The same questions for the
+System One models: pplx12 0.43 -> 0.66, d3 0.38 -> 0.72. Anchoring on the agent's trajectory is therefore not a
+System One quirk: it is what happens to any judge that reads the agent's actions. What is specific to the System One
+models is the cost of the remedy: with the task text alone they match or beat the thinking LLM (0.66-0.72 vs 0.62)
+at 0.2-0.6 s per judgment vs ~80 s (about 150-350x less time), which is what makes wide screening affordable.
