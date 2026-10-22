@@ -789,3 +789,6 @@ more than about a third of the missed orders.
   list, not the indication ranking (the System One role is then the repeat judge); A > B as well means both System One
   judgments matter. O1 uses m = 8 and the hard filter from the P10 exploration; the online outcome is new data.
   Smoke test first: 2 tasks, check `screen.pool`, `pool_after_dedup`, `flagged` and the screening time per FINISH.
+  Smoke test (2026-10-22 08:31, run 99, 1 task, not part of O1): the arm runs end to end; at the first FINISH the
+  pool held 77 items, 71 after the repeat filter, 8 were shown, and the LLM answered with 3 orders; screening plus
+  the LLM's second turn took 104 s. Job exit code 1 is the usual "not every checkpoint passed" (41 of 52 P9 runs).
