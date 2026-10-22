@@ -792,3 +792,10 @@ more than about a third of the missed orders.
   Smoke test (2026-10-22 08:31, run 99, 1 task, not part of O1): the arm runs end to end; at the first FINISH the
   pool held 77 items, 71 after the repeat filter, 8 were shown, and the LLM answered with 3 orders; screening plus
   the LLM's second turn took 104 s. Job exit code 1 is the usual "not every checkpoint passed" (41 of 52 P9 runs).
+
+## O1 launched (2026-10-22 09:30, allocation 49587179, w007)
+
+Both arms, 54 tasks, run 1, 14 workers each: `prior-pplx12-dedup` (port base 18100) and `prior-random-dedup`
+(18300). Qwen TP2 on GPUs 0,1 (8011) and TP1 on GPU 2 (8013), tasks routed by name with
+`8011/v1*2,8013/v1*1`, so a task meets the same replica in both arms (run 3's routing could not be reproduced exactly;
+the replicas serve the same weights and sampling); pplx12 on GPU 3. Logs `logs/o1_{pplx12,random}_run1.log`.
