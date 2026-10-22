@@ -877,3 +877,13 @@ allocation; `a_run.sh` was stopped by hand at 16:21 before it could stop pplx12 
   false completion claim, not a grader artifact. Together with RECOMMENDS (4), about a third of the noted misses
   (13/37) are orders the agent intended and believes or says it placed: the part a check of the note against the
   executed orders could close. The rest of "noted" is deferral (CONDITIONAL) or a decision against (NEGATED).
+
+## O1 interim (2026-10-22 16:53, NOT the verdict: 49/54 pplx12, 51/54 random; the allocation ends ~17:00)
+
+The remaining tasks (5 + 3) restart clean on the next allocation (stale claims, `pb_run` removes the unfinished job
+dirs). Interim, `results/pb_gap_o1_*.json`, `results/pb_o1_mechanism.json`: required-order checkpoints A − run3
++0.009 [−0.07, 0.09] (49 tasks); B − run3 +0.06 [−0.03, 0.16] (51); A − B −0.045 [−0.15, 0.06] (48). Harms: orders
++1.4 / +1.7 per task, unmatched +1.3 / +1.7 (above the +1.0 bound), forbidden 0 -> 0. Mechanism, inside the run: the
+pplx12 list held an open required spec in 15 tasks (random 11) and the agent placed it in 5 (random 1); variant
+share of the list 0.04 / 0.015; uptake 6% / 4% of shown items. Between runs, the arms' own pre-checklist misses
+differ (open specs at FINISH 0.81 vs 0.61 per task), which swamps the within-run closures at n ≈ 50.
