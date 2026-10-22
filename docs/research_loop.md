@@ -693,3 +693,14 @@ near a third of the missed orders at a 3-5 item budget.
   Prediction: the warning recovers < 0.25 of the retrieval-only gain over the state in ≥ 2 of 3 models (anchoring is
   in the input, not fixable by telling the model). If it recovers ≥ 0.6, the cheap remedy is an instruction and the
   design rule weakens to "warn the checker".
+
+## G6-LLM verdict (2026-10-22 06:37): not testable; the questions Qwen answers in every condition carry no anchoring
+
+`results/pb_g6_llm.json`. Qwen thinking with the no-orders state answered 656 of 919. On the 507 questions that its
+state, retrieval-only and no-orders runs all answered (7 tasks with a computable AUROC) there is no anchoring to
+recover: state 0.54, retrieval-only 0.55 (+0.02 [−0.04, 0.08]), no-orders 0.52 (−0.02 [−0.10, 0.05]), and the
+System One models show none either on the same questions (pplx12 0.54 / 0.55, d3 0.47 / 0.43, amos 0.57 / 0.57,
+state / retrieval-only). Requiring an answer from all three Qwen runs keeps the tasks with short trajectories, where
+the agent's orders do not anchor. The prediction can be neither confirmed nor refuted; the share is undefined. What the
+run does show: Qwen's unanswered rate stays at 29% (median 44 s per answered question), so the LLM-as-checker loses
+most often on exactly the long trajectories where anchoring is strongest.

@@ -1,0 +1,36 @@
+{
+ "questions_common": 507,
+ "tasks": 7,
+ "valid_llm_noorders": 656,
+ "auroc": {
+  "llm": 0.5353,
+  "llm_retr": 0.5514,
+  "llm_noorders": 0.515,
+  "llm_task": 0.6033,
+  "pplx12": 0.5396,
+  "pplx12_noorders": 0.5292,
+  "pplx12_retr": 0.5466,
+  "d3": 0.4652,
+  "d3_noorders": 0.4577,
+  "d3_retr": 0.4336,
+  "amos": 0.5724,
+  "amos_noorders": 0.5653,
+  "amos_retr": 0.5652
+ },
+ "llm_retr_minus_llm": {
+  "delta": 0.0161,
+  "ci95": [
+   -0.0401,
+   0.0785
+  ]
+ },
+ "llm_noorders_minus_llm": {
+  "delta": -0.0202,
+  "ci95": [
+   -0.102,
+   0.0462
+  ]
+ },
+ "llm_noorders_share_of_retr_gain": -1.259,
+ "median_s_llm_noorders": 44.084
+}
