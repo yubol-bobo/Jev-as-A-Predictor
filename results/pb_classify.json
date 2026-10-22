@@ -1,0 +1,54 @@
+{
+ "noted": {
+  "noted": {
+   "n": 40,
+   "share": {
+    "CLAIMS_DONE": 0.3,
+    "CONDITIONAL": 0.25,
+    "NEGATED": 0.175,
+    "OTHER": 0.175,
+    "RECOMMENDS": 0.1
+   }
+  }
+ },
+ "placed": {
+  "placed": {
+   "n": 40,
+   "share": {
+    "DIFFERENT": 0.9,
+    "EQUIVALENT": 0.1
+   }
+  }
+ },
+ "reasons": {
+  "Clinical Reasoning": {
+   "n": 161,
+   "share": {
+    "WRONG": 0.41,
+    "INCOMPLETE": 0.255,
+    "NO_NOTE": 0.23,
+    "HEDGED": 0.05,
+    "MISSING": 0.043,
+    "OTHER": 0.012
+   }
+  },
+  "Documentation": {
+   "n": 86,
+   "share": {
+    "WRONG": 0.547,
+    "INCOMPLETE": 0.291,
+    "NO_NOTE": 0.105,
+    "MISSING": 0.058
+   }
+  },
+  "Data Retrieval": {
+   "n": 44,
+   "share": {
+    "MISSING": 0.614,
+    "WRONG": 0.182,
+    "INCOMPLETE": 0.114,
+    "NO_NOTE": 0.091
+   }
+  }
+ }
+}

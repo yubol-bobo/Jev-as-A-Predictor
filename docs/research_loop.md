@@ -848,3 +848,32 @@ then reasons in the note, and the note's further orders are never executed; cont
   - A6 (Q3, `pb_classify.py reasons`): shares of NO_NOTE / MISSING / WRONG / HEDGED / INCOMPLETE among failed
     Clinical Reasoning and Documentation checkpoints; no directional prediction.
   Order of runs: A5, A6 (minutes), A2, A1 (the finish point), then A3, A4.
+
+## A5 / A6 verdicts (2026-10-22 16:34; local Qwen, no thinking, temperature 0; `results/pb_classify.json`)
+
+Run early on the O1 replicas at low concurrency (the O1 drivers ran past 16:30, so the A1-A4 replay moves to the next
+allocation; `a_run.sh` was stopped by hand at 16:21 before it could stop pplx12 or start anything).
+- **A5 fails (0.40 < 0.5).** How the agent's own note names the 40 missed required orders it mentions (llm_log_k5 run1
+  and run3): CLAIMS_DONE 30%, CONDITIONAL 25%, NEGATED 17.5%, OTHER 17.5%, RECOMMENDS 10%. RECOMMENDS + CLAIMS_DONE =
+  0.40. So "noted" (53% of misses) is not mostly said-not-done: about a quarter are deferred or conditional and about
+  a sixth are explicit decisions against. The large part is CLAIMS_DONE: the note says the order was placed and no
+  executed order matches the grader's spec. Two readings, to separate before any claim: (a) the agent believes it
+  placed something it did not (an execution or bookkeeping error), (b) it placed an equivalent order under a name the
+  spec's pattern does not match (a grader artifact). Check: for each CLAIMS_DONE case, does any placed order of the
+  run judge as the same order (local judge, placed orders vs the spec's names)?
+  Consequence for A1: the pool of orders a self-consistency nudge can recover is about RECOMMENDS + CLAIMS_DONE of the
+  noted misses, ~0.4 × 0.53 ≈ 21% of all misses (if CLAIMS_DONE is real); A1's +0.15 is ambitious on this base.
+- **A6 (descriptive; 291 failed checkpoints, four LLM runs).** Clinical Reasoning (161): WRONG 41%, INCOMPLETE 25.5%,
+  NO_NOTE 23%, HEDGED 5%, MISSING 4%. Documentation (86): WRONG 55%, INCOMPLETE 29%, NO_NOTE 10.5%, MISSING 6%. Data
+  Retrieval (44): MISSING 61%, WRONG 18%, INCOMPLETE 11%, NO_NOTE 9%. The same pattern in llm and llm_log_k5 runs.
+  Reading: reasoning and documentation fail mainly on content (a wrong value, interpretation or decision; then a
+  missing required detail), not on hedging; about a fifth of reasoning failures are simply no note. Next split
+  (proposed): WRONG into a misread or missing chart fact vs a wrong clinical judgment from correct facts, which
+  decides whether retrieval or knowledge is the lever.
+- **A5b (exploratory, 16:35; `pb_classify.py placed`, the check above).** Local Qwen, given the spec's name patterns
+  and every order the run placed: of the 12 CLAIMS_DONE misses, 9 have no equivalent placed order (3 do: grader
+  pattern misses). Over all noted misses, 4 of 37 judged have an equivalent placed order. So reading (a) dominates:
+  in about a quarter of the noted misses (9/37) the agent's note states an order as placed that was never executed, a
+  false completion claim, not a grader artifact. Together with RECOMMENDS (4), about a third of the noted misses
+  (13/37) are orders the agent intended and believes or says it placed: the part a check of the note against the
+  executed orders could close. The rest of "noted" is deferral (CONDITIONAL) or a decision against (NEGATED).

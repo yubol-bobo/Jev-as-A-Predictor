@@ -480,6 +480,27 @@ DEDUP_QUESTION = ("Candidate order: {order}. Is it the same as, or equivalent to
                   "study, referral or consult, procedure, or drug), one of the orders already placed?")
 DEDUP_YES, DEDUP_NO = "Yes, it repeats an order already placed", "No, it is a new order"
 DEDUP_DECIDER, DEDUP_MAX = "pplx12", 0.5  # items with P(repeat) >= DEDUP_MAX are dropped
+# R, the restart: at the first FINISH the LLM is asked once more for the orders the task requires, from its context
+# with its own decisions removed (`restart-fresh`) or from the full context (`restart-full`, control); only the order
+# calls of that answer are executed, minus exact repeats of placed orders (offline counterpart: pb_replay.py A2)
+RESTART_ASK = ("Based on the task and the patient data gathered so far, place every order that this task requires and "
+               "that has not been placed yet, then finish.")
+DECISION_TOOLS = ("_create", "write_file")  # orders, messages, appointments, the note
+
+
+def fresh_context(messages: list[dict]) -> list[dict]:
+    """The messages with every decision turn (a tool call ending in DECISION_TOOLS) and the tool results answering it
+    removed: the system prompt, the task and the retrieval turns remain."""
+    out, drop = [], set()
+    for m in messages:
+        calls = m.get("tool_calls") or []
+        if m["role"] == "assistant" and any(_tc_name_args(tc)[0].endswith(DECISION_TOOLS) for tc in calls):
+            drop |= {tc["id"] if isinstance(tc, dict) else tc.id for tc in calls}
+        elif m["role"] == "tool" and m.get("tool_call_id") in drop:
+            continue
+        else:
+            out.append(m)
+    return out
 
 
 def turn_orders(raw: str) -> list[tuple[str, str, str]]:
@@ -521,6 +542,7 @@ class ScreenClient:
     Orders the run has placed are dropped and the top M shown. With B = 0 no extra samples are drawn.
     A suffix `-dedup` (O1: `prior-pplx12-dedup`, `prior-random-dedup`) also drops every pool item that DEDUP_DECIDER,
     given only the run's placed orders, judges a repeat of one of them (P10).
+    Rankers `restart-fresh` / `restart-full` (R) show no list: see _restart.
     """
 
     def __init__(self, base, ranker: str, k: int, b: int, m: int, log_path: Path, seed: str):
@@ -571,6 +593,37 @@ class ScreenClient:
             return r.json()["distribution"][letters[0]]
         with ThreadPoolExecutor(8) as ex:
             return list(ex.map(one, orders))
+
+    def _restart(self, messages, common, chosen, rec):
+        """Arm R: ask for the remaining orders (RESTART_ASK) from the fresh or the full context; execute only its order
+        calls that do not repeat a placed order by name; with none left, the LLM's own FINISH stands."""
+        t0, screen = time.time(), {"ranker": self.ranker}
+        try:
+            ctx = fresh_context(messages) if self.ranker == "restart-fresh" else list(messages)
+            screen["context_messages"] = [len(messages), len(ctx)]
+            r2 = self.base.chat(ctx + [{"role": "user", "content": RESTART_ASK}], **common).raw.choices[0]
+            calls = r2.message.tool_calls or []
+            screen["answer"] = render_turn(r2.message.content, calls)[:MAX_CANDIDATE_CHARS]
+            keep, dropped = [], {"repeat": 0, "not_order": 0}
+            for tc in calls:
+                os_ = turn_orders(render_turn(None, [tc]))
+                if not os_:
+                    dropped["not_order"] += 1
+                elif order_key(os_[0]) in self.placed:
+                    dropped["repeat"] += 1
+                else:
+                    keep.append(tc)
+            screen.update(dropped=dropped, executed=len(keep))
+            if keep:
+                r2.message.tool_calls = keep
+                r2.message.content = ("[Pre-finish review]\n" + RESTART_ASK + "\n\n" + (r2.message.content or "")).strip()
+                self._note([], render_turn(r2.message.content, keep))
+                chosen = r2
+        except Exception as e:  # restart failure: the LLM's own FINISH stands
+            screen["error"] = repr(e)[:500]
+        screen["s"] = round(time.time() - t0, 2)
+        rec["screen"] = screen
+        return chosen
 
     def _rank(self, messages, common, screen):
         """The top M (score, order) pairs of the pool; the pool and flagged orders go into `screen`."""
@@ -623,7 +676,10 @@ class ScreenClient:
                                    "n_messages": n_messages, "msg_epoch": epoch, "pick": 0, "q": QUESTION_VERSION,
                                    "prompt_tokens": resp.prompt_tokens, "completion_tokens": resp.completion_tokens}
         self._note(renderings, renderings[0])
-        if not chosen.message.tool_calls and not self.done:
+        if not chosen.message.tool_calls and not self.done and self.ranker.startswith("restart-"):
+            self.done = True
+            chosen = self._restart(messages, common, chosen, rec)
+        elif not chosen.message.tool_calls and not self.done:
             self.done = True
             t0, screen = time.time(), {"ranker": self.ranker}
             try:
