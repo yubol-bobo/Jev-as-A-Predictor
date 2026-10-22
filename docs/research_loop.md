@@ -799,3 +799,52 @@ Both arms, 54 tasks, run 1, 14 workers each: `prior-pplx12-dedup` (port base 181
 (18300). Qwen TP2 on GPUs 0,1 (8011) and TP1 on GPU 2 (8013), tasks routed by name with
 `8011/v1*2,8013/v1*1`, so a task meets the same replica in both arms (run 3's routing could not be reproduced exactly;
 the replicas serve the same weights and sampling); pplx12 on GPU 3. Logs `logs/o1_{pplx12,random}_run1.log`.
+
+## Why the agent errs: anatomy (exploratory, 2026-10-22 11:40; existing logs, CPU only)
+
+The user's success criteria for this stage: (Q1) why a required order is missed in the first place (context drift,
+a plan fixed too early, or a wrong task decomposition); (Q2) whether anchoring on its own orders causes the omission,
+not only blocks recovery; (Q3) how Clinical Reasoning and Documentation checkpoints fail.
+
+`scripts/pb_omission.py` -> `results/pb_omission.json` (llm_log_k5/run1, 100 tasks, 54 with a required-order spec;
+run3, 54 tasks; 236 specs; 76 missed at the end of the run).
+- **Where a missed order is lost** (first class that applies; the note's and text's classes use the grader's name
+  regexes on free text, so they are upper bounds that include negated mentions): **noted** in the agent's own note
+  but never placed 53% (run1) / 53% (run3); proposed by a sampled candidate but never executed 8% / 18%; only
+  mentioned in a candidate's text 3% / 0%; **silent** (never surfaces) 36% / 30%.
+- **The task-text prior knows them**: of the noted ones 100% (40/40) are in the task-only Qwen list (P8 pool); of the
+  silent ones about half (14/25); placed ones 99%. About 14% of all misses (silent and not in the prior) look like a
+  knowledge or decomposition gap; most of the rest the model can name and often writes down.
+- **The order of work**: the executed turns end, in 91 of 154 runs, as retrieval -> one burst of orders -> the note
+  -> FINISH ('ONF' or 'O.NF'); 20 runs write the note and finish with no order. Orders are one burst (73/100 and 50/54
+  runs) at 73-76% of the run; placed required orders come at 74% of the run, at ~42-49k prompt tokens, the same
+  point and context length at which the missed-but-proposed ones first appear (69-76%, 49-55k tokens): no sign that
+  orders surfacing later, at longer contexts, are the ones lost. The note, the most explicit clinical reasoning of
+  the run, comes after the orders, and the agent rarely returns to ordering after it.
+- **Q3, first pass**: of the failed Clinical Reasoning checkpoints (161, four LLM runs) 23% fail because no note was
+  written or it is empty; Documentation 10% (9/86); the rest are the grader's content judgments (to classify, A6).
+Reading (hypothesis, to test): the dominant omission is an execution gap at the end of the episode: the agent orders,
+then reasons in the note, and the note's further orders are never executed; context drift has no support yet.
+
+- **A1-A6 (fixed 2026-10-22 11:40, before any sample; run after O1 on Qwen, all four GPUs).** `scripts/pb_replay.py`
+  rebuilds the agent's exact context (its system prompt, its 14 tools, Qwen thinking, 16k tokens, K = 5 samples) at
+  the first FINISH (51 cases with an open required spec, 69 open specs) and at the first order step (102 cases).
+  Outcome per sample: share of the target specs that the sampled turn orders (finish: the open specs; order step: all
+  required specs), duplicates of placed orders, number of orders; paired by case, bootstrap CIs.
+  - A1 (Q1, execution gap): finish_nudge ("check that every order your note or plan recommends has been placed;
+    place any not yet placed") − finish_none: coverage ≥ +0.15 with the CI excluding 0. If it holds, most omissions
+    are said-not-done and are closed by a self-consistency check; if not, the noted mentions are not plans.
+  - A2 (Q2, does seeing its own decisions suppress the missed orders at generation): finish_fresh − finish_ask, both
+    with the same request ("place every order this task requires and that has not been placed yet"), fresh = the
+    context with every order/message/appointment/note turn and its results removed: coverage ≥ +0.10 with the CI
+    excluding 0. If it holds, the agent's own decisions suppress the orders it would otherwise generate (anchoring is
+    a cause of omission, at least at the end of the run); duplicates are reported as the price.
+  - A3 (Q1, context drift): order_remind (the task instruction repeated just before the first order step) −
+    order_none: coverage of all required specs ≥ +0.05 with the CI excluding 0 supports drift; otherwise no support.
+  - A4 (Q1, plan before acting / decomposition): order_plan ("write out your full assessment and plan, listing every
+    order the task requires, then place every order in it") − order_none: coverage ≥ +0.05 with the CI excluding 0
+    supports that acting before full reasoning loses orders.
+  - A5 (Q1, what the note says, `pb_classify.py noted`): of the noted misses, RECOMMENDS + CLAIMS_DONE ≥ 0.5.
+  - A6 (Q3, `pb_classify.py reasons`): shares of NO_NOTE / MISSING / WRONG / HEDGED / INCOMPLETE among failed
+    Clinical Reasoning and Documentation checkpoints; no directional prediction.
+  Order of runs: A5, A6 (minutes), A2, A1 (the finish point), then A3, A4.

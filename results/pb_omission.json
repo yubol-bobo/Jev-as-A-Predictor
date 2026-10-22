@@ -1,0 +1,99 @@
+{
+ "q1": {
+  "llm_log_k5/run1": {
+   "tasks": 100,
+   "specs": 118,
+   "classes": {
+    "placed": 82,
+    "noted": 19,
+    "proposed": 3,
+    "silent": 13,
+    "mentioned": 1
+   },
+   "missed_share": {
+    "noted": 0.528,
+    "proposed": 0.083,
+    "silent": 0.361,
+    "mentioned": 0.028
+   },
+   "placed_rel_step_mean": 0.739,
+   "placed_tokens_mean": 48785.317,
+   "missed_first_rel_step_mean": {
+    "noted": 0.75,
+    "proposed": 0.759,
+    "mentioned": 1.0
+   },
+   "missed_first_tokens_mean": {
+    "proposed": 48619.333,
+    "mentioned": 88201.0
+   },
+   "runs": {
+    "steps_mean": 14.85,
+    "orders_mean": 3.25,
+    "bursts": {
+     "1": 73,
+     "0": 27
+    },
+    "order_phase_start_mean": 0.733,
+    "order_phase_end_mean": 0.761,
+    "final_tokens_mean": 58374.71
+   }
+  },
+  "llm_log_k5/run3": {
+   "tasks": 54,
+   "specs": 118,
+   "classes": {
+    "placed": 78,
+    "noted": 21,
+    "proposed": 7,
+    "silent": 12
+   },
+   "missed_share": {
+    "noted": 0.525,
+    "proposed": 0.175,
+    "silent": 0.3
+   },
+   "placed_rel_step_mean": 0.745,
+   "placed_tokens_mean": 42416.821,
+   "missed_first_rel_step_mean": {
+    "noted": 0.83,
+    "proposed": 0.691,
+    "mentioned": null
+   },
+   "missed_first_tokens_mean": {
+    "proposed": 54712.714,
+    "mentioned": null
+   },
+   "runs": {
+    "steps_mean": 14.556,
+    "orders_mean": 4.722,
+    "bursts": {
+     "1": 50,
+     "2": 1,
+     "0": 3
+    },
+    "order_phase_start_mean": 0.738,
+    "order_phase_end_mean": 0.76,
+    "final_tokens_mean": 57718.426
+   }
+  }
+ },
+ "q3": {
+  "Clinical Reasoning": {
+   "other": 124,
+   "no_output": 37
+  },
+  "Documentation": {
+   "other": 77,
+   "no_output": 9
+  },
+  "Data Retrieval": {
+   "other": 40,
+   "no_output": 4
+  },
+  "Action Execution": {
+   "other": 66,
+   "no_output": 2
+  }
+ }
+}
