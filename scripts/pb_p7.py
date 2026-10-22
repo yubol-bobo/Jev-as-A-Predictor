@@ -4,6 +4,8 @@ For each finished task of a screen arm: the screen record of the first FINISH (p
 LLM's answer), the flagged orders that match a required-order grader (pb_offline_orders.required_orders), and the
 orders placed in the answer. Outcome comparisons are pb_gap.py's job; this explains them.
 
+  Also O1 (factorized checklist): pool after the repeat filter, the share of flagged orders that repeat a required
+  order already met (variant share), and the share of flagged orders the LLM placed (uptake).
   .venv/bin/python scripts/pb_p7.py [--arms screen_freq_b8m3_k5,screen_pplx12-task_b8m3_k5] [--out results/pb_p7_mechanism.json]
 """
 
@@ -18,7 +20,7 @@ sys.path[:0] = [str(REPO / "scripts"), str(REPO)]
 from pb_gap import calls  # noqa: E402
 from pb_offline_orders import matches, orders_in, required_orders  # noqa: E402
 from pb_summarize import JOBS  # noqa: E402
-from src.s1clin.pb_decider import turn_orders  # noqa: E402
+from src.s1clin.pb_decider import order_key, turn_orders  # noqa: E402
 
 FLAG = re.compile(r"^(MedicationRequest|ServiceRequest): (.*?)(?: \(code (.*)\))?$")
 
@@ -55,13 +57,20 @@ def arm(slug):
             open_ = set(range(len(specs))) - before  # required specs not yet met when the screen ran
             row.update(specs=len(specs), open_before=len(open_), flagged_open=len(met(flagged, specs) & open_),
                        closed_after=len(final & open_), closed_by_flag=len(final & open_ & met(flagged, specs)))
+            keys = {order_key(o) for o in flagged}
+            row.update(pool_after_dedup=screen.get("pool_after_dedup", screen.get("pool", 0)),
+                       flagged_variant=sum(any(matches(specs[i], *o) for i in before) for o in flagged),
+                       answer_from_flag=sum(order_key(o) in keys for o in placed))
             row.update(pool=screen.get("pool", 0), flagged=len(flagged), s=screen.get("s"),
                        flagged_required=sum(is_required(o, specs) for o in flagged),
                        answer_orders=len(placed), answer_required=sum(is_required(o, specs) for o in placed))
         rows.append(row)
     sc = [r for r in rows if r["screened"]]
     mean = lambda k: round(sum(r[k] for r in sc) / len(sc), 3) if sc else None  # noqa: E731
+    share = lambda k: round(sum(r[k] for r in sc) / max(1, sum(r["flagged"] for r in sc)), 3)  # noqa: E731
     return {"tasks": len(rows), "screened": len(sc), "pool": mean("pool"), "flagged": mean("flagged"),
+            "pool_after_dedup": mean("pool_after_dedup"), "flagged_variant_share": share("flagged_variant"),
+            "uptake_share": share("answer_from_flag"), "answer_from_flag": mean("answer_from_flag"),
             "flagged_required": mean("flagged_required"), "answer_orders": mean("answer_orders"),
             "answer_required": mean("answer_required"), "screen_s": mean("s"),
             "tasks_with_flagged_required": sum(r["flagged_required"] > 0 for r in sc),
