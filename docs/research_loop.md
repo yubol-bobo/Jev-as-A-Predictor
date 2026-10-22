@@ -774,7 +774,7 @@ exploratory): top-3 0.27, top-5 0.27, **top-8 0.55 vs 0.36 (+0.19 [0.01, 0.38])*
 from the filtered pool 0.28. The separation of the two judgments works; what a 3-5 item list cannot do is cover
 more than about a third of the missed orders.
 
-- **O1 (online, the next allocation; fixed 2026-10-22 08:25, before any run).** The factorized checklist at the
+- **O1 (online, the next allocation; fixed 2026-10-22 08:21, before any run).** The factorized checklist at the
   agent's first FINISH, on all 54 tasks of llm_log_k5/run3 (`results/o1_tasks.txt`; not selected on a past miss).
   Arms, both `pb_run --arm screen --b 0 --m 8 --tasks @results/o1_tasks.txt --run 1`:
   A `--ranker prior-pplx12-dedup`: the task-prior pool (built before the run from the task text alone, ranked by
