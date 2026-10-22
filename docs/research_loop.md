@@ -631,3 +631,7 @@ System One models: pplx12 0.43 -> 0.66, d3 0.38 -> 0.72. Anchoring on the agent'
 System One quirk: it is what happens to any judge that reads the agent's actions. What is specific to the System One
 models is the cost of the remedy: with the task text alone they match or beat the thinking LLM (0.66-0.72 vs 0.62)
 at 0.2-0.6 s per judgment vs ~80 s (about 150-350x less time), which is what makes wide screening affordable.
+- **G5-LLM (fixed 2026-10-22 05:00, before the run).** Qwen thinking scores the unplaced subset (919) with the
+  retrieval-only state (`pb_screen.py llm --retrieval`), same prompt and budget as its state and task-only runs.
+  Prediction: on questions all three Qwen runs answer, retrieval-only ≥ state + 0.10 (state 0.46, task-only 0.62).
+  If it holds, "strip the agent's decisions" is a rule for any judge, not only for System One models.

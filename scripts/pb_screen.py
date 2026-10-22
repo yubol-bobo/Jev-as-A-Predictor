@@ -242,13 +242,15 @@ def score(blind, workers, rich=False, task=False, subset=False, cf=False, retrie
         list(ex.map(run, todo))
 
 
-def llm(url, workers, task=False):
-    out, done = _answers("llm_task" if task else "llm")
+def llm(url, workers, task=False, retrieval=False):
+    out, done = _answers("llm_task" if task else "llm_retr" if retrieval else "llm")
     states = json.loads((OD / "states.json").read_text())
     if task:  # the task instruction only (P6c control)
         states = {t: (v[0], []) for t, v in states.items()}
+    if retrieval:  # G5 for the LLM: the state without the agent's decisions
+        states = {t: (v[0], retrieval_only(v[1])) for t, v in states.items()}
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
-    if task:  # only the subset the unplaced AUROC is computed on: unplaced orders of tasks with a missed required one
+    if task or retrieval:  # only the subset the unplaced AUROC is computed on: unplaced orders of tasks with a missed one
         missed = missed_tasks()
         todo = [q for q in todo if q["task"] in missed and not q["placed"]]
     lock = threading.Lock()
@@ -401,7 +403,7 @@ def main():
     ap.add_argument("--out", default=str(REPO / "results/pb_screen.json"))
     a = ap.parse_args()
     os.umask(0o077)
-    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval, a.drop), "llm": lambda: llm(a.url, a.workers, a.task),
+    {"cf": lambda: cf_report(a.out), "build": build, "build_rich": build_rich, "score": lambda: score(a.blind, a.workers, a.rich, a.task, a.subset, a.cf, a.retrieval, a.drop), "llm": lambda: llm(a.url, a.workers, a.task, a.retrieval),
      "report": lambda: report(a.out)}[a.cmd]()
 
 
