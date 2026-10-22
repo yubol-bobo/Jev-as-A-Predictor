@@ -207,7 +207,48 @@ def fig_clinenv():
     plt.close(fig)
 
 
+# ---------------------------------------------------------------- Figure 6: the checker inherits the blind spot
+S1 = [("pplx12", "pplx12", "#2a78d6", "o"), ("d3", "d3", "#eb6834", "s"), ("amos", "amos", "#1baf7a", "D"),
+      ("linne", "linne", "#eda100", "^"), ("decider31b", "decider-31b", "#e87ba4", "v"), ("clef", "Clef", "#008300", "P")]
+
+
+def fig_anchor():
+    """Unplaced AUROC (missed required vs unneeded orders) of each System One model by what it reads. The row marked *
+    has 3 models (pplx12, d3, amos); each black line is the mean over the models shown in its row (say so in the caption)."""
+    sc = (load("pb_screen.json") or {}).get("scorers")
+    if not sc:
+        return
+    rows = [("", "Agent's full trajectory"), ("_warn", "+ debiasing instruction*"), ("_nonotes", "− agent's notes"),
+            ("_noorders", "− agent's orders"), ("_retr", "Chart only (no decisions)"), ("_task", "Task text only")]
+    fig, ax = plt.subplots(figsize=(3.5, 2.6))
+    for y, (suf, _) in enumerate(rows):
+        vals = []
+        for i, (m, name, col, mk) in enumerate(S1):
+            v = (sc.get(m + suf) or {}).get("auroc_unplaced_mean_per_task")
+            if v is None:
+                continue
+            vals.append(v)
+            ax.scatter(v, y + (i - 2.5) * 0.07, s=26, color=col, marker=mk, edgecolor="white", linewidth=0.6, zorder=4,
+                       label=name if y == 0 else None)
+        mean = sum(vals) / len(vals)
+        ax.plot([mean, mean], [y - 0.3, y + 0.3], color=C["ink"], lw=1.6, zorder=5)
+        ax.text(0.83, y, f"{mean:.2f}", va="center", ha="left", fontsize=7.6, color=C["ink"], fontweight="bold")
+    ax.axvline(0.5, color=C["bad"], lw=1.0, ls=(0, (4, 2)), zorder=2)
+    ax.text(0.5, -0.75, "chance", color=C["bad"], fontsize=7, ha="center", va="bottom", fontweight="bold")
+    ax.set_yticks(range(len(rows)), [r for _, r in rows], fontsize=7.8)
+    ax.set_ylim(len(rows) - 0.5, -0.9)
+    ax.set_xlim(0.3, 0.82)
+    ax.grid(axis="y", visible=False)
+    label(ax, x="AUROC, missed required vs unneeded orders")
+    title(ax, "What the checker reads")
+    ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.32, -0.27), fontsize=7, handletextpad=0.2,
+              columnspacing=0.8, markerscale=0.9)
+    fig.savefig(OUT / "fig6_anchor.pdf")
+    fig.savefig(OUT / "fig6_anchor_preview.png", dpi=200)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
-    for f in (fig_main, fig_orders, fig_tools, fig_clinenv):
+    for f in (fig_main, fig_orders, fig_tools, fig_clinenv, fig_anchor):
         f()
     print("figures:", sorted(p.name for p in OUT.glob("fig*.pdf")))
