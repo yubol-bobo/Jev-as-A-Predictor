@@ -151,6 +151,12 @@ def build_rich():
     print(f"rich states: {len(rich)} tasks, extra retrieval steps per task median {sorted(extra)[len(extra) // 2]}")
 
 
+def missed_tasks():
+    """Tasks where the state run left a required order unplaced (from all questions, so resumes keep the subset)."""
+    return {q["task"] for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines())
+            if q["label"] == "required" and not q["placed"]}
+
+
 def _answers(name):
     p = OD / f"answers_{name}.jsonl"
     return p, ({x["id"]: x for x in map(json.loads, p.read_text().splitlines()) if x.get("p") is not None}
@@ -189,13 +195,13 @@ def score(blind, workers, rich=False, task=False, subset=False, cf=False, retrie
     states = json.loads((OD / ("states_rich.json" if rich else "states.json")).read_text())
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
     if cf:  # G4: the unplaced orders of the tasks with a missed required order
-        missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
+        missed = missed_tasks()
         todo = [q for q in todo if q["task"] in missed and not q["placed"]]
     if subset:  # G1: only the orders the placed / unplaced AUROCs are computed on
-        missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
+        missed = missed_tasks()
         todo = [q for q in todo if q["placed"] or q["task"] in missed]
     if rich:  # first the subset P6b is judged on: unplaced orders of tasks where the run missed a required order
-        missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
+        missed = missed_tasks()
         todo.sort(key=lambda q: not (q["task"] in missed and not q["placed"]))
     lock = threading.Lock()
     print(f"{out.name}: {len(todo)} to score", flush=True)
@@ -232,7 +238,7 @@ def llm(url, workers, task=False):
         states = {t: (v[0], []) for t, v in states.items()}
     todo = [q for q in map(json.loads, (OD / "questions.jsonl").read_text().splitlines()) if q["id"] not in done]
     if task:  # only the subset the unplaced AUROC is computed on: unplaced orders of tasks with a missed required one
-        missed = {q["task"] for q in todo if q["label"] == "required" and not q["placed"]}
+        missed = missed_tasks()
         todo = [q for q in todo if q["task"] in missed and not q["placed"]]
     lock = threading.Lock()
     print(f"{out.name}: {len(todo)} to score", flush=True)
