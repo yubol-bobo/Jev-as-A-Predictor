@@ -1,0 +1,71 @@
+{
+ "order_none": {
+  "open": 0.1063,
+  "unm": 1.6392,
+  "forb": 0.0,
+  "prec": 0.4124,
+  "cases_with_open": 48
+ },
+ "order_remind": {
+  "open": 0.125,
+  "unm": 1.9176,
+  "forb": 0.0,
+  "prec": 0.4118,
+  "cases_with_open": 48
+ },
+ "order_plan": {
+  "open": 0.1757,
+  "unm": 2.7863,
+  "forb": 0.0,
+  "prec": 0.3709,
+  "cases_with_open": 48
+ },
+ "order_remind_minus_none_open": {
+  "cases": 48,
+  "mean": 0.0187,
+  "ci95": [
+   -0.0187,
+   0.0542
+  ]
+ },
+ "order_remind_minus_none_unm": {
+  "cases": 102,
+  "mean": 0.2784,
+  "ci95": [
+   -0.0196,
+   0.5765
+  ]
+ },
+ "order_remind_minus_none_prec": {
+  "cases": 83,
+  "mean": 0.0106,
+  "ci95": [
+   -0.0309,
+   0.0501
+  ]
+ },
+ "order_plan_minus_none_open": {
+  "cases": 48,
+  "mean": 0.0694,
+  "ci95": [
+   0.0187,
+   0.1264
+  ]
+ },
+ "order_plan_minus_none_unm": {
+  "cases": 102,
+  "mean": 1.1471,
+  "ci95": [
+   0.802,
+   1.502
+  ]
+ },
+ "order_plan_minus_none_prec": {
+  "cases": 88,
+  "mean": -0.0374,
+  "ci95": [
+   -0.0761,
+   -0.0003
+  ]
+ }
+}

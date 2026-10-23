@@ -1010,3 +1010,24 @@ judge and the ranking) wait; the order-step replay (A3, A4; Qwen only) runs firs
 Reading so far: asking at FINISH recovers missed orders (+0.085), and removing the agent's own decisions from the
 context adds about as much again (+0.065, CI touching 0); the pplx12 checklist reaches the same level as the fresh
 restart, beats the random list mostly by adding fewer non-rubric orders (−0.65 unmatched). Runs 4-5 decide R1 and R3.
+
+## A3 / A4 verdicts (2026-10-23 15:20; order-step replay, 102 cases, K = 5; `results/pb_replay.json`)
+Run on allocation 49673289 (8013, slow) and 49691349 (Qwen TP2 on GPUs 0,1); a Lustre eviction of the node at 13:26
+killed the replay processes silently once (no errored records; they resumed from the written cases).
+- **A3 holds as pre-registered.** order_remind − order_none: coverage of all required specs at the first order step
+  +0.108 [+0.063, +0.152] (0.333 -> 0.440); orders per sample 2.35 -> 2.88; finish 0.01 -> 0.03.
+- **A4 holds as pre-registered.** order_plan − order_none: +0.186 [+0.132, +0.240] (-> 0.519; any of 5 samples 0.96);
+  orders per sample 3.91.
+- Exploratory (`scripts/pb_replay_order_x.py`, `results/pb_replay_order_x.json`), on the specs the logged run finally
+  missed (open at its FINISH, 48 cases): remind − none +0.019 [−0.019, +0.054] (no recovery); plan − none +0.069
+  [+0.019, +0.126]. Precision of placed orders (share matching a required spec): none 0.41, remind 0.41, plan 0.37
+  (−0.037 [−0.076, −0.000]); unmatched orders per sample remind +0.28 [−0.02, +0.58], plan +1.15 [+0.80, +1.50];
+  forbidden 0 everywhere.
+Reading: the pre-registered metric counts all required specs at the first order step, so it mixes timing with
+omission (79% of step omissions are placed later in the run, cycle 1). Repeating the task before the order step makes
+the agent place more of the orders it would place anyway, at the same precision, and does not reach the orders the
+run finally misses: context drift explains the step-level shortfall, not the final omissions. Planning first does
+reach them (+0.07, about two thirds of A2's fresh-context effect at FINISH) at the cost of about one more non-rubric
+order per step. So for Q1: the final omissions come less from losing the instruction than from acting before the
+whole plan is written, and (A2, R) from anchoring on the orders already placed; a quarter of the misses the note
+mentions are false completion claims (A5b).
