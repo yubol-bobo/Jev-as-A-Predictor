@@ -11,7 +11,7 @@ all checkpoints that pass, orders placed after the branch, those matching no req
 ones. Paired over cases, bootstrap CIs. Replay check: agreement of `none` with the logged run, checkpoint by
 checkpoint.
 
-  .venv/bin/python scripts/pb_r.py [--out results/pb_r.json]
+  .venv/bin/python scripts/pb_r.py [--out results/pb_r.json] [--runs 1,2,3,4]
 """
 
 import argparse
@@ -55,7 +55,9 @@ def mean(v):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(REPO / "results/pb_r.json"))
+    ap.add_argument("--runs", help="only these runs, e.g. 1,2,3,4 (default: all finished jobs)")
     a = ap.parse_args()
+    keep = {f"run{r}" for r in a.runs.split(",")} if a.runs else None
     per, agree, n_jobs = {arm: {} for arm in ARMS}, [], {arm: 0 for arm in ARMS}
     for c in cases():
         if not c["open"] or not c["finish"]:
@@ -68,7 +70,7 @@ def main():
         for arm in ARMS:
             rows = []
             for rd in sorted((JOBS / f"screen_{RANKER[arm]}-p{p}_b0m8_k1").glob("run[0-9]*")):
-                if rd.name == "run99":  # smoke tests
+                if rd.name == "run99" or (keep and rd.name not in keep and arm != "none"):  # smoke tests
                     continue
                 jd = rd / c["task"]
                 cps = checkpoints(jd) if (jd / "metadata.json").exists() else None
@@ -88,7 +90,7 @@ def main():
                         agree += [orig[k] == cps.get(k) for k in orig]
             if rows:
                 per[arm][(c["run"], c["task"])] = {k: mean([r[k] for r in rows]) for k in rows[0]} | {"runs": len(rows)}
-    res = {"jobs": n_jobs, "replay_agreement": round(mean(agree), 4) if agree else None,
+    res = {"runs": a.runs or "all", "jobs": n_jobs, "replay_agreement": round(mean(agree), 4) if agree else None,
            "replay_checkpoints": len(agree)}
     for arm in ARMS:
         rows = per[arm].values()

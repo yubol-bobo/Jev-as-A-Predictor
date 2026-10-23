@@ -992,3 +992,21 @@ was stopped after 15 min with no job finished: both replicas are KV-bound (8011 
 driver while run 2 holds 8011, then runs 3-5 go one after another on both replicas (least-loaded routing). Replicas are identical; a task may meet a different replica
 than in runs 1-2. Replay check after run 1: none agrees with the logged runs on 0.997 of 352 checkpoints. No verdict
 numbers are read before the last run.
+
+### R interim on runs 1-3 of 5 (2026-10-23 11:50; not the verdict)
+Allocation 49673289 was killed at 09:19 (SLURM FAILED, exit 9:0, cause not shown; MaxRSS 157 GB of 1000 GB) during
+run 4; runs 1-3 are complete for every arm (153 jobs per arm, none 51). Allocation 49691349 (w008, 11:30) gives this
+project 2 GPUs, and pplx12 (49 GB) does not fit beside a TP2 Qwen, so runs 4-5 (they need pplx12 for the repeat
+judge and the ranking) wait; the order-step replay (A3, A4; Qwen only) runs first. `scripts/pb_r.py --runs 1,2,3`:
+- Replay check: 0.997 of 352 checkpoints (holds).
+- R1 fresh − full +0.065 [−0.003, +0.144]: the size is past the bar (+0.03), the CI touches 0 (not yet held).
+- R2 full − none +0.085 [+0.029, +0.160]: holds.
+- R3 list − none +0.144 [+0.059, +0.239] holds; list − listrand +0.052 [−0.003, +0.114]: size past the bar (+0.05),
+  the CI touches 0 (not yet held). listrand − none +0.092 [+0.039, +0.154].
+- Harms: unmatched fresh − full +0.43 [−0.05, +0.92] (bound +0.5, holds), list − none +1.44 [+1.10, +1.82] (bound
+  +1.0, fails; listrand − none +2.10); forbidden 0 in every arm; all-checkpoint pass fresh − full +0.029 [+0.004,
+  +0.059], list − none +0.045 [+0.016, +0.082] (hold).
+- Exploratory: fresh − list +0.007 [−0.088, +0.105]; fresh places 1.93 orders per case after the branch, list 1.71.
+Reading so far: asking at FINISH recovers missed orders (+0.085), and removing the agent's own decisions from the
+context adds about as much again (+0.065, CI touching 0); the pplx12 checklist reaches the same level as the fresh
+restart, beats the random list mostly by adding fewer non-rubric orders (−0.65 unmatched). Runs 4-5 decide R1 and R3.
