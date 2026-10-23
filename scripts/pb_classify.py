@@ -7,13 +7,15 @@ placed), CONDITIONAL (only if / consider / later / defers to another clinician),
 declined), OTHER (a past result, history, or other context).
 A5b: for each noted miss, whether any order the run placed is the required order under another name (EQUIVALENT /
 DIFFERENT), to tell an execution error from a grader-pattern miss in CLAIMS_DONE.
+A7: for each A6 WRONG checkpoint, FACT (a record fact misstated or overlooked) or JUDGMENT (facts right, the
+interpretation or decision wrong).
 A6: for each failed Clinical Reasoning / Documentation / Data Retrieval checkpoint (pb_omission.py reasons.jsonl),
 what the grader's reason says: NO_NOTE (no output file or empty), MISSING (the note does not address the required
 element), WRONG (an incorrect value, interpretation or decision), HEDGED (non-committal or conditional where a
 decision was required), INCOMPLETE (addressed but a required detail is missing: threshold, dose, timing, specific
 test), OTHER.
 
-  .venv/bin/python scripts/pb_classify.py noted|placed|reasons [--url http://127.0.0.1:8011/v1] [--workers 16]
+  .venv/bin/python scripts/pb_classify.py noted|placed|reasons|wrong [--url http://127.0.0.1:8011/v1] [--workers 16]
   .venv/bin/python scripts/pb_classify.py report [--out results/pb_classify.json]
 """
 
@@ -46,6 +48,18 @@ CLAIMS_DONE - the note says this order was ordered or placed
 CONDITIONAL - only if something, consider, at a later visit, or deferred to another clinician
 NEGATED - not indicated, not needed, or declined
 OTHER - a past result, history, or other context, not a plan for this order
+Reply with JSON only: {{"category": "..."}}"""
+WRONG = ["FACT", "JUDGMENT", "UNCLEAR"]
+WRONG_PROMPT = """A grader checked an AI agent's clinical note and the checkpoint below failed because the note was judged wrong. The text is the grader's failure message.
+
+Checkpoint: {cp} ({type})
+Grader's failure message:
+{msg}
+
+What is wrong? Answer with one category:
+FACT - the note misstates or overlooks a fact in the patient's record (a value, date, result, medication, diagnosis, or history)
+JUDGMENT - the facts are right, but the interpretation, decision, recommendation, or plan is wrong
+UNCLEAR - the message does not say
 Reply with JSON only: {{"category": "..."}}"""
 PLACED = ["EQUIVALENT", "DIFFERENT"]
 PLACED_PROMPT = """A clinical task required an order whose name matches one of these patterns: {names}
@@ -100,10 +114,14 @@ def placed_orders(r):
 
 
 def classify(kind, url, workers):
-    src = OD / ("reasons.jsonl" if kind == "reasons" else "noted_snippets.jsonl")
+    src = OD / ("reasons.jsonl" if kind in ("reasons", "wrong") else "noted_snippets.jsonl")
     rows = [json.loads(l) for l in src.read_text().splitlines()]
-    if kind == "reasons":
+    if kind in ("reasons", "wrong"):
         rows = [r for r in rows if r["type"] in ("Clinical Reasoning", "Documentation", "Data Retrieval")]
+    if kind == "wrong":  # A7: only the checkpoints A6 labelled WRONG
+        a6 = {(x["run"], x["task"], x["cp"]) for x in map(json.loads, (OD / "classified_reasons.jsonl").read_text()
+                                                         .splitlines()) if x["category"] == "WRONG"}
+        rows = [r for r in rows if (r["run"], r["task"], r["cp"]) in a6]
     out, lock = OD / f"classified_{kind}.jsonl", threading.Lock()
     key = lambda r: (r["run"], r["task"], r["cp"])  # noqa: E731
     done = {key(x) for x in map(json.loads, out.read_text().splitlines()) if x["category"] != "UNPARSED"} \
@@ -115,6 +133,8 @@ def classify(kind, url, workers):
             cat = ask(url, PLACED_PROMPT.format(names=", ".join(r["order_names"]), placed=placed_orders(r)), PLACED)
         elif kind == "noted":
             cat = ask(url, NOTED_PROMPT.format(names=", ".join(r["order_names"]), spans="\n---\n".join(r["spans"])), NOTED)
+        elif kind == "wrong":
+            cat = ask(url, WRONG_PROMPT.format(cp=r["cp"], type=r["type"], msg=r["assert"][:2500]), WRONG)
         elif r["cat"] == "no_output":
             cat = "NO_NOTE"
         else:
@@ -130,7 +150,7 @@ def classify(kind, url, workers):
 
 def report(path):
     res = {}
-    for kind in ("noted", "placed", "reasons"):
+    for kind in ("noted", "placed", "reasons", "wrong"):
         p = OD / f"classified_{kind}.jsonl"
         if not p.exists():
             continue
@@ -145,7 +165,7 @@ def report(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["noted", "placed", "reasons", "report"])
+    ap.add_argument("cmd", choices=["noted", "placed", "reasons", "wrong", "report"])
     ap.add_argument("--url", default="http://127.0.0.1:8011/v1")
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--out", default=str(REPO / "results/pb_classify.json"))

@@ -1,0 +1,61 @@
+{
+ "finish_none": {
+  "cases": 51,
+  "coverage": 0.0,
+  "coverage_any_of_k": 0.0,
+  "duplicates": 0.0,
+  "orders": 0.0588,
+  "finish_rate": 0.7176
+ },
+ "finish_nudge": {
+  "cases": 51,
+  "coverage": 0.0784,
+  "coverage_any_of_k": 0.1373,
+  "duplicates": 0.0078,
+  "orders": 1.7843,
+  "finish_rate": 0.0196
+ },
+ "finish_ask": {
+  "cases": 51,
+  "coverage": 0.1268,
+  "coverage_any_of_k": 0.2353,
+  "duplicates": 0.0039,
+  "orders": 1.3294,
+  "finish_rate": 0.1333
+ },
+ "finish_fresh": {
+  "cases": 51,
+  "coverage": 0.1974,
+  "coverage_any_of_k": 0.4706,
+  "duplicates": 1.149,
+  "orders": 4.0431,
+  "finish_rate": 0.0157
+ },
+ "finish_nudge_minus_finish_none": {
+  "cases": 51,
+  "coverage": 0.0784,
+  "ci95": [
+   0.0255,
+   0.1431
+  ],
+  "duplicates": 0.0078
+ },
+ "finish_fresh_minus_finish_ask": {
+  "cases": 51,
+  "coverage": 0.0706,
+  "ci95": [
+   0.0059,
+   0.1392
+  ],
+  "duplicates": 1.1451
+ },
+ "finish_ask_minus_finish_none": {
+  "cases": 51,
+  "coverage": 0.1268,
+  "ci95": [
+   0.0627,
+   0.202
+  ],
+  "duplicates": 0.0039
+ }
+}

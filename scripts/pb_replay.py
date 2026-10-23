@@ -21,6 +21,10 @@ required specs. Raw samples stay under data/offline/pb_replay/.
   .venv/bin/python scripts/pb_replay.py build
   .venv/bin/python scripts/pb_replay.py run --cond finish_fresh [--k 5] [--url URL*w,...] [--workers 24]
   .venv/bin/python scripts/pb_replay.py score [--out results/pb_replay.json]
+  .venv/bin/python scripts/pb_replay.py filter    (exploratory, for R: the finish samples after the online filter)
+The `filter` command applies R's filter (pb_decider: drop exact repeats of placed orders, then items the pplx12
+repeat judge, given only the placed orders, scores P(repeat) >= 0.5) to the finish_ask / finish_fresh samples and
+reports coverage, repeats and other orders after it (results/pb_replay_filter.json).
 """
 
 import argparse
@@ -120,7 +124,8 @@ def route(spec, key):
 def run(cond, k, url, workers):
     import openai
     path, lock = OD / f"samples_{cond}.jsonl", threading.Lock()
-    done = {(x["run"], x["task"]) for x in map(json.loads, path.read_text().splitlines())} if path.exists() else set()
+    done = {(x["run"], x["task"]) for x in map(json.loads, path.read_text().splitlines())
+            if "error" not in x} if path.exists() else set()  # failed requests are retried
     todo = [c for c in cases() if (c["run"], c["task"]) not in done
             and (c["open"] or not cond.startswith("finish"))]  # at finish, only cases with an open spec are scored
     tl = tools()
@@ -201,9 +206,57 @@ def score(out):
     print(json.dumps(res, indent=1))
 
 
+def filt(out):
+    import requests
+    from src.s1clin.pb_decider import (DECIDER_URLS, DEDUP_DECIDER, DEDUP_INSTRUCTION, DEDUP_MAX, DEDUP_NO,
+                                       DEDUP_QUESTION, DEDUP_YES, render_order)
+    cs = {(c["run"], c["task"]): c for c in cases()}
+
+    def p_repeat(placed, o, key):
+        letters = ["A", "B"]
+        random.Random(f"dedup|{key}|{order_key(o)}").shuffle(letters)
+        r = requests.post(DECIDER_URLS[DEDUP_DECIDER], timeout=600, json={
+            "instruction": DEDUP_INSTRUCTION, "steps": [{"action": "Orders already placed", "results": [placed]}],
+            "question": DEDUP_QUESTION.format(order=render_order(o)), "options": {letters[0]: DEDUP_YES, letters[1]: DEDUP_NO}})
+        r.raise_for_status()
+        return r.json()["distribution"][letters[0]]
+
+    res, per = {}, {}
+    for cond in ("finish_ask", "finish_fresh"):
+        rows = {}
+        for x in map(json.loads, (OD / f"samples_{cond}.jsonl").read_text().splitlines()):
+            c = cs.get((x["run"], x["task"]))
+            if not c or "samples" not in x or not c["open"]:
+                continue
+            specs = [s for s in required_orders(c["task"]) if not s["negative"]]
+            pk, placed = {order_key(o) for o in c["placed"]}, "\n".join(map(render_order, c["placed"])) or "(none)"
+            cov, rep, var, oth, kept = [], [], [], [], []
+            for smp in x["samples"]:
+                os_ = [o for o in turn_orders(smp) if order_key(o) not in pk]
+                if os_ and c["placed"]:
+                    with ThreadPoolExecutor(8) as ex:
+                        p = list(ex.map(lambda o: p_repeat(placed, o, f"{x['run']}|{x['task']}"), os_))
+                    os_ = [o for o, q in zip(os_, p) if q < DEDUP_MAX]
+                met = [s for j, s in enumerate(specs) if j not in c["open"]]
+                cov.append(len({i for i in c["open"] for o in os_ if matches(specs[i], *o)}) / len(c["open"]))
+                var.append(sum(any(matches(s, *o) for s in met) for o in os_))
+                oth.append(sum(not any(matches(s, *o) for s in specs) for o in os_))
+                kept.append(len(os_))
+            rows[(x["run"], x["task"])] = {k: sum(v) / len(v) for k, v in
+                                           (("cov", cov), ("variants_left", var), ("other", oth), ("orders", kept))}
+        per[cond] = rows
+        res[cond] = {k: round(sum(r[k] for r in rows.values()) / len(rows), 4) for k in ("cov", "variants_left", "other", "orders")}
+        res[cond]["cases"] = len(rows)
+    ks = [k for k in per["finish_fresh"] if k in per["finish_ask"]]
+    d = [per["finish_fresh"][k]["cov"] - per["finish_ask"][k]["cov"] for k in ks]
+    res["fresh_minus_ask"] = {"cases": len(ks), "coverage": round(sum(d) / len(d), 4), "ci95": boot(d)}
+    Path(out).write_text(json.dumps(res, indent=1))
+    print(json.dumps(res, indent=1))
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "run", "score"])
+    ap.add_argument("cmd", choices=["build", "run", "score", "filter"])
     ap.add_argument("--cond", choices=CONDS)
     ap.add_argument("--k", type=int, default=5)
     ap.add_argument("--url", default="http://127.0.0.1:8011/v1*2,http://127.0.0.1:8013/v1*1")
@@ -227,6 +280,8 @@ def main():
                           "median_chars": {k: sorted(v)[len(v) // 2] for k, v in sizes.items()}}, indent=1))
     elif a.cmd == "run":
         run(a.cond, a.k, a.url, a.workers)
+    elif a.cmd == "filter":
+        filt(REPO / "results/pb_replay_filter.json")
     else:
         score(a.out)
 

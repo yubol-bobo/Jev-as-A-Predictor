@@ -50,5 +50,27 @@
     "NO_NOTE": 0.091
    }
   }
+ },
+ "wrong": {
+  "Documentation": {
+   "n": 47,
+   "share": {
+    "FACT": 0.617,
+    "JUDGMENT": 0.383
+   }
+  },
+  "Clinical Reasoning": {
+   "n": 66,
+   "share": {
+    "JUDGMENT": 0.697,
+    "FACT": 0.303
+   }
+  },
+  "Data Retrieval": {
+   "n": 8,
+   "share": {
+    "FACT": 1.0
+   }
+  }
  }
 }

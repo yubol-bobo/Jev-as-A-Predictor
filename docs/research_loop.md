@@ -887,3 +887,34 @@ dirs). Interim, `results/pb_gap_o1_*.json`, `results/pb_o1_mechanism.json`: requ
 pplx12 list held an open required spec in 15 tasks (random 11) and the agent placed it in 5 (random 1); variant
 share of the list 0.04 / 0.015; uptake 6% / 4% of shown items. Between runs, the arms' own pre-checklist misses
 differ (open specs at FINISH 0.81 vs 0.61 per task), which swamps the within-run closures at n ≈ 50.
+
+## Allocation 49632386 (2026-10-22 22:48, w010): O1 finished here; A1-A4 replay alongside (`scripts/b_run.sh`)
+
+- **A7 (Q3, fixed 22:50 before any label; descriptive, no directional prediction).** The A6 WRONG checkpoints
+  (121) split by local Qwen from the grader's message: FACT (a record fact misstated or overlooked) vs JUDGMENT
+  (facts right, the interpretation or decision wrong) vs UNCLEAR (`pb_classify.py wrong`). Reading: a FACT majority
+  points to retrieval and reading the chart as the lever; a JUDGMENT majority to clinical knowledge or reasoning.
+- **A7 result (23:22; `results/pb_classify.json` "wrong").** Of the WRONG failures: Clinical Reasoning (66) JUDGMENT
+  70%, FACT 30%; Documentation (47) FACT 62%, JUDGMENT 38%; Data Retrieval (8) FACT 100%. Combined with A6, the
+  reasoning failures are mainly judgment (0.41 × 0.70 ≈ 29% of failed reasoning checkpoints are a wrong decision from
+  correct facts; 12% a misread fact; 26% incomplete; 23% no note), while documentation failures are mainly the record
+  copied wrong (0.55 × 0.62 ≈ 34% a misstated fact). Two different levers: knowledge/reasoning for the plan,
+  faithful reading of the chart for the note. Caveat: labels come from the grader's message, one local model, no
+  human check.
+
+## A1 / A2 verdicts (2026-10-23 02:02; `results/pb_replay.json`, 51 finish cases, 69 open specs, K = 5)
+
+Coverage of the open required specs by the one sampled turn at the agent's first FINISH: as it was (none) 0.00
+(0.06 orders; 72% finish again), nudge 0.078, ask 0.127, fresh 0.197 (any of 5 samples: 0, 0.14, 0.24, 0.47).
+- **A1 fails on size: nudge − none +0.078 [0.026, 0.143]** (pre-registered ≥ +0.15). Real but small, consistent
+  with A5/A5b: only about a third of the noted misses are intended-and-believed-placed, the part a self-check closes.
+- **A2 fails on size: fresh − ask +0.071 [0.006, 0.139]** (pre-registered ≥ +0.10), the CI excludes 0. With the
+  same request, removing its own decisions from the context raises coverage of the missed orders by about half
+  (0.127 -> 0.197; any-of-5 0.24 -> 0.47), at a price: per sample 0.35 exact repeats of placed orders and 0.80
+  variants of already-met specs (ask: 0 and 0), and 2.9 other orders vs 1.3. Reading: the agent's own decisions do
+  suppress orders it would otherwise generate (Q2: some support that anchoring contributes to omission, smaller than
+  predicted), but the fresh context also simply orders more, and part of the gain may be volume.
+- Exploratory: ask − none +0.127 [0.063, 0.202]; asking for the remaining orders is itself worth more than the nudge.
+- For R (online): an exact-name filter would remove only 0.35 of the 1.15 repeats per sample; the variants need a
+  semantic repeat judge. The pplx12 repeat judge from P10 (placed orders only, AUROC 0.93 variants vs missed) is the
+  natural System One role here.

@@ -482,7 +482,9 @@ DEDUP_YES, DEDUP_NO = "Yes, it repeats an order already placed", "No, it is a ne
 DEDUP_DECIDER, DEDUP_MAX = "pplx12", 0.5  # items with P(repeat) >= DEDUP_MAX are dropped
 # R, the restart: at the first FINISH the LLM is asked once more for the orders the task requires, from its context
 # with its own decisions removed (`restart-fresh`) or from the full context (`restart-full`, control); only the order
-# calls of that answer are executed, minus exact repeats of placed orders (offline counterpart: pb_replay.py A2)
+# calls of that answer are executed, minus exact repeats of placed orders and minus those DEDUP_DECIDER, given only
+# the placed orders, judges a repeat (offline counterpart: pb_replay.py A2, where the fresh answer repeated 1.15
+# placed or met orders per sample, 0.35 of them by exact name)
 RESTART_ASK = ("Based on the task and the patient data gathered so far, place every order that this task requires and "
                "that has not been placed yet, then finish.")
 DECISION_TOOLS = ("_create", "write_file")  # orders, messages, appointments, the note
@@ -604,7 +606,7 @@ class ScreenClient:
             r2 = self.base.chat(ctx + [{"role": "user", "content": RESTART_ASK}], **common).raw.choices[0]
             calls = r2.message.tool_calls or []
             screen["answer"] = render_turn(r2.message.content, calls)[:MAX_CANDIDATE_CHARS]
-            keep, dropped = [], {"repeat": 0, "not_order": 0}
+            keep, dropped = [], {"repeat": 0, "not_order": 0, "variant": 0}
             for tc in calls:
                 os_ = turn_orders(render_turn(None, [tc]))
                 if not os_:
@@ -612,7 +614,13 @@ class ScreenClient:
                 elif order_key(os_[0]) in self.placed:
                     dropped["repeat"] += 1
                 else:
-                    keep.append(tc)
+                    keep.append((tc, os_[0]))
+            if keep and self.placed_orders:  # variants of placed orders: the P10 repeat judge, placed orders only
+                p = self._repeat([o for _, o in keep])
+                screen["p_repeat"] = [round(x, 4) for x in p]
+                dropped["variant"] = sum(x >= DEDUP_MAX for x in p)
+                keep = [k for k, x in zip(keep, p) if x < DEDUP_MAX]
+            keep = [tc for tc, _ in keep]
             screen.update(dropped=dropped, executed=len(keep))
             if keep:
                 r2.message.tool_calls = keep
