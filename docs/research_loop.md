@@ -958,7 +958,7 @@ Reading: the System One parts did their jobs (ranking from the task text; repeat
 agent accepts about a third of the correct flags and adds about one non-rubric order per task; the design question
 is now measurement, which the shared-prefix runs answer (R below).
 
-- **R, the restart and the checklist from a shared prefix (fixed 2026-10-23 04:44, before any R run; the user asked
+- **R, the restart and the checklist from a shared prefix (fixed 2026-10-23 04:40, before any R run; the user asked
   for the restart experiment to be pre-registered after O1).** Cases: the A2 cases, 51 (logged run, task) pairs of
   llm_log_k5 run1 (25) and run3 (26) with a required-order spec open at the first FINISH (69 open specs;
   `results/r_tasks_{1,3}.txt`). Each job replays the logged run up to that FINISH (`--ranker <arm>-p{1,3}`, verified
@@ -982,3 +982,13 @@ is now measurement, which the shared-prefix runs answer (R below).
   - Exploratory: fresh − list (a free-form restart vs a System One checklist), cost per case.
   Not a held-out test of A2 (the same cases); what is new is the online grading, the executed filter, and the
   agent's continuation after the branch.
+
+### R progress (2026-10-23 06:33)
+Run 1 of all arms done at 06:31 (none at 04:45): 1h45 per run on 8011 alone, so runs 3-5 would not fit the
+allocation (ends ~11:40). The order-step replay (A3, A4) on 8013 was paused (~8 min per case per condition at one
+worker, 15-18 of 108 cases done; resumable, `pb_replay.py run` skips finished cases). A first split (8013 alone takes runs 3 and 5)
+was stopped after 15 min with no job finished: both replicas are KV-bound (8011 holds ~16 agent contexts at a time,
+8013 ~3), so 8013 alone would need ~9 h per run. Now (`scripts/r_run2.sh`, 06:52) run 3 uses 8013 at one worker per
+driver while run 2 holds 8011, then runs 3-5 go one after another on both replicas (least-loaded routing). Replicas are identical; a task may meet a different replica
+than in runs 1-2. Replay check after run 1: none agrees with the logged runs on 0.997 of 352 checkpoints. No verdict
+numbers are read before the last run.
