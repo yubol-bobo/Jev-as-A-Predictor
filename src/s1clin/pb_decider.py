@@ -530,6 +530,30 @@ def short_state(messages, budget: int = SCREEN_STATE_CHARS):
 
 
 PRIOR_DIR = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_screen")
+# R with a shared prefix: a ranker ending in PREFIX_SUFFIX replays the logged run PREFIX_RUN of the same task turn by
+# turn (its assistant messages, re-executed against a fresh environment, no LLM call) up to its FINISH, where the arm
+# branches; every arm then starts from the same state and only the branch differs
+PREFIX_SUFFIX, PREFIX_RUN = "-p3", "llm_log_k5/run3"
+PREFIX_JOBS = Path(os.environ.get("PB_JOBS", "/ocean/projects/cis260032p/yliy/data/physicianbench/jobs"))
+
+
+def logged_turns(job_dir: Path):
+    """(assistant messages before the FINISH, the FINISH's final answer or None) of a logged llm_log run."""
+    msgs = []
+    for line in (job_dir / "logs/agent/decisions.messages.jsonl").read_text().splitlines():
+        r = json.loads(line)
+        msgs = msgs[:r["keep"]] if r["op"] == "reset" else msgs + [r["msg"]]
+    dec = [json.loads(l) for l in (job_dir / "logs/agent/decisions.jsonl").read_text().splitlines()]
+    last = dec[-1]["candidates"][dec[-1].get("pick", 0)] if dec else ""
+    final = last[len("FINISH with final answer: "):] if turn_kind(last) == "finish" else None
+    return [m for m in msgs if m["role"] == "assistant"], final
+
+
+def _as_choice(content, tool_calls):
+    tcs = [SimpleNamespace(id=tc["id"], type="function", function=SimpleNamespace(
+        name=tc["function"]["name"], arguments=tc["function"]["arguments"])) for tc in tool_calls or []] or None
+    return SimpleNamespace(message=SimpleNamespace(role="assistant", content=content, tool_calls=tcs, refusal=None),
+                           finish_reason="tool_calls" if tcs else "stop")
 
 
 class ScreenClient:
@@ -544,7 +568,9 @@ class ScreenClient:
     Orders the run has placed are dropped and the top M shown. With B = 0 no extra samples are drawn.
     A suffix `-dedup` (O1: `prior-pplx12-dedup`, `prior-random-dedup`) also drops every pool item that DEDUP_DECIDER,
     given only the run's placed orders, judges a repeat of one of them (P10).
-    Rankers `restart-fresh` / `restart-full` (R) show no list: see _restart.
+    Rankers `restart-fresh` / `restart-full` (R) show no list: see _restart. With the suffix PREFIX_SUFFIX the run
+    replays the logged run PREFIX_RUN up to its FINISH and branches there; `restart-none-p3` keeps the logged FINISH
+    (the replay check).
     """
 
     def __init__(self, base, ranker: str, k: int, b: int, m: int, log_path: Path, seed: str):
@@ -554,6 +580,19 @@ class ScreenClient:
         self.msglog = MessageLog(Path(log_path).with_suffix(".messages.jsonl"))
         self.proposed, self.placed = {}, set()  # order key -> [order, count]; keys of executed orders
         self.placed_orders = []  # executed orders, first of each key
+        self.prefix = None
+        if ranker.endswith(PREFIX_SUFFIX):  # R with a shared prefix
+            self.ranker = ranker[:-len(PREFIX_SUFFIX)]
+            src, dst = PREFIX_JOBS / PREFIX_RUN / seed.split("|")[0], Path(log_path).parents[2]
+            turns, final = logged_turns(src)
+            # the logged turns name the logged run's own workspace (absolute paths): point them at this run's
+            fix = lambda x: x.replace(str(src), str(dst)) if isinstance(x, str) else x  # noqa: E731
+            turns = [{**m, "content": fix(m.get("content")), "tool_calls": [
+                {**tc, "function": {**tc["function"], "arguments": fix(tc["function"]["arguments"])}}
+                for tc in m.get("tool_calls") or []]} for m in turns]
+            if str(src) in json.dumps(turns) or str(src) in json.dumps(turns, ensure_ascii=False):
+                raise RuntimeError("replayed turns still name the logged run's directory")
+            self.prefix = (turns, fix(final))
 
     def _note(self, turns, executed):
         for t in turns:
@@ -600,6 +639,9 @@ class ScreenClient:
         """Arm R: ask for the remaining orders (RESTART_ASK) from the fresh or the full context; execute only its order
         calls that do not repeat a placed order by name; with none left, the LLM's own FINISH stands."""
         t0, screen = time.time(), {"ranker": self.ranker}
+        if self.ranker == "restart-none":
+            rec["screen"] = screen
+            return chosen
         try:
             ctx = fresh_context(messages) if self.ranker == "restart-fresh" else list(messages)
             screen["context_messages"] = [len(messages), len(ctx)]
@@ -672,11 +714,34 @@ class ScreenClient:
         with ThreadPoolExecutor(4) as ex:
             return list(ex.map(one, orders))
 
+    def _replayed(self, messages, common, n_messages, epoch):
+        """The logged run's turn for this step (prefix), or at its FINISH the arm's branch."""
+        from agent.llm_client import ChatResponse
+        turns, final = self.prefix
+        rec = {"step": self.step, "prefix": True, "n_messages": n_messages, "msg_epoch": epoch, "pick": 0}
+        if self.step <= len(turns):
+            m = turns[self.step - 1]
+            chosen = _as_choice(m.get("content"), m.get("tool_calls"))
+        else:
+            chosen = _as_choice(final or "", None)
+            self.done = True
+            if self.ranker != "restart-none":
+                chosen = self._restart(messages, common, chosen, rec)
+        rendered = render_turn(chosen.message.content, chosen.message.tool_calls)[:MAX_CANDIDATE_CHARS]
+        rec["candidates"] = [rendered]
+        self._note([rendered], rendered)
+        with self.log_path.open("a") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        return ChatResponse(content=chosen.message.content, tool_calls=chosen.message.tool_calls, prompt_tokens=0,
+                            completion_tokens=0, raw=SimpleNamespace(choices=[chosen], usage=None))
+
     def chat(self, messages, tools=None, temperature=None, parallel_tool_calls=True, reasoning_effort=None, **kw):
         self.step += 1
         n_messages, epoch = self.msglog.sync(messages)
         common = dict(tools=tools, temperature=temperature, parallel_tool_calls=parallel_tool_calls,
                       reasoning_effort=reasoning_effort)
+        if self.prefix is not None and not self.done and (self.prefix[1] is not None or self.step <= len(self.prefix[0])):
+            return self._replayed(messages, common, n_messages, epoch)
         resp = self.base.chat(messages, n=self.k, **common)
         choices = resp.raw.choices
         renderings = [render_turn(c.message.content, c.message.tool_calls)[:MAX_CANDIDATE_CHARS] for c in choices]

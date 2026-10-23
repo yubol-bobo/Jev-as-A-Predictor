@@ -888,7 +888,7 @@ pplx12 list held an open required spec in 15 tasks (random 11) and the agent pla
 share of the list 0.04 / 0.015; uptake 6% / 4% of shown items. Between runs, the arms' own pre-checklist misses
 differ (open specs at FINISH 0.81 vs 0.61 per task), which swamps the within-run closures at n ≈ 50.
 
-## Allocation 49632386 (2026-10-22 22:48, w010): O1 finished here; A1-A4 replay alongside (`scripts/b_run.sh`)
+## Allocation 49632386 (2026-10-22 22:48, w010): O1 resumed; A1-A4 replay alongside (`scripts/b_run.sh`)
 
 - **A7 (Q3, fixed 22:50 before any label; descriptive, no directional prediction).** The A6 WRONG checkpoints
   (121) split by local Qwen from the grader's message: FACT (a record fact misstated or overlooked) vs JUDGMENT
@@ -918,3 +918,25 @@ Coverage of the open required specs by the one sampled turn at the agent's first
 - For R (online): an exact-name filter would remove only 0.35 of the 1.15 repeats per sample; the variants need a
   semantic repeat judge. The pplx12 repeat judge from P10 (placed orders only, AUROC 0.93 variants vs missed) is the
   natural System One role here.
+
+## Allocation 49673289 (2026-10-23 03:42, w005)
+
+49632386 ended before its time limit (by 03:41 a new allocation was running); O1 was still 3 tasks short (52/54,
+53/54): the replay requests (n = 5, 16k thinking tokens) had filled the Qwen KV cache from about 23:00 and the O1
+agents queued behind them (8-9 steps in 3 h); the order-step replay was paused at 02:03 and had written nothing.
+Here O1 gets its own replica (Qwen TP2, 8011) and the replay the other (8013), so neither waits on the other.
+- **R filter check (exploratory, 04:08; `pb_replay.py filter` -> `results/pb_replay_filter.json`).** R's online
+  filter (exact repeats, then the pplx12 repeat judge from the placed orders alone) applied to the A2 samples: fresh
+  0.174 vs ask 0.127 coverage of the open specs, +0.047 [−0.012, 0.112]; variants of met specs per sample 0.80 ->
+  0.08; orders kept 1.5 vs 1.3 (fresh, ask). The filter equalizes volume and most of A2's gain survives it. Spread
+  over all required-order checkpoints of 54 tasks this is about +0.03, far below the run-to-run noise of an
+  independent online run (O1: ±0.1), so R is redesigned around a shared prefix (below).
+- **Shared-prefix runs (code, 04:10-04:21).** `--ranker restart-{none,full,fresh}-p3`: each run replays the logged
+  llm_log_k5/run3 trajectory of its task (the assistant turns, re-executed against a fresh environment, no LLM call)
+  up to its FINISH and branches there; every arm starts from the same state. Smoke test (run 99, one task):
+  restart-none reproduces run 3 exactly (4/7, the same failed checkpoints), restart-fresh executed 2 orders after
+  the filter dropped 1 exact repeat and 4 variants. **Incident, fixed:** the logged turns name run 3's workspace by
+  absolute path, so the first smoke test wrote its notes into run 3's job directory (one task,
+  alcohol_use_disorder; for about two minutes its note held the smoke run's text). The note was restored from run 3's
+  own logged write_file calls and verified identical; no other file was touched; run 3's grading (metadata) predates
+  it. The replay now rewrites the logged run's directory to its own and refuses to start if any reference remains.

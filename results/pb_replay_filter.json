@@ -1,0 +1,24 @@
+{
+ "finish_ask": {
+  "cov": 0.1268,
+  "variants_left": 0.0,
+  "other": 1.1098,
+  "orders": 1.2941,
+  "cases": 51
+ },
+ "finish_fresh": {
+  "cov": 0.1739,
+  "variants_left": 0.0824,
+  "other": 1.2039,
+  "orders": 1.5059,
+  "cases": 51
+ },
+ "fresh_minus_ask": {
+  "cases": 51,
+  "coverage": 0.0471,
+  "ci95": [
+   -0.0118,
+   0.1118
+  ]
+ }
+}
