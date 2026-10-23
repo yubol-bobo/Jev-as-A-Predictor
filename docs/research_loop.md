@@ -940,3 +940,45 @@ Here O1 gets its own replica (Qwen TP2, 8011) and the replay the other (8013), s
   alcohol_use_disorder; for about two minutes its note held the smoke run's text). The note was restored from run 3's
   own logged write_file calls and verified identical; no other file was touched; run 3's grading (metadata) predates
   it. The replay now rewrites the logged run's directory to its own and refuses to start if any reference remains.
+
+## O1 verdict (2026-10-23 04:38; 54/54 tasks per arm; `results/pb_gap_o1_*.json`, `results/pb_o1_mechanism.json`)
+
+**Fails.** Primary, required-order checkpoints A (pplx12-ranked factorized checklist) − run3: −0.020 [−0.100,
++0.063] (pre-registered ≥ +0.05, CI excluding 0). Secondary A − B (random 8 from the same filtered pool): −0.090
+[−0.201, +0.020] (pre-registered ≥ +0.03); B − run3 +0.069 [−0.020, +0.170]. Variant share of the shown list 0.041
+(A) / 0.017 (B), within the ≤ 0.10 bound: the repeat judge works online. Harms: orders +1.15 (A) / +1.69 (B) per
+task, unmatched (no rubric match) +1.13 / +1.67, above the +1.0 bound; forbidden 0 -> 0; task pass +0.02 / 0.00.
+Mechanism inside the runs (screened FINISHes, 52 per arm): the A list held an open required spec in 18 tasks (B 12),
+covering 0.46 of the open specs per task (B 0.25; P10 offline 0.55 vs random 0.28); the agent placed 0.17 open
+specs per task from it (B 0.04), 6 tasks closed (B 2); uptake 5.5% / 4.1% of shown items. So the ranking puts the
+missed orders on the list twice as often and they get placed four times as often, but the arms' own runs differed
+before the checklist (open specs at FINISH 0.90 vs 0.62 per task) and that between-run difference is larger than
+everything the checklist adds; at 54 tasks an independent online run cannot see an effect of this size.
+Reading: the System One parts did their jobs (ranking from the task text; repeat judge from the placed orders), the
+agent accepts about a third of the correct flags and adds about one non-rubric order per task; the design question
+is now measurement, which the shared-prefix runs answer (R below).
+
+- **R, the restart and the checklist from a shared prefix (fixed 2026-10-23 04:44, before any R run; the user asked
+  for the restart experiment to be pre-registered after O1).** Cases: the A2 cases, 51 (logged run, task) pairs of
+  llm_log_k5 run1 (25) and run3 (26) with a required-order spec open at the first FINISH (69 open specs;
+  `results/r_tasks_{1,3}.txt`). Each job replays the logged run up to that FINISH (`--ranker <arm>-p{1,3}`, verified
+  to reproduce run 3 exactly on one task) and branches there; K = 1; Qwen 8011, pplx12 for the repeat judge and the
+  ranking. Arms: none (the logged FINISH; 1 run, the replay check); full (RESTART_ASK on the full context); fresh
+  (RESTART_ASK on the context without its own decision turns); for both, only order calls are executed, minus exact
+  repeats and minus items the pplx12 repeat judge (placed orders only) scores P ≥ 0.5; list (O1's pplx12-ranked
+  factorized checklist, 8 items); listrand (8 random items of the same filtered pool). Full, fresh, list and listrand
+  5 runs each (`scripts/r_run.sh`). Outcome per case, mean over runs: the share of the open specs' checkpoints that
+  pass in the grader (`scripts/pb_r.py`). Paired over cases, bootstrap 95% CIs.
+  - R1 (Q2, does seeing its own decisions suppress the missed orders, online): fresh − full ≥ +0.03 with the CI
+    excluding 0. Basis: A2 after the same filter, +0.047 [−0.012, 0.112]; the expected SE is about 0.03, so the
+    power is about one half; a null here is weak evidence.
+  - R2 (asking at FINISH, online): full − none ≥ +0.08 with the CI excluding 0 (offline ask − none +0.127).
+  - R3 (O1's question with the between-run noise removed): list − none ≥ +0.10 and list − listrand ≥ +0.05, each with
+    the CI excluding 0 (O1 in-run: 0.17 vs 0.04 open specs closed per task, of 0.90 / 0.62 open).
+  - Harms: unmatched orders (no required spec matched) per case fresh − full ≤ +0.5 and list − none ≤ +1.0; no
+    forbidden orders; share of all checkpoints passing fresh − full and list − none ≥ −0.03.
+  - Replay check: none agrees with the logged run on ≥ 0.90 of the checkpoints (the grader's LLM judge varies);
+    below that, every result carries the caveat.
+  - Exploratory: fresh − list (a free-form restart vs a System One checklist), cost per case.
+  Not a held-out test of A2 (the same cases); what is new is the online grading, the executed filter, and the
+  agent's continuation after the branch.

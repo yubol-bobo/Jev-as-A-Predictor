@@ -530,10 +530,10 @@ def short_state(messages, budget: int = SCREEN_STATE_CHARS):
 
 
 PRIOR_DIR = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_screen")
-# R with a shared prefix: a ranker ending in PREFIX_SUFFIX replays the logged run PREFIX_RUN of the same task turn by
+# R with a shared prefix: a ranker ending in a PREFIX_RUNS suffix replays that logged run of the same task turn by
 # turn (its assistant messages, re-executed against a fresh environment, no LLM call) up to its FINISH, where the arm
 # branches; every arm then starts from the same state and only the branch differs
-PREFIX_SUFFIX, PREFIX_RUN = "-p3", "llm_log_k5/run3"
+PREFIX_RUNS = {"-p1": "llm_log_k5/run1", "-p3": "llm_log_k5/run3"}  # ranker suffix -> logged run
 PREFIX_JOBS = Path(os.environ.get("PB_JOBS", "/ocean/projects/cis260032p/yliy/data/physicianbench/jobs"))
 
 
@@ -568,8 +568,8 @@ class ScreenClient:
     Orders the run has placed are dropped and the top M shown. With B = 0 no extra samples are drawn.
     A suffix `-dedup` (O1: `prior-pplx12-dedup`, `prior-random-dedup`) also drops every pool item that DEDUP_DECIDER,
     given only the run's placed orders, judges a repeat of one of them (P10).
-    Rankers `restart-fresh` / `restart-full` (R) show no list: see _restart. With the suffix PREFIX_SUFFIX the run
-    replays the logged run PREFIX_RUN up to its FINISH and branches there; `restart-none-p3` keeps the logged FINISH
+    Rankers `restart-fresh` / `restart-full` (R) show no list: see _restart. With a PREFIX_RUNS suffix (-p1, -p3)
+    the run replays that logged run up to its FINISH and branches there; `restart-none-p3` keeps the logged FINISH
     (the replay check).
     """
 
@@ -581,9 +581,9 @@ class ScreenClient:
         self.proposed, self.placed = {}, set()  # order key -> [order, count]; keys of executed orders
         self.placed_orders = []  # executed orders, first of each key
         self.prefix = None
-        if ranker.endswith(PREFIX_SUFFIX):  # R with a shared prefix
-            self.ranker = ranker[:-len(PREFIX_SUFFIX)]
-            src, dst = PREFIX_JOBS / PREFIX_RUN / seed.split("|")[0], Path(log_path).parents[2]
+        if ranker[-3:] in PREFIX_RUNS:  # R with a shared prefix
+            self.ranker = ranker[:-3]
+            src, dst = PREFIX_JOBS / PREFIX_RUNS[ranker[-3:]] / seed.split("|")[0], Path(log_path).parents[2]
             turns, final = logged_turns(src)
             # the logged turns name the logged run's own workspace (absolute paths): point them at this run's
             fix = lambda x: x.replace(str(src), str(dst)) if isinstance(x, str) else x  # noqa: E731
@@ -634,6 +634,30 @@ class ScreenClient:
             return r.json()["distribution"][letters[0]]
         with ThreadPoolExecutor(8) as ex:
             return list(ex.map(one, orders))
+
+    def _screen(self, messages, common, chosen, rec):
+        """Arm screen at the first FINISH: rank, show the top M as a checklist, execute the LLM's answer."""
+        t0, screen = time.time(), {"ranker": self.ranker}
+        try:
+            ranked = self._rank(messages, common, screen)
+        except Exception as e:  # screening failure: the LLM's own FINISH stands
+            ranked, screen["error"] = [], repr(e)[:500]
+        try:
+            if ranked:
+                items = "\n".join(f"{i + 1}. {render_order(o)}" for i, (s, o) in enumerate(ranked))
+                note = CHECKLIST.format(items=items)
+                r2 = self.base.chat(messages + [{"role": "user", "content": note}], **common)
+                chosen = r2.raw.choices[0]
+                if chosen.message.tool_calls:  # keep the reason visible to later steps
+                    chosen.message.content = ("[Pre-finish review of flagged orders]\n" + note + "\n\n" +
+                                              (chosen.message.content or "")).strip()
+                screen["answer"] = render_turn(chosen.message.content, chosen.message.tool_calls)[:MAX_CANDIDATE_CHARS]
+                self._note([], screen["answer"])
+        except Exception as e:  # screening failure: the LLM's own FINISH stands
+            screen["error"] = repr(e)[:500]
+        screen["s"] = round(time.time() - t0, 2)
+        rec["screen"] = screen
+        return chosen
 
     def _restart(self, messages, common, chosen, rec):
         """Arm R: ask for the remaining orders (RESTART_ASK) from the fresh or the full context; execute only its order
@@ -725,8 +749,10 @@ class ScreenClient:
         else:
             chosen = _as_choice(final or "", None)
             self.done = True
-            if self.ranker != "restart-none":
+            if self.ranker.startswith("restart-"):
                 chosen = self._restart(messages, common, chosen, rec)
+            else:  # a checklist arm (prior-*) from the shared prefix
+                chosen = self._screen(messages, common, chosen, rec)
         rendered = render_turn(chosen.message.content, chosen.message.tool_calls)[:MAX_CANDIDATE_CHARS]
         rec["candidates"] = [rendered]
         self._note([rendered], rendered)
@@ -754,26 +780,7 @@ class ScreenClient:
             chosen = self._restart(messages, common, chosen, rec)
         elif not chosen.message.tool_calls and not self.done:
             self.done = True
-            t0, screen = time.time(), {"ranker": self.ranker}
-            try:
-                ranked = self._rank(messages, common, screen)
-            except Exception as e:  # screening failure: the LLM's own FINISH stands
-                ranked, screen["error"] = [], repr(e)[:500]
-            try:
-                if ranked:
-                    items = "\n".join(f"{i + 1}. {render_order(o)}" for i, (s, o) in enumerate(ranked))
-                    note = CHECKLIST.format(items=items)
-                    r2 = self.base.chat(messages + [{"role": "user", "content": note}], **common)
-                    chosen = r2.raw.choices[0]
-                    if chosen.message.tool_calls:  # keep the reason visible to later steps
-                        chosen.message.content = ("[Pre-finish review of flagged orders]\n" + note + "\n\n" +
-                                                  (chosen.message.content or "")).strip()
-                    screen["answer"] = render_turn(chosen.message.content, chosen.message.tool_calls)[:MAX_CANDIDATE_CHARS]
-                    self._note([], screen["answer"])
-            except Exception as e:  # screening failure: the LLM's own FINISH stands
-                screen["error"] = repr(e)[:500]
-            screen["s"] = round(time.time() - t0, 2)
-            rec["screen"] = screen
+            chosen = self._screen(messages, common, chosen, rec)
         with self.log_path.open("a") as f:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
         from agent.llm_client import ChatResponse
