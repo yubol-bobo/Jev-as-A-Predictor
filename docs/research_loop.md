@@ -1184,3 +1184,46 @@ contrasts (XR, XA) do not.
 Gemma (FP8) is served on GPU 1 (8031), with the Qwen judge on GPU 0 (8011). A toy tool-call request returns a parsed
 tool call and separate reasoning. The X0 smoke test (run 99) completed one task end to end: retrieval, two orders, a
 note and FINISH, graded by Qwen. X1 run 1 (100 tasks, 8 workers) started at 16:05.
+
+## X1 run 1 (descriptive) and XQ3 verdict (2026-10-24 17:05; `results/pb_x1_run1.json`, `pb_omission_gemma4.json`, `pb_classify_gemma4.json`)
+Run 1 took 100 tasks in 51 min (16:05-16:56, 8 workers).
+
+**X1, Gemma beside Qwen (descriptive).** Qwen's numbers are from `llm` run 1 and the executed path of
+llm_log_k5 run 1. Gemma − Qwen is paired over tasks.
+
+| | Gemma | Qwen | Gemma − Qwen |
+|---|---|---|---|
+| task pass | 0.08 | 0.41 | −0.33 [−0.42, −0.25] |
+| checkpoint pass | 0.51 | 0.81 | −0.30 [−0.35, −0.24] |
+| required-order specs placed | 0.40 | 0.67-0.72 | −0.29 [−0.40, −0.18] |
+| steps | 16 | 36 | −20 |
+| orders | 1.0 | 3.1 | |
+| unmatched orders | 0.7 | 3.0 | |
+
+- Documentation checkpoints pass at 0.22 for Gemma vs 0.69-0.71 for Qwen.
+- 56 of 100 Gemma runs place no order (Qwen 27).
+- Not a harness artifact:
+  - no FINISH holds an unparsed tool call;
+  - no turn reaches the token cap;
+  - 90 runs end in a FINISH with a text answer (median 1.5k characters, after a median of 8 steps);
+  - 8 runs end on the harness's own repeated-call abort, as can happen for Qwen;
+  - 2 runs end on a request error.
+- Gemma is a much weaker agent in this harness: it stops early and acts little.
+- Missed required specs (Q1 anatomy):
+  - Gemma: silent 0.58, noted 0.35, mentioned 0.07;
+  - Qwen run 1: silent 0.36, noted 0.53, proposed 0.08.
+
+**XQ3 fails as pre-registered (1 of 3 checkpoint types match).**
+- Data retrieval: MISSING is dominant for both (Gemma 0.55, Qwen 0.61). **Matches.**
+- Clinical reasoning: Gemma's dominant category is INCOMPLETE (0.38; WRONG 0.19), Qwen's is WRONG (0.41). **Does
+  not match.** Within WRONG the split does match: judgment 0.62 (Qwen 0.70).
+- Documentation: Gemma's dominant category is INCOMPLETE (0.57; WRONG 0.17), Qwen's is WRONG (0.55). **Does not
+  match.** Within WRONG (n = 13): judgment 0.54 (Qwen fact 0.62).
+- A5 (descriptive): Gemma's 25 noted misses are mostly RECOMMENDS (0.60; Qwen 0.10). CLAIMS_DONE is 0.16, and for
+  0.96 of them no placed order is equivalent, so about 0.16 are false completion claims (Qwen about a quarter).
+
+Reading:
+- Qwen fails by saying the wrong thing; Gemma fails by saying too little. The Q3 error profile depends on the agent.
+- Within "wrong", clinical reasoning failures are judgment for both agents.
+- Gemma also shows an execution gap that Qwen does not: it recommends orders in its note and never places them
+  (15 of 25 noted misses). For Qwen, A1's nudge recovered only +0.08.

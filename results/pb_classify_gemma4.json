@@ -1,0 +1,77 @@
+{
+ "noted": {
+  "noted": {
+   "n": 25,
+   "share": {
+    "RECOMMENDS": 0.6,
+    "CONDITIONAL": 0.2,
+    "CLAIMS_DONE": 0.16,
+    "OTHER": 0.04
+   }
+  }
+ },
+ "placed": {
+  "placed": {
+   "n": 25,
+   "share": {
+    "DIFFERENT": 0.96,
+    "EQUIVALENT": 0.04
+   }
+  }
+ },
+ "reasons": {
+  "Data Retrieval": {
+   "n": 47,
+   "share": {
+    "MISSING": 0.553,
+    "INCOMPLETE": 0.319,
+    "WRONG": 0.085,
+    "NO_NOTE": 0.043
+   }
+  },
+  "Clinical Reasoning": {
+   "n": 153,
+   "share": {
+    "INCOMPLETE": 0.379,
+    "NO_NOTE": 0.229,
+    "WRONG": 0.19,
+    "MISSING": 0.118,
+    "HEDGED": 0.078,
+    "OTHER": 0.007
+   }
+  },
+  "Documentation": {
+   "n": 77,
+   "share": {
+    "INCOMPLETE": 0.571,
+    "WRONG": 0.169,
+    "NO_NOTE": 0.13,
+    "MISSING": 0.078,
+    "OTHER": 0.039,
+    "HEDGED": 0.013
+   }
+  }
+ },
+ "wrong": {
+  "Data Retrieval": {
+   "n": 4,
+   "share": {
+    "FACT": 1.0
+   }
+  },
+  "Documentation": {
+   "n": 13,
+   "share": {
+    "JUDGMENT": 0.538,
+    "FACT": 0.462
+   }
+  },
+  "Clinical Reasoning": {
+   "n": 29,
+   "share": {
+    "JUDGMENT": 0.621,
+    "FACT": 0.379
+   }
+  }
+ }
+}

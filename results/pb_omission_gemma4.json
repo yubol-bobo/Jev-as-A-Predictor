@@ -1,0 +1,58 @@
+{
+ "q1": {
+  "llm_log_k1__gemma4/run1": {
+   "tasks": 100,
+   "specs": 118,
+   "classes": {
+    "noted": 25,
+    "placed": 47,
+    "silent": 41,
+    "mentioned": 5
+   },
+   "missed_share": {
+    "noted": 0.352,
+    "silent": 0.577,
+    "mentioned": 0.07
+   },
+   "placed_rel_step_mean": 0.728,
+   "placed_tokens_mean": 24308.085,
+   "missed_first_rel_step_mean": {
+    "noted": 1.0,
+    "proposed": null,
+    "mentioned": 1.0
+   },
+   "missed_first_tokens_mean": {
+    "proposed": null,
+    "mentioned": 41213.0
+   },
+   "runs": {
+    "steps_mean": 8.67,
+    "orders_mean": 1.01,
+    "bursts": {
+     "0": 56,
+     "1": 44
+    },
+    "order_phase_start_mean": 0.749,
+    "order_phase_end_mean": 0.749,
+    "final_tokens_mean": 32690.48
+   }
+  }
+ },
+ "q3": {
+  "Data Retrieval": {
+   "other": 45,
+   "no_output": 2
+  },
+  "Clinical Reasoning": {
+   "other": 118,
+   "no_output": 35
+  },
+  "Documentation": {
+   "other": 67,
+   "no_output": 10
+  },
+  "Action Execution": {
+   "other": 53
+  }
+ }
+}

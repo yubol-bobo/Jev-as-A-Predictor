@@ -1,0 +1,123 @@
+{
+ "llm/run1": {
+  "tasks": 100,
+  "pass": 0.41,
+  "cps": 0.8128,
+  "steps": 36.31,
+  "orders": 3.07,
+  "notes": 1.6,
+  "required_placed": 0.6682,
+  "unmatched": 3.0364,
+  "groups": {
+   "AE: must not order": 0.0,
+   "AE: other action": 0.8889,
+   "AE: required order": 0.7485,
+   "Clinical Reasoning": 0.8392,
+   "Data Retrieval": 0.83,
+   "Documentation": 0.7071
+  }
+ },
+ "llm_log_k5/run1": {
+  "tasks": 100,
+  "pass": 0.41,
+  "cps": 0.8032,
+  "steps": 36.34,
+  "orders": 3.25,
+  "notes": 1.48,
+  "required_placed": 0.7176,
+  "unmatched": 3.3818,
+  "groups": {
+   "AE: must not order": 1.0,
+   "AE: other action": 0.7778,
+   "AE: required order": 0.784,
+   "Clinical Reasoning": 0.8273,
+   "Data Retrieval": 0.8131,
+   "Documentation": 0.6869
+  }
+ },
+ "qwen_pool": {
+  "tasks": 54,
+  "run1": 0.6682,
+  "runs_1_2": 0.7346
+ },
+ "llm_log_k1__gemma4/run1": {
+  "tasks": 100,
+  "pass": 0.08,
+  "cps": 0.5091,
+  "steps": 16.39,
+  "orders": 1.01,
+  "notes": 0.92,
+  "required_placed": 0.3997,
+  "unmatched": 0.7273,
+  "groups": {
+   "AE: must not order": 1.0,
+   "AE: other action": 0.6944,
+   "AE: required order": 0.4676,
+   "Clinical Reasoning": 0.572,
+   "Data Retrieval": 0.5354,
+   "Documentation": 0.2222
+  }
+ },
+ "gemma4_minus_qwen": {
+  "pass": {
+   "cases": 100,
+   "mean": -0.33,
+   "ci95": [
+    -0.33,
+    -0.42,
+    -0.245,
+    100
+   ]
+  },
+  "cps": {
+   "cases": 100,
+   "mean": -0.2989,
+   "ci95": [
+    -0.2989,
+    -0.3533,
+    -0.2421,
+    100
+   ]
+  },
+  "required_placed": {
+   "cases": 54,
+   "mean": -0.2932,
+   "ci95": [
+    -0.2932,
+    -0.402,
+    -0.1829,
+    54
+   ]
+  },
+  "orders": {
+   "cases": 100,
+   "mean": -2.15,
+   "ci95": [
+    -2.15,
+    -2.73,
+    -1.61,
+    100
+   ]
+  },
+  "unmatched": {
+   "cases": 55,
+   "mean": -2.4818,
+   "ci95": [
+    -2.4818,
+    -3.2818,
+    -1.7636,
+    55
+   ]
+  },
+  "steps": {
+   "cases": 100,
+   "mean": -19.935,
+   "ci95": [
+    -19.935,
+    -23.745,
+    -16.175,
+    100
+   ]
+  }
+ }
+}
