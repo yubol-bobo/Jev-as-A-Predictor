@@ -1031,3 +1031,9 @@ reach them (+0.07, about two thirds of A2's fresh-context effect at FINISH) at t
 order per step. So for Q1: the final omissions come less from losing the instruction than from acting before the
 whole plan is written, and (A2, R) from anchoring on the orders already placed; a quarter of the misses the note
 mentions are false completion claims (A5b).
+
+### R runs 4-5 resumed (2026-10-23 20:13, allocation 49716204, w004, GPUs 0,1)
+Allocation 49691349 ended at 17:19 like 49673289 at 09:19: the interactive step was killed (SIGKILL, CANCELLED, after
+5 h 49 min and 5 h 40 min; MaxRSS 69 GB / 157 GB of 1000 GB), not a resource limit seen by SLURM. Run 4 stood at 75 of
+204 jobs. `scripts/r_run3.sh`: Qwen TP1 on GPU 0 (8011) + pplx12 on GPU 1 (8022), runs 4 and 5, about 0.7 jobs/min
+(129 run-4 jobs left, about 3 h).
