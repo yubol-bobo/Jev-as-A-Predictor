@@ -12,6 +12,8 @@ ones. Paired over cases, bootstrap CIs. Replay check: agreement of `none` with t
 checkpoint.
 
   .venv/bin/python scripts/pb_r.py [--out results/pb_r.json] [--runs 1,2,3,4]
+With S1CLIN_AGENT=gemma4 (XR): the Gemma 4 agent's cases (llm_log_k1__gemma4 runs 1 and 2), arms none / full /
+fresh with exact-name repeats filtered only (job tags __rjnone__gemma4); results/pb_r_gemma4.json.
 """
 
 import argparse
@@ -25,13 +27,14 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(REPO / "scripts"), str(REPO)]
 from pb_gap import calls  # noqa: E402
 from pb_offline_orders import CREATE, matches, required_orders  # noqa: E402
-from pb_replay import cases  # noqa: E402
+from pb_replay import AGENT, R_RUNS, SUFFIX, cases  # noqa: E402
 from pb_summarize import JOBS  # noqa: E402
 
 RANKER = {"none": "restart-none", "full": "restart-full", "fresh": "restart-fresh", "list": "prior-pplx12-dedup",
           "listrand": "prior-random-dedup",
           "listd3": "prior-d3-dedup"}  # R3-d3
-ARMS = tuple(RANKER)
+ARMS = tuple(RANKER) if AGENT == "qwen" else ("none", "full", "fresh")
+TAG = "" if AGENT == "qwen" else f"__rjnone__{AGENT}"  # XR: exact-name repeat filter only
 CP = re.compile(r"^(PASSED|FAILED) \S*test_checkpoint_(\S+)", re.M)
 
 
@@ -55,12 +58,12 @@ def mean(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=str(REPO / "results/pb_r.json"))
+    ap.add_argument("--out", default=str(REPO / f"results/pb_r{SUFFIX}.json"))
     ap.add_argument("--runs", help="only these runs, e.g. 1,2,3,4 (default: all finished jobs)")
     a = ap.parse_args()
     keep = {f"run{r}" for r in a.runs.split(",")} if a.runs else None
     per, agree, n_jobs = {arm: {} for arm in ARMS}, [], {arm: 0 for arm in ARMS}
-    for c in cases():
+    for c in cases(R_RUNS):
         if not c["open"] or not c["finish"]:
             continue
         p = c["run"][-1]
@@ -70,7 +73,7 @@ def main():
         n_placed = len(c["placed"])
         for arm in ARMS:
             rows = []
-            for rd in sorted((JOBS / f"screen_{RANKER[arm]}-p{p}_b0m8_k1").glob("run[0-9]*")):
+            for rd in sorted((JOBS / f"screen_{RANKER[arm]}-p{p}_b0m8_k1{TAG}").glob("run[0-9]*")):
                 if rd.name == "run99" or (keep and rd.name not in keep and arm != "none"):  # smoke tests
                     continue
                 jd = rd / c["task"]
@@ -100,6 +103,8 @@ def main():
     for x, y in (("fresh", "full"), ("full", "none"), ("fresh", "none"), ("list", "none"), ("list", "listrand"),
                  ("listrand", "none"), ("fresh", "list"),
                  ("listd3", "none"), ("listd3", "listrand"), ("listd3", "list")):
+        if x not in ARMS or y not in ARMS:
+            continue
         ks = [k for k in per[x] if k in per[y] and per[x][k]["open"] is not None and per[y][k]["open"] is not None]
         res[f"{x}_minus_{y}"] = {"cases": len(ks)} | {
             k: {"mean": round(mean(d), 4), "ci95": boot(d)} for k in ("open", "all", "unmatched", "forbidden")

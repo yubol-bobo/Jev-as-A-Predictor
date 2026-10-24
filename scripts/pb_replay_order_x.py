@@ -1,10 +1,11 @@
 """Exploratory after the A3/A4 verdict: the order-step conditions on the specs each run finally missed (open at its
-FINISH), and order precision. Aggregates only; writes results/pb_replay_order_x.json.
+FINISH), and order precision. Aggregates only; writes results/pb_replay_order_x.json (S1CLIN_AGENT=gemma4: XA,
+results/pb_replay_order_x_gemma4.json, with plan − remind).
   .venv/bin/python scripts/pb_replay_order_x.py
 """
 import json, sys
 sys.path[:0] = ["scripts", "."]
-from pb_replay import cases, OD, turn_orders, boot
+from pb_replay import cases, OD, SUFFIX, turn_orders, boot
 from pb_offline_orders import required_orders, matches
 cs = {(c["run"], c["task"]): c for c in cases()}
 per = {}
@@ -35,10 +36,10 @@ for cond, rows in per.items():
     res[cond] = {k: round(sum(r[k] for r in rows.values() if r[k] is not None) /
                           max(1, sum(r[k] is not None for r in rows.values())), 4) for k in ("open", "unm", "forb", "prec")}
     res[cond]["cases_with_open"] = sum(r["open"] is not None for r in rows.values())
-for a in ("order_remind", "order_plan"):
+for a, b in (("order_remind", "order_none"), ("order_plan", "order_none")) + ((("order_plan", "order_remind"),) if SUFFIX else ()):
     for k in ("open", "unm", "prec"):
-        ks = [q for q in per[a] if q in per["order_none"] and per[a][q][k] is not None and per["order_none"][q][k] is not None]
-        d = [per[a][q][k] - per["order_none"][q][k] for q in ks]
-        res[f"{a}_minus_none_{k}"] = {"cases": len(ks), "mean": round(sum(d) / len(d), 4), "ci95": boot(d)}
-json.dump(res, open("/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor/results/pb_replay_order_x.json", "w"), indent=1)
+        ks = [q for q in per[a] if q in per[b] and per[a][q][k] is not None and per[b][q][k] is not None]
+        d = [per[a][q][k] - per[b][q][k] for q in ks]
+        res[f"{a}_minus_{b[6:]}_{k}"] = {"cases": len(ks), "mean": round(sum(d) / len(d), 4), "ci95": boot(d)}
+json.dump(res, open(f"/ocean/projects/cis260032p/yliy/research/Jev-as-A-Predictor/results/pb_replay_order_x{SUFFIX}.json", "w"), indent=1)
 print(json.dumps(res, indent=1))

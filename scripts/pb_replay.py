@@ -1,5 +1,6 @@
 """Replay the agent's own context at two points of its logged runs and sample its next turn under different inputs
-(research loop A1-A4: why required orders are missed; aggregates only in results/).
+(research loop A1-A4: why required orders are missed; aggregates only in results/). With S1CLIN_AGENT=gemma4 (X, XA): the runs, samples and
+results of the Gemma 4 agent (llm_log_k1__gemma4, sampled by Gemma; results/pb_replay_gemma4.json).
 
 Cases: each task of llm_log_k5/run1 and run3 with a required-order spec. Two points per case, rebuilt from
 decisions.messages.jsonl exactly as the LLM saw them:
@@ -45,8 +46,12 @@ from pb_offline_orders import matches, required_orders  # noqa: E402
 from pb_summarize import JOBS  # noqa: E402
 from src.s1clin.pb_decider import order_key, render_turn, turn_kind, turn_orders  # noqa: E402
 
-OD = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_replay")
-RUNS = ("llm_log_k5/run1", "llm_log_k5/run3")
+AGENT = os.environ.get("S1CLIN_AGENT", "qwen")  # the agent whose runs are replayed and who samples (X: gemma4)
+MODEL = {"qwen": "qwen3.8-27b", "gemma4": "gemma-4-31b-it"}[AGENT]
+OD = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_replay") / ("" if AGENT == "qwen" else AGENT)
+RUNS = {"qwen": ("llm_log_k5/run1", "llm_log_k5/run3"), "gemma4": ("llm_log_k1__gemma4/run1",)}[AGENT]
+R_RUNS = {"qwen": RUNS, "gemma4": ("llm_log_k1__gemma4/run1", "llm_log_k1__gemma4/run2")}[AGENT]  # R / XR cases
+SUFFIX = "" if AGENT == "qwen" else f"_{AGENT}"  # of the results files
 NUDGE = ("Before you finish, check that every order your note or plan recommends has actually been placed. Place any "
          "that have not been placed yet, then finish.")
 ASK = ("Based on the task and the patient data gathered so far, place every order that this task requires and that "
@@ -58,10 +63,10 @@ CONDS = ("finish_none", "finish_nudge", "finish_ask", "finish_fresh", "order_non
 DECISION_TOOLS = ("_create", "write_file")
 
 
-def cases():
+def cases(runs=RUNS):
     """[{run, task, finish: (epoch, n), order: (epoch, n), open: [spec idx], placed: [orders before finish]}]."""
     out = []
-    for slug in RUNS:
+    for slug in runs:
         for jd in sorted(p for p in (JOBS / slug).iterdir() if p.is_dir()):
             dec_p = jd / "logs/agent/decisions.jsonl"
             specs = [s for s in required_orders(jd.name) if not s["negative"]]
@@ -140,7 +145,7 @@ def run(cond, k, url, workers):
             t0 = time.time()
             try:
                 cl = openai.OpenAI(base_url=route(url, c["task"]), api_key="none", timeout=3600)
-                r = cl.chat.completions.create(model="qwen3.8-27b", messages=msgs, tools=tl, parallel_tool_calls=True, n=k,
+                r = cl.chat.completions.create(model=MODEL, messages=msgs, tools=tl, parallel_tool_calls=True, n=k,
                                                max_completion_tokens=16384,
                                                extra_body={"chat_template_kwargs": {"enable_thinking": True}})
                 rec["samples"] = [render_turn(ch.message.content, ch.message.tool_calls) for ch in r.choices]
@@ -261,7 +266,7 @@ def main():
     ap.add_argument("--k", type=int, default=5)
     ap.add_argument("--url", default="http://127.0.0.1:8011/v1*2,http://127.0.0.1:8013/v1*1")
     ap.add_argument("--workers", type=int, default=24)
-    ap.add_argument("--out", default=str(REPO / "results/pb_replay.json"))
+    ap.add_argument("--out", default=str(REPO / f"results/pb_replay{SUFFIX}.json"))
     a = ap.parse_args()
     os.umask(0o077)
     OD.mkdir(parents=True, exist_ok=True, mode=0o700)
