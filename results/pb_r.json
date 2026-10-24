@@ -6,7 +6,7 @@
   "fresh": 255,
   "list": 255,
   "listrand": 255,
-  "listd3": 0
+  "listd3": 153
  },
  "replay_agreement": 0.9972,
  "replay_checkpoints": 352,
@@ -51,12 +51,12 @@
   "forbidden": 0.0
  },
  "listd3": {
-  "cases": 0,
-  "open": null,
-  "all": null,
-  "orders": null,
-  "unmatched": null,
-  "forbidden": null
+  "cases": 51,
+  "open": 0.5425,
+  "all": 0.7148,
+  "orders": 1.7516,
+  "unmatched": 1.5229,
+  "forbidden": 0.0
  },
  "fresh_minus_full": {
   "cases": 51,
@@ -276,12 +276,96 @@
   }
  },
  "listd3_minus_none": {
-  "cases": 0
+  "cases": 51,
+  "open": {
+   "mean": 0.1601,
+   "ci95": [
+    0.0784,
+    0.2516
+   ]
+  },
+  "all": {
+   "mean": 0.0507,
+   "ci95": [
+    0.023,
+    0.0866
+   ]
+  },
+  "unmatched": {
+   "mean": 1.5229,
+   "ci95": [
+    1.1569,
+    1.915
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
  },
  "listd3_minus_listrand": {
-  "cases": 0
+  "cases": 51,
+  "open": {
+   "mean": 0.0719,
+   "ci95": [
+    0.0105,
+    0.1333
+   ]
+  },
+  "all": {
+   "mean": 0.0254,
+   "ci95": [
+    0.0099,
+    0.0431
+   ]
+  },
+  "unmatched": {
+   "mean": -0.4575,
+   "ci95": [
+    -0.8314,
+    -0.0915
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
  },
  "listd3_minus_list": {
-  "cases": 0
+  "cases": 51,
+  "open": {
+   "mean": 0.0131,
+   "ci95": [
+    -0.0137,
+    0.0425
+   ]
+  },
+  "all": {
+   "mean": 0.0039,
+   "ci95": [
+    -0.0039,
+    0.0119
+   ]
+  },
+  "unmatched": {
+   "mean": 0.0523,
+   "ci95": [
+    -0.2157,
+    0.3425
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
  }
 }

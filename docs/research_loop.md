@@ -1157,3 +1157,18 @@ Tests:
 
 Order: X0 smoke test (2 tasks, run 99, not analysed), then X1 run 1, then XQ3 and XA (offline, from run 1), then
 X1 run 2, then XR.
+
+## R3-d3 verdict (2026-10-24 15:40; 3 runs, 153 jobs, 51 cases; `results/pb_r.json`)
+The d3 list runs 1-3 ran 11:39-15:34. Every job finished and was graded.
+- **R3-d3a holds:** listd3 − none +0.160 [+0.078, +0.252] (bar +0.10). Open-spec pass is 0.54 (pplx12 list 0.53).
+- **R3-d3b holds:** listd3 − listrand +0.072 [+0.011, +0.133] (bar +0.05).
+- Harms:
+  - unmatched orders listd3 − none +1.52 [+1.16, +1.92] (bound +1.0, **fails**, as for the pplx12 list);
+  - listd3 − listrand −0.46 [−0.83, −0.09];
+  - forbidden 0;
+  - all-checkpoint pass +0.051 [+0.023, +0.087].
+- Exploratory: listd3 − list +0.013 [−0.014, +0.043] (unmatched +0.05). This matches the offline prediction: at 8
+  items the two rankings cover about the same specs (0.57 vs 0.54).
+Reading: R3 is not a property of pplx12. A second System One model ranking the same pool from the task text alone
+gives the same recovery, and the same edge over a random list. The ranked lists also add a third fewer non-rubric
+orders than the random list. The harm (about 1.5 non-rubric orders per case) is shared by every list.
