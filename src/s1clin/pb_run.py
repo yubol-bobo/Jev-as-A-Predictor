@@ -8,6 +8,8 @@ Arms (docs/physicianbench_decider.md):
               history are logged for the offline decision evaluation
   s1_tool     each step: Clef chooses the tool (or FINISH) from the full menu, Qwen writes the call
   llm_tool    control for s1_tool: the same one-tool-per-turn restriction, the tool chosen by Qwen's own turn
+  (--agent gemma4: Gemma 4 31B-it is the agent in every arm, at --agent-url, scripts/vllm_gemma_up.sh; the grader's
+  judge stays Qwen at --llm-url; job tags get the suffix __gemma4)
   gate        each step: Qwen samples K candidate turns; at commitment points (an order or FINISH among them) the
               decider's pick overrules Qwen's first sample if it is ahead by log-odds >= --margin, else the first
               sample (= `llm`) is executed (2026-10-20; pb_decider.GatedDecider)
@@ -52,6 +54,9 @@ ENV = {
 }
 
 
+AGENT_MODELS = {"qwen": "qwen3.8-27b", "gemma4": "gemma-4-31b-it"}  # --agent -> served model name
+
+
 def child_env(llm_url):
     env = {k: v for k, v in os.environ.items() if k not in ("OPENROUTER_API_KEY", "ANTHROPIC_API_KEY")}
     env.update(ENV)
@@ -92,7 +97,9 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
         log_dir.mkdir(parents=True, exist_ok=True)
         registry = ToolRegistry()
         register_all_tools(registry)
-        base = LLMClient(model_id="qwen3.8-27b")
+        agent_url = os.environ.get("S1CLIN_AGENT_URL")  # another agent model than the judge's (--agent)
+        base = LLMClient(model_id=os.environ.get("S1CLIN_AGENT_MODEL", "qwen3.8-27b"),
+                         **({"api_key": "EMPTY", "base_url": agent_url} if agent_url else {}))
         seed = f"{task}|{job_dir.parent.name}"  # per (task, run)
         if arm == "llm":
             client = base
@@ -133,6 +140,8 @@ def run_one(task: str, arm: str, k: int, job_dir: Path, port: int, max_steps: in
     write_metadata(job_dir, model=client.model_id, task=task, arm=arm, k=k, max_steps=max_steps, temperature=None,
                    reasoning_effort="high(qwen thinking)", fhir_url=fhir_url, success=success, test_results=tests,
                    judge="qwen3.8-27b (local, thinking off)", llm_url=os.environ["OPENAI_BASE_URL"],
+                   agent_url=os.environ.get("S1CLIN_AGENT_URL"), repeat_judge=os.environ.get("S1CLIN_REPEAT_JUDGE"),
+                   prefix_arm=os.environ.get("S1CLIN_PREFIX_ARM"),
                    decider=os.environ.get("S1CLIN_DECIDER", "clef") if arm in ("clef", "s1_tool", "gate") else None,
                    gate_margin=float(os.environ["S1CLIN_GATE_MARGIN"]) if arm == "gate" else None,
                    gate_points=os.environ.get("S1CLIN_GATE_POINTS", "commit") if arm == "gate" else None,
@@ -164,6 +173,11 @@ def main():
     ap.add_argument("--ranker", default="pplx12", help="screen arm: a System One decider, or freq (control)")
     ap.add_argument("--b", type=int, default=8, help="screen arm: extra tool-forced samples at the first FINISH")
     ap.add_argument("--m", type=int, default=3, help="screen arm: orders shown to the LLM")
+    ap.add_argument("--agent", default="qwen", choices=list(AGENT_MODELS), help="the agent LLM (the judge stays Qwen)")
+    ap.add_argument("--agent-url", help="--agent other than qwen: its server (e.g. http://127.0.0.1:8031/v1)")
+    ap.add_argument("--repeat-judge", default="pplx12", help="screen arm: the System One repeat judge, or none "
+                    "(exact-name repeats only); other than pplx12, the job tag gets the suffix __rj<name>")
+    ap.add_argument("--prefix-arm", default="llm_log_k5", help="screen arm with a -p<run> ranker: the logged arm replayed")
     ap.add_argument("--one", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument("--port", type=int, help=argparse.SUPPRESS)
     a = ap.parse_args()
@@ -184,6 +198,16 @@ def main():
         os.environ.update(S1CLIN_SCREEN_RANKER=a.ranker, S1CLIN_SCREEN_B=str(a.b), S1CLIN_SCREEN_M=str(a.m))
     if a.arm in ("clef", "s1_tool", "gate") and a.decider != "clef":
         arm_tag += f"__{a.decider}"
+    if a.repeat_judge != "pplx12":
+        arm_tag += f"__rj{a.repeat_judge}"
+    if a.agent != "qwen":
+        if not a.agent_url:
+            ap.error("--agent other than qwen needs --agent-url")
+        arm_tag += f"__{a.agent}"
+        os.environ.update(S1CLIN_AGENT_MODEL=AGENT_MODELS[a.agent], S1CLIN_AGENT_URL=a.agent_url,
+                          S1CLIN_LLM_SERVER=f"scripts/vllm_gemma_up.sh (agent {a.agent}); judge: scripts/vllm_qwen_up.sh")
+    if a.repeat_judge != "pplx12" or a.prefix_arm != "llm_log_k5":
+        os.environ.update(S1CLIN_REPEAT_JUDGE=a.repeat_judge, S1CLIN_PREFIX_ARM=a.prefix_arm)
     os.environ["S1CLIN_DECIDER"] = a.decider  # inherited by the per-task processes (child_env copies os.environ)
 
     def job_of(t):
@@ -218,7 +242,10 @@ def main():
             cmd = [sys.executable, "-m", "src.s1clin.pb_run", "--one", "--arm", a.arm, "--tasks", t, "--run",
                    str(a.run), "--k", str(a.k), "--port", str(port), "--max-steps", str(a.max_steps),
                    "--decider", a.decider, "--margin", str(a.margin), "--points", a.points,
-                   "--ranker", a.ranker, "--b", str(a.b), "--m", str(a.m)]  # else the child's defaults
+                   "--ranker", a.ranker, "--b", str(a.b), "--m", str(a.m), "--agent", a.agent,
+                   "--repeat-judge", a.repeat_judge, "--prefix-arm", a.prefix_arm]  # else the child's defaults
+            if a.agent_url:
+                cmd += ["--agent-url", a.agent_url]
             t0 = time.time()
             try:
                 with open(jd / "runner.log", "w") as log:

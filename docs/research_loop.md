@@ -1110,3 +1110,50 @@ decider. Coverage of the open specs:
 - top 8 (the online arm's size): d3 0.57, pplx12 0.54; +0.03 [−0.04, +0.12].
 At 8 items the two rankings cover about the same specs, so offline predicts listd3 ≈ list online. d3's edge is
 in the first five slots.
+
+## X, the agent-side findings with a second agent LLM: Gemma 4 31B-it (fixed 2026-10-24 12:01, before any Gemma output)
+Every agent-side finding so far (Q1: A3/A4; Q2: A2, R1/R2; Q3: A5-A7) comes from one agent, Qwen3.8-27B. The user
+chose Gemma 4 31B-it (google/gemma-4-31B-it, local cache) as the second agent.
+
+Setup:
+- Gemma runs as the agent in the same harness: MiniAgent, the same tools, prompts, 100 steps and 16k completion
+  tokens. It is served bf16 with thinking on, 128k context, and sampling from its generation config
+  ().
+- Qwen stays the grader's judge (thinking off) and the Q3 labeller, so only the agent changes.
+- ; job tags get the suffix .
+- Hardware: GPU 0 runs the Qwen judge (8011) and GPU 1 runs Gemma (8031). No new Qwen agent runs; Qwen comparisons
+  use the existing numbers.
+
+Tests:
+- **X1, base runs.** Arm llm_log, K = 1 (each step logged, its one sample executed), all 100 tasks, runs 1 and 2.
+  Descriptive only, no prediction:
+  - checkpoint pass by category;
+  - required-order checkpoints;
+  - open required specs at the first FINISH;
+  - coverage of the required orders by run 1 alone vs runs 1+2 pooled (Qwen: 75% per run, 91% over 5 runs);
+  - each of these set beside Qwen's `llm` run 1.
+- **XR, Q2 online (R with Gemma).** Cases are the (run, task) pairs of Gemma runs 1 and 2 whose first FINISH leaves
+  a required-order spec open, as in R. Arms none (the replay check), full and fresh; K = 1; 3 runs each.
+  - One change from R: the restart arms drop only exact-name repeats of placed orders, with no pplx12 repeat judge.
+    pplx12 does not fit beside Gemma and the Qwen judge on two GPUs. Both arms use the same filter.
+  - XR1: fresh − full ≥ +0.03 with the CI excluding 0 (Qwen R1 +0.071).
+  - XR2: full − none ≥ +0.08 with the CI excluding 0 (Qwen R2 +0.080).
+  - Harms: unmatched orders fresh − full ≤ +0.5; forbidden 0; all-checkpoint pass fresh − full ≥ −0.03.
+  - Replay check ≥ 0.90.
+  - A verdict needs at least 25 cases; with fewer, the result is reported as descriptive.
+- **XA, Q1 offline (A3/A4 with Gemma).** `pb_replay.py` order-step replay at the first order step of Gemma run 1,
+  K = 5 Gemma samples, the same three conditions (none, remind, plan). The confirmatory outcome is the one that
+  carried the Qwen reading (exploratory there): coverage of the specs the run finally missed (open at its FINISH).
+  - XA4: plan − none ≥ +0.03 with the CI excluding 0 (Qwen +0.069).
+  - XA3: plan − remind ≥ +0.03 with the CI excluding 0 (Qwen: remind +0.019 n.s., plan +0.069). This is the claim
+    that acting before the plan is written, rather than drift, loses the final orders.
+  - The A3/A4 step-level metric (all required specs at the first order step) is reported as before.
+- **XQ3, Q3.** A5-A7 classification of Gemma run 1's failed checkpoints with the same Qwen labeller and prompts
+  (`pb_classify.py`). Prediction: for each checkpoint type, the dominant category matches Qwen's:
+  - clinical reasoning: WRONG, mostly judgment;
+  - documentation: WRONG, mostly fact;
+  - data retrieval: MISSING.
+  The A5 share of noted misses that are false completion claims is descriptive.
+
+Order: X0 smoke test (2 tasks, run 99, not analysed), then X1 run 1, then XQ3 and XA (offline, from run 1), then
+X1 run 2, then XR.

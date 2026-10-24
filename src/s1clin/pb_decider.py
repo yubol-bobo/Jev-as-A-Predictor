@@ -479,7 +479,8 @@ DEDUP_INSTRUCTION = "Compare a candidate clinical order with the orders already 
 DEDUP_QUESTION = ("Candidate order: {order}. Is it the same as, or equivalent to (the same laboratory test, imaging "
                   "study, referral or consult, procedure, or drug), one of the orders already placed?")
 DEDUP_YES, DEDUP_NO = "Yes, it repeats an order already placed", "No, it is a new order"
-DEDUP_DECIDER, DEDUP_MAX = "pplx12", 0.5  # items with P(repeat) >= DEDUP_MAX are dropped
+# items with P(repeat) >= DEDUP_MAX are dropped; S1CLIN_REPEAT_JUDGE=none (R-Gemma) keeps only the exact-name filter
+DEDUP_DECIDER, DEDUP_MAX = os.environ.get("S1CLIN_REPEAT_JUDGE", "pplx12"), 0.5
 # R, the restart: at the first FINISH the LLM is asked once more for the orders the task requires, from its context
 # with its own decisions removed (`restart-fresh`) or from the full context (`restart-full`, control); only the order
 # calls of that answer are executed, minus exact repeats of placed orders and minus those DEDUP_DECIDER, given only
@@ -532,8 +533,10 @@ def short_state(messages, budget: int = SCREEN_STATE_CHARS):
 PRIOR_DIR = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_screen")
 # R with a shared prefix: a ranker ending in a PREFIX_RUNS suffix replays that logged run of the same task turn by
 # turn (its assistant messages, re-executed against a fresh environment, no LLM call) up to its FINISH, where the arm
-# branches; every arm then starts from the same state and only the branch differs
-PREFIX_RUNS = {"-p1": "llm_log_k5/run1", "-p3": "llm_log_k5/run3"}  # ranker suffix -> logged run
+# branches; every arm then starts from the same state and only the branch differs. The logged arm is llm_log_k5
+# (Qwen) unless S1CLIN_PREFIX_ARM names another (R-Gemma: llm_log_k1__gemma4)
+PREFIX_ARM = os.environ.get("S1CLIN_PREFIX_ARM", "llm_log_k5")
+PREFIX_RUNS = {"-p1": "run1", "-p2": "run2", "-p3": "run3"}  # ranker suffix -> logged run of PREFIX_ARM
 PREFIX_JOBS = Path(os.environ.get("PB_JOBS", "/ocean/projects/cis260032p/yliy/data/physicianbench/jobs"))
 
 
@@ -583,7 +586,7 @@ class ScreenClient:
         self.prefix = None
         if ranker[-3:] in PREFIX_RUNS:  # R with a shared prefix
             self.ranker = ranker[:-3]
-            src, dst = PREFIX_JOBS / PREFIX_RUNS[ranker[-3:]] / seed.split("|")[0], Path(log_path).parents[2]
+            src, dst = PREFIX_JOBS / PREFIX_ARM / PREFIX_RUNS[ranker[-3:]] / seed.split("|")[0], Path(log_path).parents[2]
             turns, final = logged_turns(src)
             # the logged turns name the logged run's own workspace (absolute paths): point them at this run's
             fix = lambda x: x.replace(str(src), str(dst)) if isinstance(x, str) else x  # noqa: E731
@@ -612,6 +615,8 @@ class ScreenClient:
                 if order_key((k, d, c)) not in self.placed]
         self.prior_pool = len(pool)
         if dedup and pool:
+            if DEDUP_DECIDER == "none":
+                raise ValueError("a -dedup ranker needs a repeat judge (S1CLIN_REPEAT_JUDGE)")
             repeat = self._repeat([o for o, _ in pool])
             pool = [x for x, r in zip(pool, repeat) if r < DEDUP_MAX]
         self.prior_dedup = len(pool)
@@ -682,7 +687,7 @@ class ScreenClient:
                     dropped["repeat"] += 1
                 else:
                     keep.append((tc, os_[0]))
-            if keep and self.placed_orders:  # variants of placed orders: the P10 repeat judge, placed orders only
+            if keep and self.placed_orders and DEDUP_DECIDER != "none":  # variants of placed orders: the P10 repeat judge
                 p = self._repeat([o for _, o in keep])
                 screen["p_repeat"] = [round(x, 4) for x in p]
                 dropped["variant"] = sum(x >= DEDUP_MAX for x in p)
