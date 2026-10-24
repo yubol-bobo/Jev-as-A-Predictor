@@ -1179,3 +1179,8 @@ cache, while one 128k context needs 23.3 GiB, so vLLM refused to start. The othe
 therefore runs with FP8 weights (vLLM online dynamic quantization) and a bf16 KV cache. Qwen stays bf16. Everything
 else in X is unchanged. Any Gemma-vs-Qwen difference carries this caveat (a quantized agent), and the within-Gemma
 contrasts (XR, XA) do not.
+
+### X progress (2026-10-24 16:05)
+Gemma (FP8) is served on GPU 1 (8031), with the Qwen judge on GPU 0 (8011). A toy tool-call request returns a parsed
+tool call and separate reasoning. The X0 smoke test (run 99) completed one task end to end: retrieval, two orders, a
+note and FINISH, graded by Qwen. X1 run 1 (100 tasks, 8 workers) started at 16:05.
