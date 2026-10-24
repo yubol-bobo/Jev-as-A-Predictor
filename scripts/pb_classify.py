@@ -17,6 +17,8 @@ test), OTHER.
 
   .venv/bin/python scripts/pb_classify.py noted|placed|reasons|wrong [--url http://127.0.0.1:8011/v1] [--workers 16]
   .venv/bin/python scripts/pb_classify.py report [--out results/pb_classify.json]
+With S1CLIN_AGENT=gemma4 (XQ3): the Gemma 4 agent's texts (pb_omission.py with the same setting), still labelled by
+Qwen; results/pb_classify_gemma4.json.
 """
 
 import argparse
@@ -32,7 +34,8 @@ from pathlib import Path
 import requests
 
 REPO = Path(__file__).resolve().parents[1]
-OD = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_omission")
+sys.path[:0] = [str(REPO / "scripts"), str(REPO)]
+from pb_omission import BASE_ARM, OD, SUFFIX  # noqa: E402
 NOTED = ["RECOMMENDS", "CLAIMS_DONE", "CONDITIONAL", "NEGATED", "OTHER"]
 REASONS = ["NO_NOTE", "MISSING", "WRONG", "HEDGED", "INCOMPLETE", "OTHER"]
 NOTED_PROMPT = """An AI agent working on a clinical task wrote a note. The order below was required by the task but the agent never placed it. The excerpts are the parts of the agent's note that mention it.
@@ -108,7 +111,7 @@ def placed_orders(r):
     from pb_gap import calls
     from pb_offline_orders import CREATE
     from pb_summarize import JOBS
-    jd = JOBS / "llm_log_k5" / r["run"] / r["task"]
+    jd = JOBS / BASE_ARM / r["run"] / r["task"]
     os_ = [f"{CREATE[n][0]}: {a.get(CREATE[n][1], '')}" for n, a in calls(jd) if n in CREATE]
     return "\n".join(os_) or "(none)"
 
@@ -168,7 +171,7 @@ def main():
     ap.add_argument("cmd", choices=["noted", "placed", "reasons", "wrong", "report"])
     ap.add_argument("--url", default="http://127.0.0.1:8011/v1")
     ap.add_argument("--workers", type=int, default=16)
-    ap.add_argument("--out", default=str(REPO / "results/pb_classify.json"))
+    ap.add_argument("--out", default=str(REPO / f"results/pb_classify{SUFFIX}.json"))
     a = ap.parse_args()
     os.umask(0o077)
     if a.cmd == "report":

@@ -18,6 +18,8 @@ judge_partial, judge_fail, other. The grader's reasons go to data/offline/pb_omi
 content stays there) for a later local classification.
 
   .venv/bin/python scripts/pb_omission.py [--runs llm_log_k5/run1,llm_log_k5/run3] [--out results/pb_omission.json]
+With S1CLIN_AGENT=gemma4 (X, XQ3): the Gemma 4 agent's run llm_log_k1__gemma4/run1 (K = 1, so `proposed` is the
+executed turn only), its own data/offline/pb_omission/gemma4/, results/pb_omission_gemma4.json.
 """
 
 import argparse
@@ -35,7 +37,10 @@ from pb_offline_orders import CREATE, matches, required_orders  # noqa: E402
 from pb_summarize import JOBS, TAXONOMY  # noqa: E402
 from src.s1clin.pb_decider import turn_orders  # noqa: E402
 
-OD = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_omission")
+AGENT = os.environ.get("S1CLIN_AGENT", "qwen")  # X: gemma4
+OD = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_omission") / ("" if AGENT == "qwen" else AGENT)
+BASE_ARM = {"qwen": "llm_log_k5", "gemma4": "llm_log_k1__gemma4"}[AGENT]  # the logged runs (pb_classify placed)
+SUFFIX = "" if AGENT == "qwen" else f"_{AGENT}"
 BLOCK = re.compile(r"^_+ test_checkpoint_(\S+) _+$", re.M)
 TOOL_LINE = re.compile(r"^\w+\(.*$", re.M)
 SNIPPETS = []
@@ -112,10 +117,11 @@ def mean(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--runs", default="llm_log_k5/run1,llm_log_k5/run3")
-    ap.add_argument("--fail-runs", default="llm/run1,llm/run2,llm_log_k5/run1,llm_log_k5/run3",
+    ap.add_argument("--runs", default="llm_log_k5/run1,llm_log_k5/run3" if AGENT == "qwen" else f"{BASE_ARM}/run1")
+    ap.add_argument("--fail-runs", default="llm/run1,llm/run2,llm_log_k5/run1,llm_log_k5/run3" if AGENT == "qwen"
+                    else f"{BASE_ARM}/run1",
                     help="runs for the Q3 failure classification")
-    ap.add_argument("--out", default=str(REPO / "results/pb_omission.json"))
+    ap.add_argument("--out", default=str(REPO / f"results/pb_omission{SUFFIX}.json"))
     a = ap.parse_args()
     os.umask(0o077)
     OD.mkdir(parents=True, exist_ok=True, mode=0o700)
