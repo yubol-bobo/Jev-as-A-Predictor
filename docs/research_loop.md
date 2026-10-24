@@ -1172,3 +1172,10 @@ The d3 list runs 1-3 ran 11:39-15:34. Every job finished and was graded.
 Reading: R3 is not a property of pplx12. A second System One model ranking the same pool from the task text alone
 gives the same recovery, and the same edge over a random list. The ranked lists also add a third fewer non-rubric
 orders than the random list. The harm (about 1.5 non-rubric orders per case) is shared by every list.
+
+### X amendment (2026-10-24 15:58, before any Gemma output)
+Gemma 4 31B-it in bf16 does not fit on one H100. Its weights take 58 GiB and leave 11.8 GiB of KV
+cache, while one 128k context needs 23.3 GiB, so vLLM refused to start. The other GPU holds the Qwen judge. Gemma
+therefore runs with FP8 weights (vLLM online dynamic quantization) and a bf16 KV cache. Qwen stays bf16. Everything
+else in X is unchanged. Any Gemma-vs-Qwen difference carries this caveat (a quantized agent), and the within-Gemma
+contrasts (XR, XA) do not.
