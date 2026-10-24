@@ -1,0 +1,95 @@
+{
+ "order_none": {
+  "open": 0.1033,
+  "unm": 0.7515,
+  "forb": 0.0,
+  "prec": 0.7,
+  "cases_with_open": 18
+ },
+ "order_remind": {
+  "open": 0.1667,
+  "unm": 0.6424,
+  "forb": 0.0,
+  "prec": 0.6999,
+  "cases_with_open": 18
+ },
+ "order_plan": {
+  "open": 0.2806,
+  "unm": 1.1758,
+  "forb": 0.0,
+  "prec": 0.6577,
+  "cases_with_open": 18
+ },
+ "order_remind_minus_none_open": {
+  "cases": 18,
+  "mean": 0.0633,
+  "ci95": [
+   -0.0256,
+   0.1522
+  ]
+ },
+ "order_remind_minus_none_unm": {
+  "cases": 33,
+  "mean": -0.1091,
+  "ci95": [
+   -0.4424,
+   0.1758
+  ]
+ },
+ "order_remind_minus_none_prec": {
+  "cases": 29,
+  "mean": 0.0136,
+  "ci95": [
+   -0.0275,
+   0.0608
+  ]
+ },
+ "order_plan_minus_none_open": {
+  "cases": 18,
+  "mean": 0.1772,
+  "ci95": [
+   0.0411,
+   0.3217
+  ]
+ },
+ "order_plan_minus_none_unm": {
+  "cases": 33,
+  "mean": 0.4242,
+  "ci95": [
+   0.1758,
+   0.6788
+  ]
+ },
+ "order_plan_minus_none_prec": {
+  "cases": 32,
+  "mean": -0.0329,
+  "ci95": [
+   -0.0807,
+   0.0128
+  ]
+ },
+ "order_plan_minus_remind_open": {
+  "cases": 18,
+  "mean": 0.1139,
+  "ci95": [
+   0.0222,
+   0.2278
+  ]
+ },
+ "order_plan_minus_remind_unm": {
+  "cases": 33,
+  "mean": 0.5333,
+  "ci95": [
+   0.2424,
+   0.8788
+  ]
+ },
+ "order_plan_minus_remind_prec": {
+  "cases": 29,
+  "mean": -0.0336,
+  "ci95": [
+   -0.0763,
+   0.0027
+  ]
+ }
+}

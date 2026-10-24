@@ -1,0 +1,44 @@
+{
+ "order_none": {
+  "cases": 33,
+  "coverage": 0.4798,
+  "coverage_any_of_k": 0.9091,
+  "duplicates": 1.1333,
+  "orders": 1.7091,
+  "finish_rate": 0.0242
+ },
+ "order_remind": {
+  "cases": 33,
+  "coverage": 0.497,
+  "coverage_any_of_k": 0.8182,
+  "duplicates": 1.0606,
+  "orders": 1.6485,
+  "finish_rate": 0.0182
+ },
+ "order_plan": {
+  "cases": 33,
+  "coverage": 0.6601,
+  "coverage_any_of_k": 0.9091,
+  "duplicates": 1.5273,
+  "orders": 2.7212,
+  "finish_rate": 0.0182
+ },
+ "order_remind_minus_order_none": {
+  "cases": 33,
+  "coverage": 0.0172,
+  "ci95": [
+   -0.0899,
+   0.1091
+  ],
+  "duplicates": -0.0727
+ },
+ "order_plan_minus_order_none": {
+  "cases": 33,
+  "coverage": 0.1803,
+  "ci95": [
+   0.0732,
+   0.2758
+  ],
+  "duplicates": 0.3939
+ }
+}
