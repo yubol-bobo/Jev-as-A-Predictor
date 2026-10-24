@@ -29,7 +29,8 @@ from pb_replay import cases  # noqa: E402
 from pb_summarize import JOBS  # noqa: E402
 
 RANKER = {"none": "restart-none", "full": "restart-full", "fresh": "restart-fresh", "list": "prior-pplx12-dedup",
-          "listrand": "prior-random-dedup"}
+          "listrand": "prior-random-dedup",
+          "listd3": "prior-d3-dedup"}  # R3-d3
 ARMS = tuple(RANKER)
 CP = re.compile(r"^(PASSED|FAILED) \S*test_checkpoint_(\S+)", re.M)
 
@@ -97,7 +98,8 @@ def main():
         res[arm] = {"cases": len(rows), **{k: round(mean([r[k] for r in rows]), 4) if rows else None
                                            for k in ("open", "all", "orders", "unmatched", "forbidden")}}
     for x, y in (("fresh", "full"), ("full", "none"), ("fresh", "none"), ("list", "none"), ("list", "listrand"),
-                 ("listrand", "none"), ("fresh", "list")):
+                 ("listrand", "none"), ("fresh", "list"),
+                 ("listd3", "none"), ("listd3", "listrand"), ("listd3", "list")):
         ks = [k for k in per[x] if k in per[y] and per[x][k]["open"] is not None and per[y][k]["open"] is not None]
         res[f"{x}_minus_{y}"] = {"cases": len(ks)} | {
             k: {"mean": round(mean(d), 4), "ci95": boot(d)} for k in ("open", "all", "unmatched", "forbidden")

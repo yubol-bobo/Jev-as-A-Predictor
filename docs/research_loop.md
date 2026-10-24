@@ -1057,3 +1057,18 @@ orders it can still generate); (3) a System One checklist built from the task te
 restart (0.53 vs 0.53), and its ranking beats a random list of the same pool (+0.06) with a third fewer non-rubric
 orders. O1's null was between-run noise, as its in-run mechanism suggested. The price of every recovery arm is about
 1-1.5 orders per case that no rubric item names; whether they are clinically reasonable is not measured here.
+
+- **R3-d3, the checklist ranked by a second System One model (fixed 2026-10-24 10:50, before any d3 score of the
+  prior pool exists).** Question: is R3 a property of pplx12, or of a System One prior read from the task text? d3
+  is the best task-only ranker in G1 (unplaced 0.73 vs pplx12 0.65). d3 scores the same task-prior pool (Qwen,
+  task text only, 8 samples) with the same task-only question (`S1CLIN_DECIDER=d3 pb_prior.py score --full`, export
+  `--name d3`); the online arm `prior-d3-dedup-p{1,3}` is O1's list arm with d3's ranking, the same pplx12 repeat
+  filter and the same 8 items, from the same shared prefix on the same 51 cases; K = 1; 3 runs (allocation time; the
+  pplx12 list has 5). `pb_r.py` arm `listd3`, per case mean over its runs, paired over cases, bootstrap 95% CIs.
+  - R3-d3a: listd3 − none ≥ +0.10 with the CI excluding 0.
+  - R3-d3b: listd3 − listrand (all 5 listrand runs) ≥ +0.05 with the CI excluding 0. Power is limited (pplx12's
+    list − listrand was +0.059 [+0.007, +0.113] on 4 runs); a miss here with R3-d3a holding reads as "a System One
+    list helps, the ranking's edge over random is not shown for d3".
+  - Harms as for list: unmatched listd3 − none ≤ +1.0, forbidden 0, all-checkpoint pass listd3 − none ≥ −0.03.
+  - Exploratory: listd3 − list (d3 vs pplx12 ranking, same pool and filter); offline top-8 coverage of the open
+    specs by d3's ranking after the repeat filter vs pplx12's (P10's function).

@@ -606,7 +606,8 @@ class ScreenClient:
     def _prior(self):
         parts = self.ranker.split("-")
         name, dedup = parts[1], parts[-1] == "dedup"
-        table = json.loads((PRIOR_DIR / "prior_ranked_pplx12.json").read_text())
+        # the same pool for every ranker; `random` shuffles pplx12's (R3-d3: prior_ranked_d3.json)
+        table = json.loads((PRIOR_DIR / f"prior_ranked_{'pplx12' if name == 'random' else name}.json").read_text())
         pool = [((k, d, c), p) for k, d, c, p in table.get(self.seed.split("|")[0], [])
                 if order_key((k, d, c)) not in self.placed]
         self.prior_pool = len(pool)

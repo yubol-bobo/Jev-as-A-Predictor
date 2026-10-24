@@ -10,7 +10,8 @@ FINISH. Aggregates only in results/.
   .venv/bin/python scripts/pb_prior.py gen [--url http://127.0.0.1:8013/v1] [--workers 4]
   S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_prior.py score [--placed] [--workers 4]
   .venv/bin/python scripts/pb_prior.py report [--out results/pb_prior.json]
-  .venv/bin/python scripts/pb_prior.py export   (-> prior_ranked_pplx12.json, read by pb_run --ranker prior-pplx12)
+  .venv/bin/python scripts/pb_prior.py export [--name d3]   (-> prior_ranked_<name>.json, read by --ranker prior-<name>)
+  S1CLIN_DECIDER=d3 .venv/bin/python scripts/pb_prior.py score --full   (the whole pool, for export; R3-d3)
   S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_prior.py dedup [--workers 4]   (P10)
   .venv/bin/python scripts/pb_prior.py factorized   (-> results/pb_p10.json)
 Patient content stays under data/offline/pb_screen/.
@@ -109,14 +110,15 @@ def pools(drop=True):
     return out
 
 
-def score(workers, placed=False):
+def score(workers, placed=False, full=False):
     """P(Yes) per pool order on the task text; with `placed` (P8b) also the run's placed orders, asking for an order
-    that is indicated and not yet placed in any equivalent form."""
+    that is indicated and not yet placed in any equivalent form. `full` scores the whole pool (nothing dropped), as
+    `export` needs (R3-d3)."""
     name = os.environ.get("S1CLIN_DECIDER", "pplx12")
     path, lock = OD / f"prior_scores_{name}{'_placed' if placed else ''}.jsonl", threading.Lock()
     done = {(x["task"], x["order"]) for x in map(json.loads, path.read_text().splitlines())} if path.exists() else set()
     info = tasks()
-    todo = [(t, o) for t, pool in pools(drop=not placed).items() for o in pool if (t, render_order(o)) not in done]
+    todo = [(t, o) for t, pool in pools(drop=not (placed or full)).items() for o in pool if (t, render_order(o)) not in done]
     print(f"{path.name}: {len(todo)} to score", flush=True)
 
     def run(item):
@@ -272,10 +274,12 @@ def main():
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", default=str(REPO / "results/pb_prior.json"))
     ap.add_argument("--placed", action="store_true", help="score/report: P8b, the placed orders in the input")
+    ap.add_argument("--full", action="store_true", help="score: the whole pool, nothing dropped (for export)")
+    ap.add_argument("--name", default="pplx12", help="export: the decider whose scores rank the pool")
     a = ap.parse_args()
     os.umask(0o077)
-    {"gen": lambda: gen(a.url, a.workers), "score": lambda: score(a.workers, a.placed),
-     "report": lambda: report(a.out, "pplx12_placed" if a.placed else "pplx12"), "export": export,
+    {"gen": lambda: gen(a.url, a.workers), "score": lambda: score(a.workers, a.placed, a.full),
+     "report": lambda: report(a.out, "pplx12_placed" if a.placed else "pplx12"), "export": lambda: export(a.name),
      "dedup": lambda: dedup(a.workers), "factorized": lambda: factorized(REPO / "results/pb_p10.json")}[a.cmd]()
 
 
