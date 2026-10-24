@@ -1,4 +1,4 @@
-# Paper plan (2026-10-22, draft for discussion; no paper text changed yet)
+# Paper plan (2026-10-22, updated 2026-10-24; draft for discussion; no paper text changed yet)
 
 Goal: a paper on System One (S1) models inside clinical agent loops that every reader takes something from. The
 current draft (`paper/main.tex`, "Who Decides?") covers the decision seat. The 2026-10-21/22 loop (`research_loop.md`,
@@ -30,12 +30,28 @@ reading the agent's work is the wrong input.**
 4. **The S1 advantage is that the remedy is cheap.** Task-only S1 judgments take 0.2-0.6 s and always answer; Qwen
    takes 41-69 s and fails to answer 17-31% within an 8k budget; on common questions task-only S1 (0.66-0.79) matches
    or beats every Qwen input. That is what makes screening hundreds of candidate orders per task affordable.
-5. **Honest limit: closing the loop online is not solved.** In-run screening (P7′) and a task-prior checklist (P9)
-   did not raise required-order checkpoints (+0.04 / +0.045, n.s.): the in-run pool rarely holds the missed orders,
-   and a 3-5 item list from the task prior covers about a third of them; the agent mostly declines to act on it.
-   Next: O1 (pre-registered, `research_loop.md`), the factorized checklist: indication from the task text, the
-   repeat check from the placed orders alone, asked separately (offline the repeat judge separates variants from
-   missed orders at AUROC 0.93; an 8-item filtered list covers 0.55 of the missed orders vs 0.36).
+5. **Closing the loop online works when measured from a shared prefix** (updated 2026-10-24; R, 51 cases, 5 runs,
+   `pb_r.json`). O1's independent-run null (−0.02) was between-run noise. Branching the same run at its first
+   FINISH, a System One checklist from the task text alone (pplx12-ranked, repeat-filtered, 8 items) raises the open
+   required-order checkpoints from 0.38 to 0.53 (+0.15 [0.07, 0.24]). It beats a random list of the same pool (+0.06
+   [0.01, 0.12]) and matches a fresh-context restart (0.53). The price is about 1.5 orders per case that no rubric item
+   names (harm bound +1.0 fails; random list +2.0), and their clinical value is unmeasured. R3-d3 (d3-ranked list)
+   tests whether this is pplx12-specific: offline at 8 items d3 ≈ pplx12 (0.57 vs 0.54); online results pending.
+
+## Why the agent misses orders (Q1-Q3; Qwen3.8-27B agent only)
+- **Q1, when the omission happens.** Not drift: reminding the agent of the task at its first order step moves orders
+  earlier (+0.11) but not into the final record (+0.02 n.s. on specs finally missed). Asking for a full plan first
+  helps the final record (+0.07 [0.02, 0.13]) (A3/A4). The agent acts before it has enumerated the plan, and orders
+  it never enumerated are never placed. 19% of required orders are never proposed in a run; 91% are covered across 5
+  runs, so the miss is a sampling miss rather than a knowledge gap (claim 2).
+- **Q2, anchoring.** Online: a restart without its own decision turns recovers +0.07 [0.01, 0.14] more than the same
+  question with them (R1). Asking at FINISH recovers +0.08 (R2). The agent's own orders suppress orders it can still
+  generate. This mirrors claim 3, where the checker's input is anchored by the same orders.
+- **Q3, other errors.** About a quarter of the misses the agent notes are false completion claims (A5b). Clinical
+  reasoning errors are mostly wrong judgment (70%), documentation errors mostly wrong facts (62%), and data retrieval
+  errors are omissions (A6/A7; Qwen-labelled, no human check).
+- **Limits.** One agent model. Qwen labels the classifiers and is the grader's judge. Extra orders are not assessed
+  clinically. No held-out end-to-end test of the best combination.
 
 ## Design rules for practitioners (Discussion)
 - Do not put an S1 model in the decision seat for open-ended clinical work; use it at commitment points at most.
@@ -45,10 +61,12 @@ reading the agent's work is the wrong input.**
 ## Proposed restructure
 - Keep §§1-4 and §5.1-5.6 (shortened); add §6 "Reading the agent: the checker inherits the blind spot"
   (claims 3-4: one figure with state / retrieval / no-orders / no-notes / task across models, one table of cost),
-  and §7 "Closing the loop online" (claim 5, short, with the negative results).
+  and §7 "Closing the loop online" (claim 5: O1's null, then R from the shared prefix), and §8 "Why the agent
+  misses orders" (Q1-Q3). The arc becomes a diagnosis paper; retitle.
 - Appendix: P6b (rich state), P8b, salience, lexical dedup, G4 details.
 
 ## Open questions for the user
 - Retitle? The current title fits claims 1-2 only. Candidates: "Fresh Eyes: System One Models as Checkers for
   Clinical Agents", or keep "Who Decides?" with a subtitle on checking.
 - Co-authors: Yubo Li, Rema Krishnan (set 2026-10-22; affiliation line to confirm).
+- Second agent model (largest gap): Qwen3-32B (local) or another family (download). Not chosen yet.
