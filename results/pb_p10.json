@@ -27,6 +27,15 @@
    "variant_share": 0.0,
    "tasks": 26
   },
+  "filtered": {
+   "coverage": 0.2692,
+   "ci95": [
+    0.1154,
+    0.4423
+   ],
+   "variant_share": 0.0897,
+   "tasks": 26
+  },
   "factorized_minus_name_drop": {
    "mean": -0.1538,
    "ci95": [
@@ -63,6 +72,15 @@
    "variant_share": 0.0,
    "tasks": 26
   },
+  "filtered": {
+   "coverage": 0.2692,
+   "ci95": [
+    0.1154,
+    0.4423
+   ],
+   "variant_share": 0.0692,
+   "tasks": 26
+  },
   "factorized_minus_name_drop": {
    "mean": -0.0513,
    "ci95": [
@@ -97,6 +115,15 @@
     0.141
    ],
    "variant_share": 0.0,
+   "tasks": 26
+  },
+  "filtered": {
+   "coverage": 0.5449,
+   "ci95": [
+    0.359,
+    0.7308
+   ],
+   "variant_share": 0.0625,
    "tasks": 26
   },
   "factorized_minus_name_drop": {

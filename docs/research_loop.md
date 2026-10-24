@@ -1098,3 +1098,15 @@ Reading (final; the provisional reading stands):
    beats a random list of the same pool.
 4. Every recovery arm costs about 1-1.5 orders per case that no rubric item names (list − none fails the
    pre-registered harm bound). Whether these orders are clinically reasonable is not measured.
+
+### R3-d3 progress and the offline coverage (exploratory; 2026-10-24 11:45)
+d3 scored the whole task-prior pool (3576 orders, 54 tasks, none missing; 11:33-11:39) and its ranking is exported.
+The online d3 list runs 1-3 started at 11:39 (`scripts/e_run.sh`, pplx12 back on GPU 1 for the repeat filter).
+Offline, P10's function on its 26 tasks (`pb_prior.py factorized --name d3`, `results/pb_p10_d3.json`). Ranking
+`filtered` is the online arm's: pplx12's repeat judge drops items with P ≥ 0.5, and the rest are ranked by the
+decider. Coverage of the open specs:
+- top 3: d3 0.33, pplx12 0.27; d3 − pplx12 +0.06 [0.00, +0.15].
+- top 5: d3 0.44, pplx12 0.27; +0.17 [+0.06, +0.33].
+- top 8 (the online arm's size): d3 0.57, pplx12 0.54; +0.03 [−0.04, +0.12].
+At 8 items the two rankings cover about the same specs, so offline predicts listd3 ≈ list online. d3's edge is
+in the first five slots.

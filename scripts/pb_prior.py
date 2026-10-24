@@ -178,15 +178,24 @@ def dedup(workers):
 def factorized(path, name="pplx12"):
     """P10 report: top-m coverage of the open specs when the whole pool is ranked by P(indicated | task) x
     (1 - P(repeats a placed order)), vs the name-drop ranking of P8, a random m, and an oracle that drops every item
-    matching an already-met spec; plus the share of top-m slots that repeat a met spec."""
+    matching an already-met spec; plus the share of top-m slots that repeat a met spec. `filtered` is the online
+    arm's ranking (O1, R): pplx12's repeat judge drops items with P >= 0.5, the rest in `name`'s order. For a decider
+    other than pplx12 (R3-d3), the repeat judge stays pplx12's and `name`'s filtered ranking is compared with
+    pplx12's on the same tasks."""
     info, full = tasks(), pools(drop=False)
-    ind = {(x["task"], x["order"]): x["p"] for x in map(json.loads, (OD / f"prior_scores_{name}.jsonl").read_text().splitlines())}
-    dup = {(x["task"], x["order"]): x["p"] for x in map(json.loads, (OD / f"prior_dedup_{name}.jsonl").read_text().splitlines())}
+    load = lambda f: {(x["task"], x["order"]): x["p"] for x in map(json.loads, (OD / f).read_text().splitlines())}
+    ind, dup = load(f"prior_scores_{name}.jsonl"), load("prior_dedup_pplx12.jsonl")
+    ind12 = load("prior_scores_pplx12.jsonl") if name != "pplx12" else ind
+    filtered = lambda sc: lambda t, items, placed: sorted((o for o in items if dup[(t, render_order(o))] < 0.5),
+                                                          key=lambda o: -sc[(t, render_order(o))])
     rankers = {
         "name_drop": lambda t, items, placed: sorted((o for o in items if norm(o) not in placed), key=lambda o: -ind[(t, render_order(o))]),
         "factorized": lambda t, items, placed: sorted(items, key=lambda o: -ind[(t, render_order(o))] * (1 - dup[(t, render_order(o))])),
         "dedup_only": lambda t, items, placed: sorted(items, key=lambda o: dup[(t, render_order(o))]),
+        "filtered": filtered(ind),
     }
+    if name != "pplx12":
+        rankers["filtered_pplx12"] = filtered(ind12)
     res = {}
     for m in (3, 5, 8):
         out = {}
@@ -196,8 +205,7 @@ def factorized(path, name="pplx12"):
                 if not open_ or t not in full:
                     continue
                 items = full[t]
-                if any((t, render_order(o)) not in ind or ind[(t, render_order(o))] is None or
-                       dup.get((t, render_order(o))) is None for o in items):
+                if any(sc.get((t, render_order(o))) is None for o in items for sc in (ind, ind12, dup)):
                     continue
                 met = [i for i in range(len(specs)) if i not in open_]
                 top = f(t, items, placed_names)[:m]
@@ -209,6 +217,9 @@ def factorized(path, name="pplx12"):
             out[rk]["_cov"] = dict(zip(ts, cov))
         d = [out["factorized"]["_cov"][t] - out["name_drop"]["_cov"][t] for t in out["factorized"]["_cov"]]
         out["factorized_minus_name_drop"] = {"mean": round(sum(d) / len(d), 4), "ci95": boot(d)}
+        if name != "pplx12":
+            d = [out["filtered"]["_cov"][t] - out["filtered_pplx12"]["_cov"][t] for t in out["filtered"]["_cov"]]
+            out[f"filtered_{name}_minus_pplx12"] = {"mean": round(sum(d) / len(d), 4), "ci95": boot(d)}
         for v in out.values():
             v.pop("_cov", None)
         res[f"top{m}"] = out
@@ -275,12 +286,12 @@ def main():
     ap.add_argument("--out", default=str(REPO / "results/pb_prior.json"))
     ap.add_argument("--placed", action="store_true", help="score/report: P8b, the placed orders in the input")
     ap.add_argument("--full", action="store_true", help="score: the whole pool, nothing dropped (for export)")
-    ap.add_argument("--name", default="pplx12", help="export: the decider whose scores rank the pool")
+    ap.add_argument("--name", default="pplx12", help="export, factorized: the decider whose scores rank the pool")
     a = ap.parse_args()
     os.umask(0o077)
     {"gen": lambda: gen(a.url, a.workers), "score": lambda: score(a.workers, a.placed, a.full),
      "report": lambda: report(a.out, "pplx12_placed" if a.placed else "pplx12"), "export": lambda: export(a.name),
-     "dedup": lambda: dedup(a.workers), "factorized": lambda: factorized(REPO / "results/pb_p10.json")}[a.cmd]()
+     "dedup": lambda: dedup(a.workers), "factorized": lambda: factorized(REPO / f"results/pb_p10{'' if a.name == 'pplx12' else '_' + a.name}.json", a.name)}[a.cmd]()
 
 
 if __name__ == "__main__":
