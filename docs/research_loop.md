@@ -1227,3 +1227,14 @@ Reading:
 - Within "wrong", clinical reasoning failures are judgment for both agents.
 - Gemma also shows an execution gap that Qwen does not: it recommends orders in its note and never places them
   (15 of 25 noted misses). For Qwen, A1's nudge recovered only +0.08.
+
+### XA verdict (2026-10-24 18:20; results/pb_replay_order_x_gemma4.json, pb_replay_gemma4.json; Gemma run 1, K=5)
+Finally-missed specs (18 cases with an open spec): none 0.10, remind 0.17, plan 0.28.
+- XA4 plan − none +0.177 [0.041, 0.322]: **holds** (bar +0.03, CI excludes 0).
+- XA3 plan − remind +0.114 [0.022, 0.228]: **holds**.
+- remind − none +0.063 [−0.026, 0.152], n.s. (as for Qwen: a reminder alone does not close misses).
+- Step-level coverage (33 cases): plan − none +0.180 [0.073, 0.276]; remind − none +0.017 n.s.
+- Cost: plan adds unmatched orders +0.42 [0.18, 0.68] per step and precision −0.03 n.s.; forbidden 0.
+Reading: the Qwen pattern replicates and is larger on Gemma (Qwen plan +0.07 on finally-missed specs): asking the
+agent to plan its orders first, not reminding it, recovers omissions; the price is extra unmatched orders.
+Allocation 49766322 ended 18:19 during X1 run 2 (54 rc lines logged) and before XR.
