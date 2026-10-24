@@ -1072,3 +1072,29 @@ orders. O1's null was between-run noise, as its in-run mechanism suggested. The 
   - Harms as for list: unmatched listd3 − none ≤ +1.0, forbidden 0, all-checkpoint pass listd3 − none ≥ −0.03.
   - Exploratory: listd3 − list (d3 vs pplx12 ranking, same pool and filter); offline top-8 coverage of the open
     specs by d3's ranking after the repeat filter vs pplx12's (P10's function).
+
+## R verdict, final (2026-10-24 11:35; all 5 runs; `results/pb_r.json`, `pb_r.py`)
+Run 5 finished at 11:30 on allocation 49766322 (w008, GPUs 0,1). 255 jobs per arm (51 cases × 5 runs), none 51.
+The verdicts are unchanged from the provisional reading on runs 1-4.
+- Replay check 0.997 of 352 checkpoints (holds).
+- **R1 holds:** fresh − full +0.071 [+0.010, +0.137] (bar +0.03, CI excluding 0). The lower bound is closer to 0
+  than the mean suggests; the effect is real but small.
+- **R2 holds:** full − none +0.080 [+0.026, +0.151] (bar +0.08; the point estimate sits at the bar).
+- **R3 holds:** list − none +0.147 [+0.067, +0.241]; list − listrand +0.059 [+0.006, +0.118].
+- Harms:
+  - unmatched orders fresh − full +0.45 [+0.09, +0.85] (bound +0.5 on the mean, holds; the CI now excludes 0);
+  - list − none +1.47 [+1.15, +1.82] (bound +1.0, **fails**; listrand − none +1.98, list − listrand −0.51
+    [−0.86, −0.18]: the ranking cuts the random list's excess by a quarter);
+  - forbidden 0 in every arm;
+  - all-checkpoint pass fresh − full +0.027 [+0.005, +0.052], list − none +0.047 [+0.018, +0.086].
+- Exploratory: fresh − list +0.004 [−0.078, +0.088]. Orders after the branch: full 1.20, fresh 1.87, list 1.75,
+  listrand 2.11. Open-spec pass: none 0.38, full 0.46, fresh 0.53, list 0.53, listrand 0.47.
+
+Reading (final; the provisional reading stands):
+1. Asking at FINISH recovers missed orders (+0.08).
+2. Removing the agent's own decision turns recovers more (+0.07 on top). This is the online answer to Q2: its own
+   decisions suppress orders it can still generate.
+3. A System One checklist from the task text alone recovers as much as the fresh restart (0.53 vs 0.53), and it
+   beats a random list of the same pool.
+4. Every recovery arm costs about 1-1.5 orders per case that no rubric item names (list − none fails the
+   pre-registered harm bound). Whether these orders are clinically reasonable is not measured.
