@@ -1058,7 +1058,7 @@ restart (0.53 vs 0.53), and its ranking beats a random list of the same pool (+0
 orders. O1's null was between-run noise, as its in-run mechanism suggested. The price of every recovery arm is about
 1-1.5 orders per case that no rubric item names; whether they are clinically reasonable is not measured here.
 
-- **R3-d3, the checklist ranked by a second System One model (fixed 2026-10-24 10:50, before any d3 score of the
+- **R3-d3, the checklist ranked by a second System One model (fixed 2026-10-24 10:27, before any d3 score of the
   prior pool exists).** Question: is R3 a property of pplx12, or of a System One prior read from the task text? d3
   is the best task-only ranker in G1 (unplaced 0.73 vs pplx12 0.65). d3 scores the same task-prior pool (Qwen,
   task text only, 8 samples) with the same task-only question (`S1CLIN_DECIDER=d3 pb_prior.py score --full`, export
