@@ -1118,9 +1118,9 @@ chose Gemma 4 31B-it (google/gemma-4-31B-it, local cache) as the second agent.
 Setup:
 - Gemma runs as the agent in the same harness: MiniAgent, the same tools, prompts, 100 steps and 16k completion
   tokens. It is served bf16 with thinking on, 128k context, and sampling from its generation config
-  ().
+  (`scripts/vllm_gemma_up.sh`).
 - Qwen stays the grader's judge (thinking off) and the Q3 labeller, so only the agent changes.
-- ; job tags get the suffix .
+- `pb_run --agent gemma4 --agent-url ...`; job tags get the suffix `__gemma4`.
 - Hardware: GPU 0 runs the Qwen judge (8011) and GPU 1 runs Gemma (8031). No new Qwen agent runs; Qwen comparisons
   use the existing numbers.
 
