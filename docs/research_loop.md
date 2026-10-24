@@ -1037,3 +1037,23 @@ Allocation 49691349 ended at 17:19 like 49673289 at 09:19: the interactive step 
 5 h 49 min and 5 h 40 min; MaxRSS 69 GB / 157 GB of 1000 GB), not a resource limit seen by SLURM. Run 4 stood at 75 of
 204 jobs. `scripts/r_run3.sh`: Qwen TP1 on GPU 0 (8011) + pplx12 on GPU 1 (8022), runs 4 and 5, about 0.7 jobs/min
 (129 run-4 jobs left, about 3 h).
+
+## R verdict on runs 1-4 of 5 (2026-10-24 03:52; provisional until run 5; `results/pb_r.json`, `pb_r.py --runs 1,2,3,4`)
+Allocation 49716204 was also killed (interactive step, after 55 min); run 4 finished on 49754860 (w009, GPUs 0,1) at
+03:50. 204 jobs per arm, none 51. Run 5 runs now and may not fit this allocation; the final verdict uses all 5.
+- Replay check 0.997 (holds).
+- **R1 holds (narrowly):** fresh − full +0.066 [+0.003, +0.140] (bar +0.03, CI excluding 0). On runs 1-3 the CI
+  touched 0; the lower bound is fragile.
+- **R2 holds:** full − none +0.086 [+0.029, +0.159].
+- **R3 holds:** list − none +0.150 [+0.069, +0.243]; list − listrand +0.059 [+0.007, +0.113].
+- Harms: unmatched orders fresh − full +0.39 [−0.02, +0.82] (bound +0.5, holds); list − none +1.44 [+1.11, +1.79]
+  (bound +1.0, **fails**; listrand − none +2.07, so the ranking cuts the random list's excess by a third); forbidden
+  0 in every arm; all-checkpoint pass fresh − full +0.027 [+0.005, +0.053], list − none +0.047 [+0.018, +0.086].
+- Exploratory: fresh − list +0.003 [−0.083, +0.093]; orders after the branch: full 1.26, fresh 1.90, list 1.71,
+  listrand 2.21.
+Reading: online, from the same point in the same run, (1) asking the agent at FINISH recovers missed orders
+(+0.09); (2) taking its own decisions out of the context recovers more (+0.07 on top, Q2: its own decisions suppress
+orders it can still generate); (3) a System One checklist built from the task text alone gets as far as the fresh
+restart (0.53 vs 0.53), and its ranking beats a random list of the same pool (+0.06) with a third fewer non-rubric
+orders. O1's null was between-run noise, as its in-run mechanism suggested. The price of every recovery arm is about
+1-1.5 orders per case that no rubric item names; whether they are clinically reasonable is not measured here.
