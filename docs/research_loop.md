@@ -1282,7 +1282,7 @@ Open required-order checkpoints: none 0.29, full 0.47, fresh 0.56, list 0.58, li
 Reading: the S1 checklist from the task text helps the second agent too, about twice as much in absolute terms
 (lower baseline), and its ranking matters more than for Qwen. The cost, orders no rubric item names, replicates.
 
-### H pre-registration (2026-10-25 07:40, before any rating; scripts/pb_extra.py)
+### H pre-registration (2026-10-25 07:29, before any rating; scripts/pb_extra.py)
 Question: the checklist arms fail the unmatched-order harm bound for both agents (R3 +1.47, R3-d3 +1.52, XR3 +1.56).
 Are those orders, which no rubric item names, clinically inappropriate, or reasonable care the rubric does not list?
 - Units: per case (R: 51 Qwen cases; XR: 65 Gemma cases), the distinct orders placed by the agent before its first
