@@ -1300,3 +1300,25 @@ Are those orders, which no rubric item names, clinically inappropriate, or reaso
 - Descriptive: full, fresh, listd3, judge agreement (Cohen's κ, 4-way and inappropriate yes/no).
 - Caveats fixed in advance: LLM judges, not physicians; each agent's own model is one of the judges (self-preference
   is possible, hence both); the judge does not see the orders already placed, so duplication is not rated here.
+
+### H verdict (2026-10-25 11:10; results/pb_extra.json)
+Coverage: Gemma judge rated all cases (Qwen agent 51, Gemma agent 65); the Qwen judge returned no parsable answer
+(3 tries) for 19/51 and 13/65 cases (long thinking on lists of up to 99 orders).
+- Validity (matched orders rated inappropriate ≤ 0.20): Gemma judge 0.17 (Qwen-agent cases), 0.06 (Gemma-agent
+  cases): valid. Qwen judge 0.51, 0.40: **fails** → descriptive only, as pre-registered.
+- Gemma judge, inappropriate (C or D) share of unmatched orders: Qwen agent base 0.21, list 0.26, listrand 0.34,
+  fresh 0.32, full 0.28, listd3 0.23; Gemma agent base 0.26, list 0.17, listrand 0.25, fresh 0.19, full 0.19.
+- H1 list − base, upper bound < +0.10: Qwen agent +0.05 [−0.09, 0.20] (fails, inconclusive); Gemma agent −0.08
+  [−0.28, 0.08] (holds). **Does not hold** (1 of 2).
+- H2 list − listrand < 0, CI excluding 0: Qwen agent −0.08 [−0.18, 0.03] (fails); Gemma agent −0.07 [−0.14, −0.003]
+  (holds). **Does not hold** (1 of 2).
+- H3 potentially harmful share of list unmatched orders ≤ 0.05, upper ≤ 0.10: 0.000 [0, 0] for both agents:
+  **holds** (Qwen judge also 0 D among list orders).
+- Agreement between judges: κ 0.31 / 0.28 (4-way), 0.31 / 0.21 (inappropriate yes/no): fair.
+Reading: by the valid judge about three quarters of the orders that no rubric item names are indicated or reasonable,
+at the rate of the agent's own unmatched orders, and none from the S1 list is rated potentially harmful; the formal
+non-inferiority and ranking claims are not established (wide CIs, one judge).
+Post-hoc observation (not a test): each case's orders were rated in one list mixing all arms, so near-duplicate
+variants of one order sit side by side, and the Qwen judge marks the later copies low value (its matched orders
+placed after the branch: fresh 0.61 inappropriate vs base 0.02). List composition thus confounds arm comparisons.
+H-b below rates each order alone.
