@@ -1238,3 +1238,10 @@ Finally-missed specs (18 cases with an open spec): none 0.10, remind 0.17, plan 
 Reading: the Qwen pattern replicates and is larger on Gemma (Qwen plan +0.07 on finally-missed specs): asking the
 agent to plan its orders first, not reminding it, recovers omissions; the price is extra unmatched orders.
 Allocation 49766322 ended 18:19 during X1 run 2 (54 rc lines logged) and before XR.
+
+### X1 full (2026-10-24 21:25; results/pb_x1.json; descriptive)
+Gemma runs 1 and 2 agree: task pass 0.08 / 0.05, checkpoint 0.51 / 0.49, steps 16 / 15, orders 1.0 / 1.0, required
+specs placed 0.40 / 0.40. Gemma − Qwen over 100 tasks (mean of each agent's two runs): checkpoint −0.31 [−0.36, −0.25],
+task pass −0.35 [−0.43, −0.27], required placed −0.29 [−0.40, −0.19] (54 tasks with a spec), orders −2.2, steps −20.
+Two-run pool coverage of required specs: Gemma 0.40 → 0.46, Qwen 0.67 → 0.73 (+0.06 for both). XR cases: run 1 32,
+run 2 33 (65 ≥ 25).
