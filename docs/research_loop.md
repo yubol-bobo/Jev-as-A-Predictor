@@ -1327,3 +1327,6 @@ H-b below rates each order alone.
 Each order of the H items rated alone (one call per order; same context, scale and judges; `pb_extra.py judge
 --single`, max 8192 tokens, 3 tries), which removes the list-composition confound. Analysis as H (validity rule,
 H1-H3, κ), reported as H-b in results/pb_extra_single.json; it replaces neither H's verdict nor its numbers.
+H-b amendment (11:28, before any H-b result was looked at): the Qwen judge rates ~3 orders/min with thinking (≈16 h for
+all 2879), so it rates a seeded random sample of 150 orders per agent (`--sample 150`; its first 50 sequential
+ratings are set aside unused). The Gemma judge rates all orders. Qwen-judge numbers are for validity and agreement.

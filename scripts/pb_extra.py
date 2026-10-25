@@ -121,7 +121,7 @@ def build():
     print(AGENT, "cases", len(items), "orders", sum(len(v["orders"]) for v in items.values()))
 
 
-def judge1(name, url, workers):
+def judge1(name, url, workers, sample=None):
     """H-b: one call per order; the case's calls run together so the shared context is prefix-cached."""
     from openai import OpenAI
     items = json.loads((OUT / f"items_{AGENT}.json").read_text())
@@ -144,7 +144,11 @@ def judge1(name, url, workers):
             except (IndexError, json.JSONDecodeError, AttributeError):
                 pass
         return ck, None
-    todo = [(c, k) for c in items for k in sorted(items[c]["orders"]) if k not in done.get(c, {})]
+    todo = [(c, k) for c in items for k in sorted(items[c]["orders"])]
+    if sample:  # a seeded random sample of the agent's orders, kept in case order (prefix cache)
+        keep = set(random.Random(f"hb-sample|{AGENT}").sample(todo, min(sample, len(todo))))
+        todo = [x for x in todo if x in keep]
+    todo = [(c, k) for c, k in todo if k not in done.get(c, {})]
     print(AGENT, name, "orders to do", len(todo), flush=True)
     n = 0
     with ThreadPoolExecutor(workers) as ex:
@@ -288,11 +292,12 @@ def main():
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--out")
     ap.add_argument("--single", action="store_true", help="H-b: each order rated alone")
+    ap.add_argument("--sample", type=int, help="H-b: rate only a seeded random sample of this many orders")
     a = ap.parse_args()
     if a.cmd == "build":
         build()
     elif a.cmd == "judge":
-        (judge1 if a.single else judge)(a.judge, a.url, a.workers)
+        judge1(a.judge, a.url, a.workers, a.sample) if a.single else judge(a.judge, a.url, a.workers)
     else:
         report(a.out or str(REPO / f"results/pb_extra{'_single' if a.single else ''}.json"),
                "ratings1" if a.single else "ratings")
