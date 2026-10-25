@@ -1348,3 +1348,21 @@ Reading: rated one at a time, the orders that the pplx12 checklist adds and no r
 the agent's own unmatched orders (or more), clearly more appropriate than a random list's, more than the restart's
 extras for Qwen, and never rated potentially harmful. The "unmatched-order harm" in R3, R3-d3 and XR3 is mostly
 care the rubric does not list, not inappropriate care, by two LLM judges (no physician check yet).
+
+### L pre-registration (2026-10-25 18:26, before any L score; allocation 49825705, GPUs 0,1)
+Question (from the paper review): what does the System One ranker add over the agent LLM itself ranking the same
+pool from the same input, without thinking?
+- Ranker `qwen`: Qwen3.8-27B, thinking off, temperature 0, sees exactly the System One model's request (task text,
+  the P6c question, the two options with the same seeded letter order) and answers one letter; P(Yes) is the
+  renormalized probability of the Yes letter from the first token's log-probabilities. Scores the whole task-prior
+  pool (`pb_prior.py score --full`, S1CLIN_DECIDER=qwen), exported as prior_ranked_qwen.json.
+- Online arm listqwen, from the same shared prefixes and cases as R / XR, 3 runs each, top 8, the same checklist
+  prompt and filters: Qwen agent `prior-qwen-dedup-p{1,3}` (pplx12 repeat judge, as R3), Gemma agent
+  `prior-qwen-p{1,2}` (exact names, as XR3). Analysis `pb_r.py` (both agents).
+- L1: listqwen − none ≥ +0.08 with the CI excluding 0, per agent (an LLM ranking also works).
+- L2 (the question; no directional prediction): list(pplx12) − listqwen per agent, with CI. Reading fixed now:
+  both CIs include 0 → "comparable rankers; the System One advantage is latency and cost"; a CI excluding 0 in
+  favour of pplx12 with the other point estimate ≥ 0 → "the System One ranker ranks better"; a CI excluding 0 in
+  favour of qwen → "the LLM ranks better".
+- Descriptive: listqwen − listrand; unmatched orders; forbidden (expected 0); offline top-8 coverage of open specs
+  (`pb_prior.py factorized --name qwen`, as R3-d3) and median seconds per judgment.

@@ -14,6 +14,8 @@ FINISH. Aggregates only in results/.
   S1CLIN_DECIDER=d3 .venv/bin/python scripts/pb_prior.py score --full   (the whole pool, for export; R3-d3)
   S1CLIN_DECIDER=pplx12 .venv/bin/python scripts/pb_prior.py dedup [--workers 4]   (P10)
   .venv/bin/python scripts/pb_prior.py factorized   (-> results/pb_p10.json)
+  S1CLIN_DECIDER=qwen .venv/bin/python scripts/pb_prior.py score --full   (L: the LLM, thinking off, as the ranker:
+      the same input, question and options, P(Yes) from the answer letter's log-probabilities; QWEN_URL)
 Patient content stays under data/offline/pb_screen/.
 """
 
@@ -51,6 +53,26 @@ PLACED_QUESTION = (
     "indicated as part of completing the task and still missing, that is, not the same as or equivalent to an order "
     "already placed?")
 PLACED_YES, PLACED_NO = "Yes, indicated and still missing", "No, not indicated or already placed"
+QWEN_URL = os.environ.get("QWEN_URL", "http://127.0.0.1:8011/v1")
+
+
+def llm_choice(instruction, question, options):
+    """L: the LLM (Qwen, thinking off) answers the System One model's request as a lettered choice in one token; the
+    distribution over the option letters comes from the first token's log-probabilities, renormalized."""
+    import math
+    prompt = (f"{instruction}\n\n---\n{question}\n\n" + "\n".join(f"{k}. {v}" for k, v in options.items())
+              + "\n\nAnswer with the letter of one option only.")
+    r = requests.post(f"{QWEN_URL}/chat/completions", timeout=600, json={
+        "model": "qwen3.8-27b", "messages": [{"role": "user", "content": prompt}], "max_tokens": 1,
+        "temperature": 0, "logprobs": True, "top_logprobs": 20,
+        "chat_template_kwargs": {"enable_thinking": False}})
+    r.raise_for_status()
+    top = r.json()["choices"][0]["logprobs"]["content"][0]["top_logprobs"]
+    lp = {k: max((t["logprob"] for t in top if t["token"].strip() == k), default=-50.0) for k in options}
+    z = sum(math.exp(v) for v in lp.values())
+    return {k: math.exp(v) / z for k, v in lp.items()}
+
+
 LINE = re.compile(r"(ServiceRequest|MedicationRequest)\s*:\s*(.+?)(?:\s*\(code\s*([^)]*)\))?\s*$")
 
 
@@ -125,20 +147,25 @@ def score(workers, placed=False, full=False):
         t, o = item
         letters = ["A", "B"]
         random.Random(f"{t}|{render_order(o)}").shuffle(letters)
+        t0 = time.time()
         try:
             steps = [{"action": "Orders the agent has placed so far",
                       "results": ["\n".join(map(render_order, info[t][4])) or "(none)"]}] if placed else []
-            r = requests.post(DECIDER_URLS[name], timeout=600, json={
-                "instruction": info[t][0], "steps": steps,
-                "question": (PLACED_QUESTION if placed else QUESTION).format(order=render_order(o)),
-                "options": {letters[0]: PLACED_YES if placed else YES, letters[1]: PLACED_NO if placed else NO}})
-            r.raise_for_status()
-            p = r.json()["distribution"][letters[0]]
+            question = (PLACED_QUESTION if placed else QUESTION).format(order=render_order(o))
+            options = {letters[0]: PLACED_YES if placed else YES, letters[1]: PLACED_NO if placed else NO}
+            if name == "qwen":  # L: the LLM as the ranker, same input (no steps: --placed is not supported)
+                p = llm_choice(info[t][0], question, options)[letters[0]]
+            else:
+                r = requests.post(DECIDER_URLS[name], timeout=600, json={
+                    "instruction": info[t][0], "steps": steps, "question": question, "options": options})
+                r.raise_for_status()
+                p = r.json()["distribution"][letters[0]]
         except Exception as e:
             p = None
             print(repr(e)[:200], flush=True)
+        rec = {"task": t, "order": render_order(o), "p": p} | ({"s": round(time.time() - t0, 3)} if name == "qwen" else {})
         with lock, open(path, "a") as f:
-            f.write(json.dumps({"task": t, "order": render_order(o), "p": p}, ensure_ascii=False) + "\n")
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
     with ThreadPoolExecutor(workers) as ex:
         list(ex.map(run, todo))

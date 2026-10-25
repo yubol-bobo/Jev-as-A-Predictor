@@ -33,10 +33,11 @@ from pb_summarize import JOBS  # noqa: E402
 
 RANKER = {"none": "restart-none", "full": "restart-full", "fresh": "restart-fresh", "list": "prior-pplx12-dedup",
           "listrand": "prior-random-dedup",
-          "listd3": "prior-d3-dedup"}  # R3-d3
-ARMS = tuple(RANKER) if AGENT == "qwen" else ("none", "full", "fresh", "list", "listrand")
+          "listd3": "prior-d3-dedup",  # R3-d3
+          "listqwen": "prior-qwen-dedup"}  # L: the LLM (thinking off) as the ranker
+ARMS = tuple(RANKER) if AGENT == "qwen" else ("none", "full", "fresh", "list", "listrand", "listqwen")
 if AGENT != "qwen":  # XR3: the same checklists with the exact-name filter only (no repeat judge, as XR)
-    RANKER |= {"list": "prior-pplx12", "listrand": "prior-random"}
+    RANKER |= {"list": "prior-pplx12", "listrand": "prior-random", "listqwen": "prior-qwen"}
 TAG = "" if AGENT == "qwen" else f"__rjnone__{AGENT}"  # XR: exact-name repeat filter only
 CP = re.compile(r"^(PASSED|FAILED) \S*test_checkpoint_(\S+)", re.M)
 
@@ -105,7 +106,9 @@ def main():
                                            for k in ("open", "all", "orders", "unmatched", "forbidden")}}
     for x, y in (("fresh", "full"), ("full", "none"), ("fresh", "none"), ("list", "none"), ("list", "listrand"),
                  ("listrand", "none"), ("fresh", "list"),
-                 ("listd3", "none"), ("listd3", "listrand"), ("listd3", "list")):
+                 ("listd3", "none"), ("listd3", "listrand"), ("listd3", "list"),
+                 ("listqwen", "none"), ("listqwen", "listrand"), ("list", "listqwen"), ("listd3", "listqwen"),
+                 ("fresh", "listqwen")):
         if x not in ARMS or y not in ARMS:
             continue
         ks = [k for k in per[x] if k in per[y] and per[x][k]["open"] is not None and per[y][k]["open"] is not None]
