@@ -39,6 +39,10 @@ reading the agent's work is the wrong input.**
    tests whether this is pplx12-specific: offline at 8 items d3 ≈ pplx12 (0.57 vs 0.54); online it holds as
    pre-registered (3 runs: listd3 − none +0.16 [0.08, 0.25], − random list +0.07 [0.01, 0.13], ≈ pplx12 list
    +0.01 n.s.; same unmatched-order cost +1.5). The effect belongs to S1 ranking of the task prior, not to one model.
+   What the unmatched orders are (H, H-b; two LLM judges, blinded, each order rated alone): as appropriate as the
+   agent's own unmatched orders (Gemma judge, Qwen agent 0.19 vs 0.22 inappropriate), more appropriate than a random
+   list's (−0.14 [−0.22, −0.06]) or the restart's extras, and none rated potentially harmful. The "harm" is mostly
+   care the rubric does not list. Physician check still missing.
 
 ## Why the agent misses orders (Q1-Q3; Qwen3.8-27B, with Gemma 4 31B-it (FP8) as a second agent, X)
 - **Q1, when the omission happens.** Not drift: reminding the agent of the task at its first order step moves orders
