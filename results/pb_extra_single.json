@@ -1,0 +1,1138 @@
+{
+ "qwen__judge_qwen": {
+  "cases": 41,
+  "unparsed_or_missing": 10,
+  "orders_rated": 148,
+  "orders_total": 1804,
+  "cells": {
+   "base": {
+    "orders": 19,
+    "dist": {
+     "A": 10,
+     "B": 5,
+     "C": 4,
+     "D": 0
+    },
+    "inappropriate": 0.2105,
+    "inappropriate_ci95": [
+     0.0,
+     0.3529
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "base_matched": {
+    "orders": 4,
+    "dist": {
+     "A": 2,
+     "B": 2,
+     "C": 0,
+     "D": 0
+    },
+    "inappropriate": 0.0,
+    "inappropriate_ci95": [
+     0.0,
+     0.0
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "fresh": {
+    "orders": 22,
+    "dist": {
+     "A": 4,
+     "B": 8,
+     "C": 10,
+     "D": 0
+    },
+    "inappropriate": 0.4545,
+    "inappropriate_ci95": [
+     0.25,
+     0.6486
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "fresh_matched": {
+    "orders": 4,
+    "dist": {
+     "A": 1,
+     "B": 2,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 0.25,
+    "inappropriate_ci95": [
+     0.0,
+     1.0
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "full": {
+    "orders": 21,
+    "dist": {
+     "A": 3,
+     "B": 11,
+     "C": 7,
+     "D": 0
+    },
+    "inappropriate": 0.3333,
+    "inappropriate_ci95": [
+     0.1111,
+     0.5556
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "full_matched": {
+    "orders": 1,
+    "dist": {
+     "A": 0,
+     "B": 0,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 1.0,
+    "inappropriate_ci95": [
+     1.0,
+     1.0
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "list": {
+    "orders": 26,
+    "dist": {
+     "A": 10,
+     "B": 13,
+     "C": 3,
+     "D": 0
+    },
+    "inappropriate": 0.1154,
+    "inappropriate_ci95": [
+     0.0,
+     0.2857
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "list_matched": {
+    "orders": 5,
+    "dist": {
+     "A": 2,
+     "B": 3,
+     "C": 0,
+     "D": 0
+    },
+    "inappropriate": 0.0,
+    "inappropriate_ci95": [
+     0.0,
+     0.0
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listd3": {
+    "orders": 17,
+    "dist": {
+     "A": 4,
+     "B": 7,
+     "C": 6,
+     "D": 0
+    },
+    "inappropriate": 0.3529,
+    "inappropriate_ci95": [
+     0.1538,
+     0.5385
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listd3_matched": {
+    "orders": 2,
+    "dist": {
+     "A": 1,
+     "B": 0,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 0.5,
+    "inappropriate_ci95": [
+     0.0,
+     1.0
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listrand": {
+    "orders": 38,
+    "dist": {
+     "A": 7,
+     "B": 15,
+     "C": 16,
+     "D": 0
+    },
+    "inappropriate": 0.4211,
+    "inappropriate_ci95": [
+     0.2647,
+     0.575
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listrand_matched": {
+    "orders": 1,
+    "dist": {
+     "A": 0,
+     "B": 0,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 1.0,
+    "inappropriate_ci95": [
+     1.0,
+     1.0
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "matched": {
+    "orders": 17,
+    "dist": {
+     "A": 6,
+     "B": 7,
+     "C": 4,
+     "D": 0
+    },
+    "inappropriate": 0.2353,
+    "inappropriate_ci95": [
+     0.0,
+     0.55
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "list_minus_base": {
+   "inappropriate": -0.0951,
+   "ci95": [
+    -0.2952,
+    0.1905
+   ]
+  },
+  "list_minus_listrand": {
+   "inappropriate": -0.3057,
+   "ci95": [
+    -0.4783,
+    -0.0893
+   ]
+  },
+  "list_minus_fresh": {
+   "inappropriate": -0.3392,
+   "ci95": [
+    -0.5758,
+    -0.055
+   ]
+  },
+  "fresh_minus_base": {
+   "inappropriate": 0.244,
+   "ci95": [
+    0.0159,
+    0.4962
+   ]
+  },
+  "full_minus_base": {
+   "inappropriate": 0.1228,
+   "ci95": [
+    -0.1204,
+    0.4231
+   ]
+  },
+  "listd3_minus_base": {
+   "inappropriate": 0.1424,
+   "ci95": [
+    -0.0774,
+    0.4286
+   ]
+  },
+  "listrand_minus_base": {
+   "inappropriate": 0.2105,
+   "ci95": [
+    -0.0126,
+    0.4975
+   ]
+  }
+ },
+ "qwen__judge_gemma4": {
+  "cases": 51,
+  "unparsed_or_missing": 0,
+  "orders_rated": 1804,
+  "orders_total": 1804,
+  "cells": {
+   "base": {
+    "orders": 210,
+    "dist": {
+     "A": 114,
+     "B": 50,
+     "C": 40,
+     "D": 6
+    },
+    "inappropriate": 0.219,
+    "inappropriate_ci95": [
+     0.1437,
+     0.2996
+    ],
+    "harmful": 0.0286,
+    "harmful_ci95": [
+     0.0,
+     0.0711
+    ]
+   },
+   "base_matched": {
+    "orders": 65,
+    "dist": {
+     "A": 59,
+     "B": 4,
+     "C": 2,
+     "D": 0
+    },
+    "inappropriate": 0.0308,
+    "inappropriate_ci95": [
+     0.0,
+     0.0847
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "fresh": {
+    "orders": 336,
+    "dist": {
+     "A": 123,
+     "B": 103,
+     "C": 104,
+     "D": 6
+    },
+    "inappropriate": 0.3274,
+    "inappropriate_ci95": [
+     0.2387,
+     0.4167
+    ],
+    "harmful": 0.0179,
+    "harmful_ci95": [
+     0.0027,
+     0.0383
+    ]
+   },
+   "fresh_matched": {
+    "orders": 88,
+    "dist": {
+     "A": 54,
+     "B": 15,
+     "C": 17,
+     "D": 2
+    },
+    "inappropriate": 0.2159,
+    "inappropriate_ci95": [
+     0.115,
+     0.3333
+    ],
+    "harmful": 0.0227,
+    "harmful_ci95": [
+     0.0,
+     0.0625
+    ]
+   },
+   "full": {
+    "orders": 218,
+    "dist": {
+     "A": 94,
+     "B": 53,
+     "C": 65,
+     "D": 6
+    },
+    "inappropriate": 0.3257,
+    "inappropriate_ci95": [
+     0.2205,
+     0.4523
+    ],
+    "harmful": 0.0275,
+    "harmful_ci95": [
+     0.0089,
+     0.0541
+    ]
+   },
+   "full_matched": {
+    "orders": 39,
+    "dist": {
+     "A": 26,
+     "B": 4,
+     "C": 8,
+     "D": 1
+    },
+    "inappropriate": 0.2308,
+    "inappropriate_ci95": [
+     0.0333,
+     0.5312
+    ],
+    "harmful": 0.0256,
+    "harmful_ci95": [
+     0.0,
+     0.12
+    ]
+   },
+   "list": {
+    "orders": 283,
+    "dist": {
+     "A": 163,
+     "B": 66,
+     "C": 54,
+     "D": 0
+    },
+    "inappropriate": 0.1908,
+    "inappropriate_ci95": [
+     0.1089,
+     0.2759
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "list_matched": {
+    "orders": 54,
+    "dist": {
+     "A": 33,
+     "B": 4,
+     "C": 17,
+     "D": 0
+    },
+    "inappropriate": 0.3148,
+    "inappropriate_ci95": [
+     0.0943,
+     0.5538
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listd3": {
+    "orders": 192,
+    "dist": {
+     "A": 99,
+     "B": 49,
+     "C": 42,
+     "D": 2
+    },
+    "inappropriate": 0.2292,
+    "inappropriate_ci95": [
+     0.1204,
+     0.3632
+    ],
+    "harmful": 0.0104,
+    "harmful_ci95": [
+     0.0,
+     0.0337
+    ]
+   },
+   "listd3_matched": {
+    "orders": 30,
+    "dist": {
+     "A": 18,
+     "B": 4,
+     "C": 8,
+     "D": 0
+    },
+    "inappropriate": 0.2667,
+    "inappropriate_ci95": [
+     0.069,
+     0.5135
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listrand": {
+    "orders": 460,
+    "dist": {
+     "A": 165,
+     "B": 144,
+     "C": 149,
+     "D": 2
+    },
+    "inappropriate": 0.3283,
+    "inappropriate_ci95": [
+     0.2639,
+     0.3995
+    ],
+    "harmful": 0.0043,
+    "harmful_ci95": [
+     0.0,
+     0.0116
+    ]
+   },
+   "listrand_matched": {
+    "orders": 30,
+    "dist": {
+     "A": 20,
+     "B": 2,
+     "C": 8,
+     "D": 0
+    },
+    "inappropriate": 0.2667,
+    "inappropriate_ci95": [
+     0.0333,
+     0.5263
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "matched": {
+    "orders": 278,
+    "dist": {
+     "A": 188,
+     "B": 32,
+     "C": 56,
+     "D": 2
+    },
+    "inappropriate": 0.2086,
+    "inappropriate_ci95": [
+     0.0939,
+     0.3454
+    ],
+    "harmful": 0.0072,
+    "harmful_ci95": [
+     0.0,
+     0.0201
+    ]
+   }
+  },
+  "list_minus_base": {
+   "inappropriate": -0.0282,
+   "ci95": [
+    -0.1391,
+    0.0836
+   ]
+  },
+  "list_minus_listrand": {
+   "inappropriate": -0.1374,
+   "ci95": [
+    -0.2181,
+    -0.0606
+   ]
+  },
+  "list_minus_fresh": {
+   "inappropriate": -0.1366,
+   "ci95": [
+    -0.246,
+    -0.0219
+   ]
+  },
+  "fresh_minus_base": {
+   "inappropriate": 0.1083,
+   "ci95": [
+    -0.0097,
+    0.2267
+   ]
+  },
+  "full_minus_base": {
+   "inappropriate": 0.1066,
+   "ci95": [
+    -0.0243,
+    0.2526
+   ]
+  },
+  "listd3_minus_base": {
+   "inappropriate": 0.0101,
+   "ci95": [
+    -0.1092,
+    0.1483
+   ]
+  },
+  "listrand_minus_base": {
+   "inappropriate": 0.1092,
+   "ci95": [
+    0.0164,
+    0.2097
+   ]
+  }
+ },
+ "qwen__agreement": {
+  "orders": 148,
+  "kappa4": 0.3274,
+  "kappa_inappropriate": 0.4919
+ },
+ "gemma4__judge_qwen": {
+  "cases": 57,
+  "unparsed_or_missing": 8,
+  "orders_rated": 150,
+  "orders_total": 1075,
+  "cells": {
+   "base": {
+    "orders": 10,
+    "dist": {
+     "A": 6,
+     "B": 1,
+     "C": 3,
+     "D": 0
+    },
+    "inappropriate": 0.3,
+    "inappropriate_ci95": [
+     0.0,
+     0.6364
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "base_matched": {
+    "orders": 6,
+    "dist": {
+     "A": 6,
+     "B": 0,
+     "C": 0,
+     "D": 0
+    },
+    "inappropriate": 0.0,
+    "inappropriate_ci95": [
+     0.0,
+     0.0
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "fresh": {
+    "orders": 19,
+    "dist": {
+     "A": 11,
+     "B": 3,
+     "C": 5,
+     "D": 0
+    },
+    "inappropriate": 0.2632,
+    "inappropriate_ci95": [
+     0.0769,
+     0.5556
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "fresh_matched": {
+    "orders": 23,
+    "dist": {
+     "A": 16,
+     "B": 6,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 0.0435,
+    "inappropriate_ci95": [
+     0.0,
+     0.15
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "full": {
+    "orders": 19,
+    "dist": {
+     "A": 11,
+     "B": 2,
+     "C": 5,
+     "D": 1
+    },
+    "inappropriate": 0.3158,
+    "inappropriate_ci95": [
+     0.0714,
+     0.6
+    ],
+    "harmful": 0.0526,
+    "harmful_ci95": [
+     0.0,
+     0.1818
+    ]
+   },
+   "full_matched": {
+    "orders": 6,
+    "dist": {
+     "A": 5,
+     "B": 0,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 0.1667,
+    "inappropriate_ci95": [
+     0.0,
+     0.5
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "list": {
+    "orders": 22,
+    "dist": {
+     "A": 15,
+     "B": 6,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 0.0455,
+    "inappropriate_ci95": [
+     0.0,
+     0.1333
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "list_matched": {
+    "orders": 9,
+    "dist": {
+     "A": 6,
+     "B": 2,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 0.1111,
+    "inappropriate_ci95": [
+     0.0,
+     0.4
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listrand": {
+    "orders": 54,
+    "dist": {
+     "A": 14,
+     "B": 18,
+     "C": 22,
+     "D": 0
+    },
+    "inappropriate": 0.4074,
+    "inappropriate_ci95": [
+     0.2667,
+     0.5625
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listrand_matched": {
+    "orders": 7,
+    "dist": {
+     "A": 5,
+     "B": 1,
+     "C": 1,
+     "D": 0
+    },
+    "inappropriate": 0.1429,
+    "inappropriate_ci95": [
+     0.0,
+     0.5
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "matched": {
+    "orders": 41,
+    "dist": {
+     "A": 31,
+     "B": 8,
+     "C": 2,
+     "D": 0
+    },
+    "inappropriate": 0.0488,
+    "inappropriate_ci95": [
+     0.0,
+     0.1282
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "list_minus_base": {
+   "inappropriate": -0.2545,
+   "ci95": [
+    -0.5974,
+    0.08
+   ]
+  },
+  "list_minus_listrand": {
+   "inappropriate": -0.362,
+   "ci95": [
+    -0.5191,
+    -0.2262
+   ]
+  },
+  "list_minus_fresh": {
+   "inappropriate": -0.2177,
+   "ci95": [
+    -0.5,
+    -0.0481
+   ]
+  },
+  "fresh_minus_base": {
+   "inappropriate": -0.0368,
+   "ci95": [
+    -0.3619,
+    0.3333
+   ]
+  },
+  "full_minus_base": {
+   "inappropriate": 0.0158,
+   "ci95": [
+    -0.3207,
+    0.3529
+   ]
+  },
+  "listrand_minus_base": {
+   "inappropriate": 0.1074,
+   "ci95": [
+    -0.2155,
+    0.4259
+   ]
+  }
+ },
+ "gemma4__judge_gemma4": {
+  "cases": 65,
+  "unparsed_or_missing": 0,
+  "orders_rated": 1075,
+  "orders_total": 1075,
+  "cells": {
+   "base": {
+    "orders": 51,
+    "dist": {
+     "A": 36,
+     "B": 5,
+     "C": 8,
+     "D": 2
+    },
+    "inappropriate": 0.1961,
+    "inappropriate_ci95": [
+     0.0833,
+     0.3409
+    ],
+    "harmful": 0.0392,
+    "harmful_ci95": [
+     0.0,
+     0.1091
+    ]
+   },
+   "base_matched": {
+    "orders": 46,
+    "dist": {
+     "A": 39,
+     "B": 5,
+     "C": 2,
+     "D": 0
+    },
+    "inappropriate": 0.0435,
+    "inappropriate_ci95": [
+     0.0,
+     0.1333
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "fresh": {
+    "orders": 169,
+    "dist": {
+     "A": 127,
+     "B": 24,
+     "C": 17,
+     "D": 1
+    },
+    "inappropriate": 0.1065,
+    "inappropriate_ci95": [
+     0.0542,
+     0.1632
+    ],
+    "harmful": 0.0059,
+    "harmful_ci95": [
+     0.0,
+     0.0195
+    ]
+   },
+   "fresh_matched": {
+    "orders": 142,
+    "dist": {
+     "A": 129,
+     "B": 7,
+     "C": 6,
+     "D": 0
+    },
+    "inappropriate": 0.0423,
+    "inappropriate_ci95": [
+     0.0065,
+     0.0945
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "full": {
+    "orders": 142,
+    "dist": {
+     "A": 95,
+     "B": 24,
+     "C": 22,
+     "D": 1
+    },
+    "inappropriate": 0.162,
+    "inappropriate_ci95": [
+     0.0986,
+     0.2301
+    ],
+    "harmful": 0.007,
+    "harmful_ci95": [
+     0.0,
+     0.0265
+    ]
+   },
+   "full_matched": {
+    "orders": 53,
+    "dist": {
+     "A": 45,
+     "B": 4,
+     "C": 3,
+     "D": 1
+    },
+    "inappropriate": 0.0755,
+    "inappropriate_ci95": [
+     0.0159,
+     0.175
+    ],
+    "harmful": 0.0189,
+    "harmful_ci95": [
+     0.0,
+     0.069
+    ]
+   },
+   "list": {
+    "orders": 157,
+    "dist": {
+     "A": 117,
+     "B": 26,
+     "C": 14,
+     "D": 0
+    },
+    "inappropriate": 0.0892,
+    "inappropriate_ci95": [
+     0.0458,
+     0.1384
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "list_matched": {
+    "orders": 47,
+    "dist": {
+     "A": 40,
+     "B": 3,
+     "C": 3,
+     "D": 1
+    },
+    "inappropriate": 0.0851,
+    "inappropriate_ci95": [
+     0.0192,
+     0.1667
+    ],
+    "harmful": 0.0213,
+    "harmful_ci95": [
+     0.0,
+     0.0732
+    ]
+   },
+   "listrand": {
+    "orders": 395,
+    "dist": {
+     "A": 192,
+     "B": 123,
+     "C": 80,
+     "D": 0
+    },
+    "inappropriate": 0.2025,
+    "inappropriate_ci95": [
+     0.1544,
+     0.2568
+    ],
+    "harmful": 0.0,
+    "harmful_ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "listrand_matched": {
+    "orders": 71,
+    "dist": {
+     "A": 55,
+     "B": 9,
+     "C": 5,
+     "D": 2
+    },
+    "inappropriate": 0.0986,
+    "inappropriate_ci95": [
+     0.0299,
+     0.1818
+    ],
+    "harmful": 0.0282,
+    "harmful_ci95": [
+     0.0,
+     0.0714
+    ]
+   },
+   "matched": {
+    "orders": 288,
+    "dist": {
+     "A": 250,
+     "B": 22,
+     "C": 13,
+     "D": 3
+    },
+    "inappropriate": 0.0556,
+    "inappropriate_ci95": [
+     0.019,
+     0.1008
+    ],
+    "harmful": 0.0104,
+    "harmful_ci95": [
+     0.0,
+     0.0279
+    ]
+   }
+  },
+  "list_minus_base": {
+   "inappropriate": -0.1069,
+   "ci95": [
+    -0.2593,
+    0.0168
+   ]
+  },
+  "list_minus_listrand": {
+   "inappropriate": -0.1134,
+   "ci95": [
+    -0.1783,
+    -0.0497
+   ]
+  },
+  "list_minus_fresh": {
+   "inappropriate": -0.0173,
+   "ci95": [
+    -0.0896,
+    0.059
+   ]
+  },
+  "fresh_minus_base": {
+   "inappropriate": -0.0896,
+   "ci95": [
+    -0.2097,
+    0.0009
+   ]
+  },
+  "full_minus_base": {
+   "inappropriate": -0.0341,
+   "ci95": [
+    -0.1884,
+    0.0909
+   ]
+  },
+  "listrand_minus_base": {
+   "inappropriate": 0.0065,
+   "ci95": [
+    -0.1332,
+    0.1231
+   ]
+  }
+ },
+ "gemma4__agreement": {
+  "orders": 150,
+  "kappa4": 0.4648,
+  "kappa_inappropriate": 0.4843
+ }
+}

@@ -1330,3 +1330,21 @@ H1-H3, κ), reported as H-b in results/pb_extra_single.json; it replaces neither
 H-b amendment (11:28, before any H-b result was looked at): the Qwen judge rates ~3 orders/min with thinking (≈16 h for
 all 2879), so it rates a seeded random sample of 150 orders per agent (`--sample 150`; its first 50 sequential
 ratings are set aside unused). The Gemma judge rates all orders. Qwen-judge numbers are for validity and agreement.
+
+### H-b result (2026-10-25 12:43; results/pb_extra_single.json; exploratory, each order rated alone)
+Gemma judge: all 2879 orders; Qwen judge: seeded samples (148 of 150 and 150 of 150 parsed).
+- Validity (matched rated inappropriate ≤ 0.20): Gemma-agent cases, Gemma judge 0.06, Qwen judge 0.05: valid.
+  Qwen-agent cases, Gemma judge 0.21, Qwen judge 0.24 (n = 17): just over the bar, so those are descriptive.
+- Gemma-agent cases, unmatched orders inappropriate (Gemma judge / Qwen judge): base 0.20 / 0.30, list 0.09 / 0.05,
+  listrand 0.20 / 0.41, fresh 0.11 / 0.26, full 0.16 / 0.32.
+  - H1 list − base: −0.11 [−0.26, 0.02] / −0.25 [−0.60, 0.08]: upper bounds < +0.10 under both judges.
+  - H2 list − listrand: −0.11 [−0.18, −0.05] / −0.36 [−0.52, −0.23]: both exclude 0.
+  - H3 harmful share of list orders: 0 / 0.
+- Qwen-agent cases (Gemma judge, descriptive): base 0.22, list 0.19, listrand 0.33, fresh 0.33, full 0.33, listd3
+  0.23; list − base −0.03 [−0.14, 0.08], list − listrand −0.14 [−0.22, −0.06], list − fresh −0.14 [−0.25, −0.02];
+  harmful list 0 (fresh 0.018, full 0.028, base 0.029).
+- Agreement κ (inappropriate yes/no) 0.49 / 0.48, up from 0.31 / 0.21 in H (the list confound added noise).
+Reading: rated one at a time, the orders that the pplx12 checklist adds and no rubric item names are as appropriate as
+the agent's own unmatched orders (or more), clearly more appropriate than a random list's, more than the restart's
+extras for Qwen, and never rated potentially harmful. The "unmatched-order harm" in R3, R3-d3 and XR3 is mostly
+care the rubric does not list, not inappropriate care, by two LLM judges (no physician check yet).

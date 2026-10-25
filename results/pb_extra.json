@@ -2,6 +2,8 @@
  "qwen__judge_qwen": {
   "cases": 32,
   "unparsed_or_missing": 19,
+  "orders_rated": 887,
+  "orders_total": 1804,
   "cells": {
    "base": {
     "orders": 92,
@@ -304,6 +306,8 @@
  "qwen__judge_gemma4": {
   "cases": 51,
   "unparsed_or_missing": 0,
+  "orders_rated": 1804,
+  "orders_total": 1804,
   "cells": {
    "base": {
     "orders": 210,
@@ -611,6 +615,8 @@
  "gemma4__judge_qwen": {
   "cases": 52,
   "unparsed_or_missing": 13,
+  "orders_rated": 754,
+  "orders_total": 1075,
   "cells": {
    "base": {
     "orders": 34,
@@ -868,6 +874,8 @@
  "gemma4__judge_gemma4": {
   "cases": 65,
   "unparsed_or_missing": 0,
+  "orders_rated": 1075,
+  "orders_total": 1075,
   "cells": {
    "base": {
     "orders": 51,

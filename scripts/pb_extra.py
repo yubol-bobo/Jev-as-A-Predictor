@@ -32,7 +32,7 @@ from pb_summarize import JOBS  # noqa: E402
 
 OUT = Path("/ocean/projects/cis260032p/yliy/data/offline/pb_extra")
 JUDGES = {"qwen": "qwen3.8-27b", "gemma4": "gemma-4-31b-it"}
-LETTERS = "ABCD"
+LETTERS = ("A", "B", "C", "D")  # a tuple: "" or None is never a rating
 MAX_RESULT, MAX_CONTEXT = 6000, 120000  # characters per tool result / whole chart text
 PROMPT = """You are an experienced attending physician reviewing orders for the patient below. The task the clinician was given
 and the patient data retrieved from the chart follow. Then a numbered list of candidate orders (in no particular order;
