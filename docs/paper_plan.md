@@ -36,9 +36,11 @@ reading the agent's work is the wrong input.**
    required-order checkpoints from 0.38 to 0.53 (+0.15 [0.07, 0.24]). It beats a random list of the same pool (+0.06
    [0.01, 0.12]) and matches a fresh-context restart (0.53). The price is about 1.5 orders per case that no rubric item
    names (harm bound +1.0 fails; random list +2.0), and their clinical value is unmeasured. R3-d3 (d3-ranked list)
-   tests whether this is pplx12-specific: offline at 8 items d3 ≈ pplx12 (0.57 vs 0.54); online results pending.
+   tests whether this is pplx12-specific: offline at 8 items d3 ≈ pplx12 (0.57 vs 0.54); online it holds as
+   pre-registered (3 runs: listd3 − none +0.16 [0.08, 0.25], − random list +0.07 [0.01, 0.13], ≈ pplx12 list
+   +0.01 n.s.; same unmatched-order cost +1.5). The effect belongs to S1 ranking of the task prior, not to one model.
 
-## Why the agent misses orders (Q1-Q3; Qwen3.8-27B agent only)
+## Why the agent misses orders (Q1-Q3; Qwen3.8-27B, with Gemma 4 31B-it (FP8) as a second agent, X)
 - **Q1, when the omission happens.** Not drift: reminding the agent of the task at its first order step moves orders
   earlier (+0.11) but not into the final record (+0.02 n.s. on specs finally missed). Asking for a full plan first
   helps the final record (+0.07 [0.02, 0.13]) (A3/A4). The agent acts before it has enumerated the plan, and orders
@@ -47,10 +49,16 @@ reading the agent's work is the wrong input.**
 - **Q2, anchoring.** Online: a restart without its own decision turns recovers +0.07 [0.01, 0.14] more than the same
   question with them (R1). Asking at FINISH recovers +0.08 (R2). The agent's own orders suppress orders it can still
   generate. This mirrors claim 3, where the checker's input is anchored by the same orders.
+- **Second agent (X, Gemma 4 31B-it, FP8).** Gemma is a much weaker agent here (checkpoint pass 0.51 vs 0.81; 56% of
+  its runs place no order; it FINISHes after ~8 steps with text). Q1 replicates and is larger: planning first closes
+  +0.18 [0.04, 0.32] of finally-missed specs, a reminder does not (+0.06 n.s.), plan − remind +0.11 [0.02, 0.23]
+  (XA). Q3 does not replicate (XQ3 fails, 1 of 3 checkpoint types): Gemma's errors are INCOMPLETE where Qwen's are
+  WRONG, and 60% of the misses it notes are recommendations it never executes (Qwen 10%): an execution gap rather
+  than a judgment gap. The error profile is agent-specific; the planning remedy is not. XR (Q2 on Gemma) pending.
 - **Q3, other errors.** About a quarter of the misses the agent notes are false completion claims (A5b). Clinical
   reasoning errors are mostly wrong judgment (70%), documentation errors mostly wrong facts (62%), and data retrieval
   errors are omissions (A6/A7; Qwen-labelled, no human check).
-- **Limits.** One agent model. Qwen labels the classifiers and is the grader's judge. Extra orders are not assessed
+- **Limits.** Two agent models, the second FP8 and much weaker. Qwen labels the classifiers and is the grader's judge. Extra orders are not assessed
   clinically. No held-out end-to-end test of the best combination.
 
 ## Design rules for practitioners (Discussion)
@@ -69,4 +77,4 @@ reading the agent's work is the wrong input.**
 - Retitle? The current title fits claims 1-2 only. Candidates: "Fresh Eyes: System One Models as Checkers for
   Clinical Agents", or keep "Who Decides?" with a subtitle on checking.
 - Co-authors: Yubo Li, Rema Krishnan (set 2026-10-22; affiliation line to confirm).
-- Second agent model (largest gap): Qwen3-32B (local) or another family (download). Not chosen yet.
+- Second agent model: Gemma 4 31B-it chosen by the user (2026-10-24), run in FP8 (KV memory; amendment a04045c).
