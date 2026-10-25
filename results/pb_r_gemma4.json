@@ -1,0 +1,127 @@
+{
+ "runs": "all",
+ "jobs": {
+  "none": 65,
+  "full": 195,
+  "fresh": 195
+ },
+ "replay_agreement": 0.9955,
+ "replay_checkpoints": 441,
+ "none": {
+  "cases": 65,
+  "open": 0.2897,
+  "all": 0.4657,
+  "orders": 0.0,
+  "unmatched": 0.0,
+  "forbidden": 0.0
+ },
+ "full": {
+  "cases": 65,
+  "open": 0.4679,
+  "all": 0.5158,
+  "orders": 1.3179,
+  "unmatched": 0.9538,
+  "forbidden": 0.0
+ },
+ "fresh": {
+  "cases": 65,
+  "open": 0.5564,
+  "all": 0.5398,
+  "orders": 2.1641,
+  "unmatched": 1.1846,
+  "forbidden": 0.0
+ },
+ "fresh_minus_full": {
+  "cases": 65,
+  "open": {
+   "mean": 0.0885,
+   "ci95": [
+    0.0321,
+    0.1526
+   ]
+  },
+  "all": {
+   "mean": 0.0241,
+   "ci95": [
+    0.0103,
+    0.0416
+   ]
+  },
+  "unmatched": {
+   "mean": 0.2308,
+   "ci95": [
+    -0.0667,
+    0.5077
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "full_minus_none": {
+  "cases": 65,
+  "open": {
+   "mean": 0.1782,
+   "ci95": [
+    0.1064,
+    0.2568
+   ]
+  },
+  "all": {
+   "mean": 0.0501,
+   "ci95": [
+    0.0312,
+    0.07
+   ]
+  },
+  "unmatched": {
+   "mean": 0.9538,
+   "ci95": [
+    0.6308,
+    1.3128
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "fresh_minus_none": {
+  "cases": 65,
+  "open": {
+   "mean": 0.2667,
+   "ci95": [
+    0.185,
+    0.3534
+   ]
+  },
+  "all": {
+   "mean": 0.0741,
+   "ci95": [
+    0.051,
+    0.1001
+   ]
+  },
+  "unmatched": {
+   "mean": 1.1846,
+   "ci95": [
+    0.9077,
+    1.4667
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ }
+}

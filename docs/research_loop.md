@@ -1245,3 +1245,15 @@ specs placed 0.40 / 0.40. Gemma − Qwen over 100 tasks (mean of each agent's tw
 task pass −0.35 [−0.43, −0.27], required placed −0.29 [−0.40, −0.19] (54 tasks with a spec), orders −2.2, steps −20.
 Two-run pool coverage of required specs: Gemma 0.40 → 0.46, Qwen 0.67 → 0.73 (+0.06 for both). XR cases: run 1 32,
 run 2 33 (65 ≥ 25).
+
+### XR verdict (2026-10-24 22:55; results/pb_r_gemma4.json; 65 cases = Gemma run 1 (32) + run 2 (33); none ×1, full and fresh ×3)
+Replay agreement 0.996 (441 checkpoints; ≥ 0.90 ok). Open required-order checkpoints: none 0.29, full 0.47, fresh 0.56.
+- XR1 fresh − full +0.089 [0.032, 0.153]: **holds** (Qwen R1 +0.071 [0.010, 0.137]).
+- XR2 full − none +0.178 [0.106, 0.257]: **holds** (Qwen R2 +0.080).
+- Harms: unmatched fresh − full +0.23 [−0.07, 0.51] (≤ +0.5 ok); forbidden 0; all-checkpoint fresh − full +0.024
+  [0.010, 0.042] (≥ −0.03 ok).
+- Descriptive: fresh − none +0.267 [0.185, 0.353]; unmatched full − none +0.95, fresh − none +1.18.
+Reading: Q2 replicates on a second, much weaker agent from another family, and both effects are larger. Asking at
+FINISH recovers omitted orders (the agent can still generate them), and removing its own decisions from the context
+recovers more (anchoring on its own orders suppresses them). Caveat: restart arms use the exact-name repeat filter
+only (no pplx12 judge), as pre-registered.
