@@ -1257,3 +1257,16 @@ Reading: Q2 replicates on a second, much weaker agent from another family, and b
 FINISH recovers omitted orders (the agent can still generate them), and removing its own decisions from the context
 recovers more (anchoring on its own orders suppresses them). Caveat: restart arms use the exact-name repeat filter
 only (no pplx12 judge), as pre-registered.
+
+### XR3 pre-registration (2026-10-24 23:00, before any XR3 job; Gemma agent)
+Question: does the System One checklist from the task text (R3: pplx12-ranked task-prior pool, top 8, shown at the
+agent's first FINISH) also help the second agent? Same 65 XR cases and shared prefixes; arms list
+(`--ranker prior-pplx12-p{1,2}`) and listrand (`prior-random-p{1,2}`, the same pool shuffled); K = 1; 3 runs each;
+compared with XR's none (and descriptively with full / fresh).
+- One change from R3, as in XR: no `-dedup` repeat judge (pplx12 does not fit beside Gemma and the Qwen judge);
+  only orders already placed by exact name leave the pool. Both list arms share this.
+- XR3a: list − none ≥ +0.08 with the CI excluding 0 (Qwen R3 +0.147).
+- XR3b: list − listrand ≥ +0.03 with the CI excluding 0 (Qwen +0.059).
+- Harms: forbidden 0; unmatched list − none ≤ +1.0 (the R bound; Qwen failed it at +1.47, reported either way).
+- Descriptive: list − fresh, all-checkpoint pass.
+Script: scripts/x_run3.sh; analysis scripts/pb_r.py with S1CLIN_AGENT=gemma4 (arms list, listrand added).

@@ -13,7 +13,8 @@ checkpoint.
 
   .venv/bin/python scripts/pb_r.py [--out results/pb_r.json] [--runs 1,2,3,4]
 With S1CLIN_AGENT=gemma4 (XR): the Gemma 4 agent's cases (llm_log_k1__gemma4 runs 1 and 2), arms none / full /
-fresh with exact-name repeats filtered only (job tags __rjnone__gemma4); results/pb_r_gemma4.json.
+fresh with exact-name repeats filtered only (job tags __rjnone__gemma4), and (XR3) list / listrand from the same
+pools without the -dedup repeat judge; results/pb_r_gemma4.json.
 """
 
 import argparse
@@ -33,7 +34,9 @@ from pb_summarize import JOBS  # noqa: E402
 RANKER = {"none": "restart-none", "full": "restart-full", "fresh": "restart-fresh", "list": "prior-pplx12-dedup",
           "listrand": "prior-random-dedup",
           "listd3": "prior-d3-dedup"}  # R3-d3
-ARMS = tuple(RANKER) if AGENT == "qwen" else ("none", "full", "fresh")
+ARMS = tuple(RANKER) if AGENT == "qwen" else ("none", "full", "fresh", "list", "listrand")
+if AGENT != "qwen":  # XR3: the same checklists with the exact-name filter only (no repeat judge, as XR)
+    RANKER |= {"list": "prior-pplx12", "listrand": "prior-random"}
 TAG = "" if AGENT == "qwen" else f"__rjnone__{AGENT}"  # XR: exact-name repeat filter only
 CP = re.compile(r"^(PASSED|FAILED) \S*test_checkpoint_(\S+)", re.M)
 
