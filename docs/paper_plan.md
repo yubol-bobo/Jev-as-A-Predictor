@@ -54,7 +54,9 @@ reading the agent's work is the wrong input.**
   +0.18 [0.04, 0.32] of finally-missed specs, a reminder does not (+0.06 n.s.), plan − remind +0.11 [0.02, 0.23]
   (XA). Q3 does not replicate (XQ3 fails, 1 of 3 checkpoint types): Gemma's errors are INCOMPLETE where Qwen's are
   WRONG, and 60% of the misses it notes are recommendations it never executes (Qwen 10%): an execution gap rather
-  than a judgment gap. The error profile is agent-specific; the planning remedy is not. XR (Q2 on Gemma) pending.
+  than a judgment gap. The error profile is agent-specific; the planning remedy is not. Q2 replicates (XR, 65 cases): fresh − full +0.09 [0.03, 0.15], full − none +0.18.
+  Claim 5 replicates (XR3): the pplx12 task-prior checklist raises open required checkpoints 0.29 → 0.58
+  (+0.29 [0.20, 0.40]), beats a random list +0.14 [0.07, 0.22], matches a fresh restart; unmatched cost +1.6.
 - **Q3, other errors.** About a quarter of the misses the agent notes are false completion claims (A5b). Clinical
   reasoning errors are mostly wrong judgment (70%), documentation errors mostly wrong facts (62%), and data retrieval
   errors are omissions (A6/A7; Qwen-labelled, no human check).

@@ -1270,3 +1270,14 @@ compared with XR's none (and descriptively with full / fresh).
 - Harms: forbidden 0; unmatched list − none ≤ +1.0 (the R bound; Qwen failed it at +1.47, reported either way).
 - Descriptive: list − fresh, all-checkpoint pass.
 Script: scripts/x_run3.sh; analysis scripts/pb_r.py with S1CLIN_AGENT=gemma4 (arms list, listrand added).
+
+### XR3 verdict (2026-10-25 00:58; results/pb_r_gemma4.json; 65 cases, list and listrand ×3 runs, 195 jobs each)
+Open required-order checkpoints: none 0.29, full 0.47, fresh 0.56, list 0.58, listrand 0.45.
+- XR3a list − none +0.292 [0.200, 0.395]: **holds** (Qwen R3 +0.147).
+- XR3b list − listrand +0.136 [0.065, 0.217]: **holds** (Qwen +0.059).
+- Harms: forbidden 0; unmatched list − none +1.56 [1.18, 1.97]: **fails** the +1.0 bound (as for Qwen, +1.47).
+  The random list costs more (+2.27) and the ranking cuts it (list − listrand −0.71 [−1.00, −0.41]).
+- Descriptive: list − fresh −0.026 [−0.10, 0.04] (as for Qwen: the checklist matches a fresh restart); all-checkpoint
+  list − none +0.078 [0.053, 0.107].
+Reading: the S1 checklist from the task text helps the second agent too, about twice as much in absolute terms
+(lower baseline), and its ranking matters more than for Qwen. The cost, orders no rubric item names, replicates.
