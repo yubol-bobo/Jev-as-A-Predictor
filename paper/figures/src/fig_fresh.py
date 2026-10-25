@@ -47,7 +47,7 @@ text(x0 + 240, 142, "orders at FINISH", 13.5, 700, LLM)
 for i, ok in enumerate((True, True, True, False)):
     row(x0 + 236, 154 + i * 33, 198, ok, LLM)
 stat(x0 + 30, 348, "75%", "of required orders proposed in a run", LLM)
-stat(x0 + 30, 386, "91%", "proposed in one of five runs", LLM)
+stat(x0 + 30, 386, "91%", "proposed in any of five runs", LLM)
 stat(x0 + 30, 424, "84%", "of the missed ones named from the task", GOOD)
 footer(x0 + 22, 486, "Two causes, on two agents", "Plans late", "and anchors on its own orders", LLM)
 
@@ -60,19 +60,24 @@ for i in range(4):
     doc(x1 + 30 + i * 12, 128 + i * 9, 74, 66, LLM, lines=3, faded=(i != 3))
 arrow(x1 + 146, 178, x1 + 192, 178, BAD)
 chip(x1 + 206, 128, 88)
-text(x1 + 330, 150, "scores each", 13.5, 400, SUB)
-text(x1 + 330, 168, "candidate order", 13.5, 400, SUB)
-labels = ("like a placed order", "unneeded", "unneeded", "missed, required")
-probs = (0.84, 0.55, 0.47, 0.21)
-for i, (lab, p) in enumerate(zip(labels, probs)):
-    yy = 262 + i * 24
-    col = BAD if i == 3 else S1
-    text(x1 + 172, yy + 10, lab, 13, 700 if i == 3 else 400, BAD if i == 3 else SUB, "end")
-    add(f'<rect x="{x1 + 184}" y="{yy}" width="200" height="12" rx="6" fill="{col}" opacity="0.10"/>')
-    add(f'<rect x="{x1 + 184}" y="{yy}" width="{200 * p:.0f}" height="12" rx="6" fill="{col}" opacity="{1 if i == 3 else 0.5}"/>')
-    text(x1 + 394, yy + 11, f"{p:.2f}", 13, 900 if i == 3 else 400, BAD if i == 3 else SUB)
-stat(x1 + 30, 410, "0.40", "AUROC for missed orders: below chance", BAD)
-text(x1 + 122, 432, "6 System One models (0.37–0.43), Qwen 0.46", 13, 400, SUB)
+text(x1 + 318, 150, "is this order", 13.5, 400, SUB)
+text(x1 + 318, 168, "indicated?", 13.5, 400, SUB)
+# measured: unplaced-order AUROC, mean over six System One models (results/pb_screen.json)
+text(x1 + 30, 262, "Missed required vs unneeded orders (AUROC)", 14, 700, INK)
+rows = (("reads the agent's trajectory", 0.40, BAD), ("reads the chart, no decisions", 0.64, S1),
+        ("reads only the task", 0.65, S1))
+bx, bw = x1 + 228, 200  # axis 0.3 .. 0.8
+pos = lambda v: bx + bw * (v - 0.3) / 0.5  # noqa: E731
+for i, (lab, v, col) in enumerate(rows):
+    yy = 282 + i * 34
+    text(x1 + 218, yy + 15, lab, 13, 700 if i == 0 else 400, BAD if i == 0 else SUB, "end")
+    add(f'<rect x="{bx}" y="{yy + 3}" width="{bw}" height="16" rx="8" fill="{col}" opacity="0.10"/>')
+    add(f'<rect x="{bx}" y="{yy + 3}" width="{pos(v) - bx:.0f}" height="16" rx="8" fill="{col}" opacity="{1 if i == 0 else 0.85}"/>')
+    text(pos(v) + 8, yy + 16, f"{v:.2f}", 13.5, 900, col)
+cx = pos(0.5)
+add(f'<line x1="{cx}" y1="276" x2="{cx}" y2="{282 + 3 * 34}" stroke="{INK}" stroke-width="1.6" stroke-dasharray="4 3"/>')
+text(cx, 404, "chance", 12.5, 700, INK, "middle")
+text(x1 + 30, 436, "6 System One models; Qwen with thinking: 0.46 → 0.62", 13, 400, SUB)
 footer(x1 + 22, 486, "Anchored by the agent's orders, not its notes", "Inherits", "the blind spot", BAD)
 
 # ------------------------------------------------------------------ panel 2: fresh eyes
@@ -101,6 +106,6 @@ for i, (agent, a, b, d) in enumerate((("Qwen3.8-27B", 38, 53, "+15"), ("Gemma 4 
     add(f'<rect x="{x2 + 140}" y="{yy + 2}" width="{2 * a}" height="16" rx="8" fill="#C9CFDB"/>')
     text(x2 + 352, yy + 15, f"{a} → {b}%", 13.5, 400, INK)
     text(x2 + 448, yy + 15, d, 15, 900, S1)
-footer(x2 + 22, 486, "Beats a random list · extra orders not harmful", "Recovers", "what the agent missed", S1)
+footer(x2 + 22, 486, "Beats a random list · no extra order rated harmful", "Recovers", "what the agent missed", S1)
 
 finish("fig0_fresh")
