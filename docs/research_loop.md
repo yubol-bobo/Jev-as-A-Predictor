@@ -1301,7 +1301,7 @@ Are those orders, which no rubric item names, clinically inappropriate, or reaso
 - Caveats fixed in advance: LLM judges, not physicians; each agent's own model is one of the judges (self-preference
   is possible, hence both); the judge does not see the orders already placed, so duplication is not rated here.
 
-### H verdict (2026-10-25 11:10; results/pb_extra.json)
+### H verdict (2026-10-25 11:06; results/pb_extra.json)
 Coverage: Gemma judge rated all cases (Qwen agent 51, Gemma agent 65); the Qwen judge returned no parsable answer
 (3 tries) for 19/51 and 13/65 cases (long thinking on lists of up to 99 orders).
 - Validity (matched orders rated inappropriate ≤ 0.20): Gemma judge 0.17 (Qwen-agent cases), 0.06 (Gemma-agent
@@ -1323,7 +1323,7 @@ variants of one order sit side by side, and the Qwen judge marks the later copie
 placed after the branch: fresh 0.61 inappropriate vs base 0.02). List composition thus confounds arm comparisons.
 H-b below rates each order alone.
 
-### H-b specification (2026-10-25 11:13, before any H-b rating; exploratory follow-up, not a new confirmatory test)
+### H-b specification (2026-10-25 11:07, before any H-b rating; exploratory follow-up, not a new confirmatory test)
 Each order of the H items rated alone (one call per order; same context, scale and judges; `pb_extra.py judge
 --single`, max 8192 tokens, 3 tries), which removes the list-composition confound. Analysis as H (validity rule,
 H1-H3, κ), reported as H-b in results/pb_extra_single.json; it replaces neither H's verdict nor its numbers.
