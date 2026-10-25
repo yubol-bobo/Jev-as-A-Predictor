@@ -1246,7 +1246,7 @@ task pass −0.35 [−0.43, −0.27], required placed −0.29 [−0.40, −0.19]
 Two-run pool coverage of required specs: Gemma 0.40 → 0.46, Qwen 0.67 → 0.73 (+0.06 for both). XR cases: run 1 32,
 run 2 33 (65 ≥ 25).
 
-### XR verdict (2026-10-24 22:55; results/pb_r_gemma4.json; 65 cases = Gemma run 1 (32) + run 2 (33); none ×1, full and fresh ×3)
+### XR verdict (2026-10-24 22:52; results/pb_r_gemma4.json; 65 cases = Gemma run 1 (32) + run 2 (33); none ×1, full and fresh ×3)
 Replay agreement 0.996 (441 checkpoints; ≥ 0.90 ok). Open required-order checkpoints: none 0.29, full 0.47, fresh 0.56.
 - XR1 fresh − full +0.089 [0.032, 0.153]: **holds** (Qwen R1 +0.071 [0.010, 0.137]).
 - XR2 full − none +0.178 [0.106, 0.257]: **holds** (Qwen R2 +0.080).
@@ -1258,7 +1258,7 @@ FINISH recovers omitted orders (the agent can still generate them), and removing
 recovers more (anchoring on its own orders suppresses them). Caveat: restart arms use the exact-name repeat filter
 only (no pplx12 judge), as pre-registered.
 
-### XR3 pre-registration (2026-10-24 23:00, before any XR3 job; Gemma agent)
+### XR3 pre-registration (2026-10-24 22:53, before any XR3 job; Gemma agent)
 Question: does the System One checklist from the task text (R3: pplx12-ranked task-prior pool, top 8, shown at the
 agent's first FINISH) also help the second agent? Same 65 XR cases and shared prefixes; arms list
 (`--ranker prior-pplx12-p{1,2}`) and listrand (`prior-random-p{1,2}`, the same pool shuffled); K = 1; 3 runs each;
