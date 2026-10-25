@@ -1,4 +1,4 @@
-# Paper plan (2026-10-22, updated 2026-10-24; draft for discussion; no paper text changed yet)
+# Paper plan (2026-10-22, updated 2026-10-25: paper restructured as "Fresh Eyes", main.tex; this file is now background)
 
 Goal: a paper on System One (S1) models inside clinical agent loops that every reader takes something from. The
 current draft (`paper/main.tex`, "Who Decides?") covers the decision seat. The 2026-10-21/22 loop (`research_loop.md`,

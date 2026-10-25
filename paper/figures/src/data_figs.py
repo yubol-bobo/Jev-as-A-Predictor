@@ -248,7 +248,138 @@ def fig_anchor():
     plt.close(fig)
 
 
+# ---------------------------------------------------------------- Figures 7-8: why agents miss orders, and fresh eyes
+AGENTS = [("", "Qwen3.8\n27B"), ("_gemma4", "Gemma 4\n31B")]
+ARM = {"none": ("agent finishes", "#C9CFDB"), "full": ("asked again,\nfull context", "#B9B2F5"),
+       "fresh": ("asked again,\nown decisions removed", C["llm"]), "listrand": ("random checklist", "#9EC5F5"),
+       "list": ("S1 checklist (pplx12)", C["clef_k5"]), "listd3": ("S1 checklist (d3)", "#0B4FA8")}
+
+
+def bar_group(ax, groups, arms, get, fmt="{:.0f}", scale=100, ylim=None):
+    width = 0.8 / len(arms)
+    present = {g: [a for a in arms if get(g, a) is not None] for g in groups}
+    for arm in arms:
+        xs, vs = [], []
+        for i, g in enumerate(groups):
+            if arm not in present[g]:
+                continue
+            k, n = present[g].index(arm), len(present[g])
+            xs.append(i + (k - (n - 1) / 2) * width)
+            vs.append(scale * get(g, arm))
+        ax.bar(xs, vs, width * 0.9, color=ARM.get(arm, (arm, "#999"))[1], label=ARM.get(arm, (arm,))[0], zorder=3,
+               edgecolor="white", linewidth=0.6)
+        for x, v in zip(xs, vs):
+            ax.text(x, v + (ylim or 100) * 0.015, fmt.format(v), ha="center", va="bottom", fontsize=6.6,
+                    fontweight="bold", color=C["ink"])
+
+
+def fig_why():
+    """(a) the agent knows the orders it misses; (b) planning first recovers them, a reminder does not;
+    (c) asked again at FINISH, it recovers more when its own decisions are removed (anchoring)."""
+    rx = {suf: load(f"pb_replay_order_x{suf}.json") for suf, _ in AGENTS}
+    rr = {suf: load(f"pb_r{suf}.json") for suf, _ in AGENTS}
+    if not all(rx.values()) or not all(rr.values()):
+        return
+    fig = plt.figure(figsize=(7.2, 2.5))
+    gs = fig.add_gridspec(1, 3, width_ratios=[0.95, 0.8, 0.8], wspace=0.62)
+
+    ax = fig.add_subplot(gs[0])  # numbers from research_loop Cycle 8 and P8 (results/pb_prior.json)
+    rows = [("placed in a run", 68, "#C9CFDB"), ("proposed in a run", 75, "#B9B2F5"),
+            ("proposed in any of 5 runs", 91, C["llm"]), ("missed ones, named from\nthe task text alone", 84, C["good"])]
+    for i, (name, v, col) in enumerate(rows):
+        ax.barh(len(rows) - 1 - i, v, 0.66, color=col, zorder=3)
+        ax.text(v + 2, len(rows) - 1 - i, f"{v}%", va="center", fontsize=7.6, fontweight="bold", color=C["ink"])
+    ax.set_yticks(range(len(rows)), [r[0] for r in rows[::-1]], fontsize=7.2)
+    ax.set_xlim(0, 112)
+    ax.set_xticks([0, 50, 100])
+    ax.grid(axis="y", visible=False)
+    label(ax, x="Required orders (%)")
+    title(ax, "(a) The agent knows")
+
+    ax = fig.add_subplot(gs[1])
+    names = {"order_none": ("as logged", "#C9CFDB"), "order_remind": ("+ task reminder", "#B9B2F5"),
+             "order_plan": ("+ plan first", C["good"])}
+    width = 0.26
+    for k, (cond, (name, col)) in enumerate(names.items()):
+        vs = [100 * rx[suf][cond]["open"] for suf, _ in AGENTS]
+        xs = [i + (k - 1) * width for i in range(len(AGENTS))]
+        ax.bar(xs, vs, width * 0.9, color=col, label=name, zorder=3, edgecolor="white", linewidth=0.6)
+        for x, v in zip(xs, vs):
+            ax.text(x, v + 0.6, f"{v:.0f}", ha="center", va="bottom", fontsize=6.8, fontweight="bold")
+    ax.set_xticks(range(len(AGENTS)), [n for _, n in AGENTS], fontsize=7.6, fontweight="bold")
+    ax.set_ylim(0, 36)
+    label(ax, y="Finally-missed orders\nplaced (%)")
+    title(ax, "(b) Plan first")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.45, -0.28), fontsize=6.6, handlelength=1, prop={"size": 6.6})
+
+    ax = fig.add_subplot(gs[2])
+    bar_group(ax, [suf for suf, _ in AGENTS], ["none", "full", "fresh"], lambda g, a: rr[g][a]["open"], ylim=70)
+    ax.set_xticks(range(len(AGENTS)), [n for _, n in AGENTS], fontsize=7.6, fontweight="bold")
+    ax.set_ylim(0, 70)
+    label(ax, y="Open required-order\ncheckpoints passed (%)")
+    title(ax, "(c) Its own orders anchor it")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.45, -0.28), fontsize=6.6, handlelength=1, prop={"size": 6.6})
+    fig.savefig(OUT / "fig7_why.pdf")
+    fig.savefig(OUT / "fig7_why_preview.png", dpi=200)
+    plt.close(fig)
+
+
+def fig_loop():
+    """(a) the S1 checklist at the agent's FINISH, both agents, against a random list of the same pool and a fresh
+    restart; (b) what the added orders are, rated alone by a blinded LLM judge (Gemma, H-b)."""
+    rr = {suf: load(f"pb_r{suf}.json") for suf, _ in AGENTS}
+    hb = load("pb_extra_single.json")
+    if not all(rr.values()) or not hb:
+        return
+    fig = plt.figure(figsize=(7.2, 2.6))
+    gs = fig.add_gridspec(1, 2, width_ratios=[1.05, 1], wspace=0.5)
+
+    ax = fig.add_subplot(gs[0])
+    arms = ["none", "listrand", "list", "listd3", "fresh"]
+    bar_group(ax, [suf for suf, _ in AGENTS], arms, lambda g, a: (rr[g].get(a) or {}).get("open"), ylim=70)
+    ax.set_xticks(range(len(AGENTS)), [f"{n.replace(chr(10), ' ')}\n({rr[s]['none']['cases']} cases)" for s, n in AGENTS],
+                  fontsize=7.6, fontweight="bold")
+    ax.set_ylim(0, 72)
+    label(ax, y="Open required-order\ncheckpoints passed (%)")
+    title(ax, "(a) Fresh eyes at the agent's finish")
+    ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.2), fontsize=6.6, handlelength=1,
+              columnspacing=0.8, prop={"size": 6.6})
+
+    ax = fig.add_subplot(gs[1])
+    srcs = [("base", "agent's own"), ("list", "S1 checklist"), ("listrand", "random list"), ("fresh", "fresh restart")]
+    cols = {"A": ("indicated", C["good"]), "B": ("reasonable", "#8BD3B5"), "C": ("low value", "#C9CFDB"),
+            "D": ("potentially harmful", C["bad"])}
+    y, yt, yl = 0, [], []
+    for suf, (key, aname) in zip(("", "_gemma4"), (("qwen__judge_gemma4", "Qwen agent"), ("gemma4__judge_gemma4", "Gemma agent"))):
+        cells = hb[key]["cells"]
+        ax.text(-2, y + 0.75, aname, ha="right", va="center", fontsize=7.2, fontweight="bold", color=C["ink"])
+        for src, sname in srcs:
+            d = cells[src]["dist"]
+            n = sum(d.values())
+            left = 0
+            for g, (gname, col) in cols.items():
+                v = 100 * d[g] / n
+                ax.barh(y, v, left=left, height=0.7, color=col, zorder=3, edgecolor="white", linewidth=0.5,
+                        label=gname if y == 0 else None)
+                left += v
+            ax.text(101.5, y, f"n={n}", va="center", fontsize=6.2, color=C["sub"])
+            yt.append(y)
+            yl.append(sname)
+            y -= 1
+        y -= 0.7
+    ax.set_yticks(yt, yl, fontsize=6.9)
+    ax.set_xlim(0, 100)
+    ax.grid(axis="y", visible=False)
+    label(ax, x="Orders outside the rubric (%)")
+    title(ax, "(b) What the extra orders are")
+    ax.legend(ncol=2, loc="upper center", bbox_to_anchor=(0.35, -0.2), fontsize=6.6, handlelength=1,
+              columnspacing=0.8, prop={"size": 6.6})
+    fig.savefig(OUT / "fig8_loop.pdf")
+    fig.savefig(OUT / "fig8_loop_preview.png", dpi=200)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
-    for f in (fig_main, fig_orders, fig_tools, fig_clinenv, fig_anchor):
+    for f in (fig_main, fig_orders, fig_tools, fig_clinenv, fig_anchor, fig_why, fig_loop):
         f()
     print("figures:", sorted(p.name for p in OUT.glob("fig*.pdf")))
