@@ -1322,3 +1322,8 @@ Post-hoc observation (not a test): each case's orders were rated in one list mix
 variants of one order sit side by side, and the Qwen judge marks the later copies low value (its matched orders
 placed after the branch: fresh 0.61 inappropriate vs base 0.02). List composition thus confounds arm comparisons.
 H-b below rates each order alone.
+
+### H-b specification (2026-10-25 11:13, before any H-b rating; exploratory follow-up, not a new confirmatory test)
+Each order of the H items rated alone (one call per order; same context, scale and judges; `pb_extra.py judge
+--single`, max 8192 tokens, 3 tries), which removes the list-composition confound. Analysis as H (validity rule,
+H1-H3, κ), reported as H-b in results/pb_extra_single.json; it replaces neither H's verdict nor its numbers.

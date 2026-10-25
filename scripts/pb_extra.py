@@ -11,6 +11,7 @@ Patient-level items and ratings stay under /ocean/projects/cis260032p/yliy/data/
   S1CLIN_AGENT=qwen|gemma4 .venv/bin/python scripts/pb_extra.py build
   S1CLIN_AGENT=... .venv/bin/python scripts/pb_extra.py judge --judge qwen|gemma4 --url http://127.0.0.1:8011/v1
   .venv/bin/python scripts/pb_extra.py report [--out results/pb_extra.json]
+H-b (`--single`): each order rated alone (same context, PROMPT1), ratings1_*.json, results/pb_extra_single.json.
 """
 
 import argparse
@@ -18,6 +19,7 @@ import json
 import random
 import re
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -48,6 +50,15 @@ CANDIDATE ORDERS
 {items}
 
 Answer with one JSON object mapping each order number to a letter, e.g. {{"1": "A", "2": "C"}}, and nothing after it."""
+PROMPT1 = PROMPT.split("Then a numbered list")[0] + """Then one candidate order.
+
+Rate the order for this patient now, in the context of this task:
+""" + PROMPT.split("in the context of this task:\n")[1].split("{context}")[0] + """{context}
+
+CANDIDATE ORDER
+{items}
+
+Answer with one JSON object, e.g. {{"rating": "B"}}, and nothing after it."""
 
 
 def key(o):
@@ -110,6 +121,44 @@ def build():
     print(AGENT, "cases", len(items), "orders", sum(len(v["orders"]) for v in items.values()))
 
 
+def judge1(name, url, workers):
+    """H-b: one call per order; the case's calls run together so the shared context is prefix-cached."""
+    from openai import OpenAI
+    items = json.loads((OUT / f"items_{AGENT}.json").read_text())
+    path = OUT / f"ratings1_{AGENT}_{name}.json"
+    done = json.loads(path.read_text()) if path.exists() else {}
+    client = OpenAI(base_url=url, api_key="x", timeout=3600)
+
+    def one(ck):
+        case, k = ck
+        prompt = PROMPT1.format(context=items[case]["context"], items=render(items[case]["orders"][k]["order"]))
+        for attempt in range(3):
+            r = client.chat.completions.create(model=JUDGES[name], messages=[{"role": "user", "content": prompt}],
+                                               max_tokens=8192, temperature=0.0 if attempt == 0 else 0.6,
+                                               extra_body={"chat_template_kwargs": {"enable_thinking": True}})
+            m = re.findall(r"\{[^{}]*\}", r.choices[0].message.content or "")
+            try:
+                g = str(json.loads(m[-1]).get("rating", "")).strip()[:1].upper()
+                if g in LETTERS:
+                    return ck, g
+            except (IndexError, json.JSONDecodeError, AttributeError):
+                pass
+        return ck, None
+    todo = [(c, k) for c in items for k in sorted(items[c]["orders"]) if k not in done.get(c, {})]
+    print(AGENT, name, "orders to do", len(todo), flush=True)
+    n = 0
+    with ThreadPoolExecutor(workers) as ex:
+        for (case, k), g in ex.map(one, todo):
+            n += 1
+            if g is not None:
+                done.setdefault(case, {})[k] = g
+            if n % 50 == 0 or n == len(todo):
+                tmp = path.with_suffix(".tmp")
+                tmp.write_text(json.dumps(done))
+                tmp.replace(path)
+                print(time.strftime("%H:%M:%S"), n, "of", len(todo), flush=True)
+
+
 def judge(name, url, workers):
     from openai import OpenAI
     items = json.loads((OUT / f"items_{AGENT}.json").read_text())
@@ -168,7 +217,7 @@ def ci(v):
     return [round(v[int(0.025 * len(v))], 4), round(v[int(0.975 * len(v)) - 1], 4)] if v else None
 
 
-def report(out):
+def report(out, prefix="ratings"):
     res = {}
     for agent in ("qwen", "gemma4"):
         ip = OUT / f"items_{agent}.json"
@@ -176,7 +225,7 @@ def report(out):
             continue
         items = json.loads(ip.read_text())
         for name in JUDGES:
-            rp = OUT / f"ratings_{agent}_{name}.json"
+            rp = OUT / f"{prefix}_{agent}_{name}.json"
             if not rp.exists():
                 continue
             ratings = json.loads(rp.read_text())
@@ -197,6 +246,8 @@ def report(out):
             cells = sorted({a for v in per_case.values() for a in v})
             pt, bs = boot_shares(per_case, cells)
             r = {"cases": len(ratings), "unparsed_or_missing": len(items) - len(ratings),
+                 "orders_rated": sum(len(v) for v in ratings.values()),
+                 "orders_total": sum(len(v["orders"]) for v in items.values()),
                  "cells": {a: {"orders": sum(dist[a].values()), "dist": dist[a],
                                "inappropriate": round(pt[a][0], 4) if pt[a][0] is not None else None,
                                "inappropriate_ci95": ci([b[a][0] for b in bs]),
@@ -209,7 +260,7 @@ def report(out):
                     r[f"{x}_minus_{y}"] = {"inappropriate": round(pt[x][0] - pt[y][0], 4), "ci95": ci(d)}
             res[f"{agent}__judge_{name}"] = r
         # agreement between the two judges on the same orders
-        rs = [OUT / f"ratings_{agent}_{n}.json" for n in JUDGES]
+        rs = [OUT / f"{prefix}_{agent}_{n}.json" for n in JUDGES]
         if all(p.exists() for p in rs):
             a, b = (json.loads(p.read_text()) for p in rs)
             pairs = [(a[c][k], b[c][k]) for c in a if c in b for k in a[c] if a[c][k] in LETTERS and b[c].get(k) in LETTERS]
@@ -235,14 +286,16 @@ def main():
     ap.add_argument("--judge", choices=tuple(JUDGES))
     ap.add_argument("--url")
     ap.add_argument("--workers", type=int, default=8)
-    ap.add_argument("--out", default=str(REPO / "results/pb_extra.json"))
+    ap.add_argument("--out")
+    ap.add_argument("--single", action="store_true", help="H-b: each order rated alone")
     a = ap.parse_args()
     if a.cmd == "build":
         build()
     elif a.cmd == "judge":
-        judge(a.judge, a.url, a.workers)
+        (judge1 if a.single else judge)(a.judge, a.url, a.workers)
     else:
-        report(a.out)
+        report(a.out or str(REPO / f"results/pb_extra{'_single' if a.single else ''}.json"),
+               "ratings1" if a.single else "ratings")
 
 
 if __name__ == "__main__":
