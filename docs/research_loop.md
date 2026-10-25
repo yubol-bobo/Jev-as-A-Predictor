@@ -1281,3 +1281,22 @@ Open required-order checkpoints: none 0.29, full 0.47, fresh 0.56, list 0.58, li
   list − none +0.078 [0.053, 0.107].
 Reading: the S1 checklist from the task text helps the second agent too, about twice as much in absolute terms
 (lower baseline), and its ranking matters more than for Qwen. The cost, orders no rubric item names, replicates.
+
+### H pre-registration (2026-10-25 07:40, before any rating; scripts/pb_extra.py)
+Question: the checklist arms fail the unmatched-order harm bound for both agents (R3 +1.47, R3-d3 +1.52, XR3 +1.56).
+Are those orders, which no rubric item names, clinically inappropriate, or reasonable care the rubric does not list?
+- Units: per case (R: 51 Qwen cases; XR: 65 Gemma cases), the distinct orders placed by the agent before its first
+  FINISH (`base`) and after the branch by each arm in any run (full, fresh, list, listrand; listd3 for Qwen). Each is
+  matched (meets a required spec) or unmatched.
+- Judges: Qwen3.8-27B and Gemma 4 31B-it (FP8), thinking on, temperature 0, each rating every order of every case.
+  Input: the fresh context at the FINISH (task and retrieved chart, no decision turns) and the case's orders in a
+  seeded shuffle with no source shown. Scale: A indicated, B reasonable, C low value, D potentially harmful.
+  Inappropriate = C or D. Shares pooled over orders, CIs by cluster bootstrap over cases.
+- Validity: matched (required) orders rated inappropriate ≤ 0.20 by a judge, else that judge is descriptive only.
+- H1 (non-inferiority): inappropriate share of the list arm's unmatched orders − that of the agent's own (base)
+  unmatched orders, upper 95% bound < +0.10. Per agent × valid judge; holds if it holds in all of them.
+- H2: list − listrand inappropriate share < 0, CI excluding 0 (the S1 ranking picks better extras); same rule.
+- H3: potentially harmful (D) share of the list arm's unmatched orders ≤ 0.05, upper bound ≤ 0.10; same rule.
+- Descriptive: full, fresh, listd3, judge agreement (Cohen's κ, 4-way and inappropriate yes/no).
+- Caveats fixed in advance: LLM judges, not physicians; each agent's own model is one of the judges (self-preference
+  is possible, hence both); the judge does not see the orders already placed, so duplication is not rated here.
