@@ -1394,3 +1394,27 @@ Open required-order checkpoints, mean over 3 runs per case; 95% bootstrap CI ove
   order, not a second model.
 - Paper consequence: the checklist effect does not need a System One model; the contribution is the task-only
   input. System One models are an equally good, cheaper ranker, not a better one.
+
+### M pre-registration (2026-10-26 10:03, before any M score; allocation 49854980, w001, GPUs 0-3 with the user's leave)
+Question (the user: does the paper show what System One models add?): L found the agent LLM without thinking ranks
+the task-prior pool about as well as one System One model. What a family of one-pass models allows cheaply is a
+committee: six independently trained System One models each judge every candidate from the task text alone, and their
+rankings are pooled. M asks whether that committee ranks better than the agent LLM.
+- Rankers: the six System One models of G1 (pplx12, Clef, d3, linne, amos, decider31b), each with exactly the
+  task-only request of L / R3 (`pb_prior.py score --full`; pplx12 and d3 scores exist from R3 / R3-d3 and are reused
+  unchanged). Committee `ens`: per task, each model's P(Yes) is turned into a percentile rank within the pool (ties
+  averaged), and the six are averaged (a model's missing score is left out of that item's mean). Fixed now; no
+  weights, no model selection.
+- Online arm listens, from the same shared prefixes and cases as R / XR / L, 3 runs each, top 8, the same checklist
+  prompt and filters: Qwen agent `prior-ens-dedup-p{1,3}` (pplx12 repeat judge, as R3 / L), Gemma agent
+  `prior-ens-p{1,2}` (exact names, as XR3 / L). Analysis `pb_r.py` (both agents) and `pb_m.py` (pooled).
+- M1 (primary, pooled): listens − listqwen over the 116 cases of both agents (51 Qwen + 65 Gemma; per-case mean
+  over runs; bootstrap over cases stratified by agent). Prediction: > 0 with the 95% CI excluding 0 → "a committee of
+  System One models ranks better than the agent LLM". CI including 0 → it does not; we then keep L's reading
+  (comparable rankers).
+- M2 (pooled): listens − list (pplx12 alone). CI excluding 0 in favour of ens → the committee adds over one model;
+  otherwise one model suffices. No directional bar.
+- Descriptive: each of M1, M2 per agent; listens − none, − listrand per agent; unmatched orders and forbidden
+  (expected 0); offline top-8 filtered coverage of open specs (`pb_prior.py factorized --name ens` and per model,
+  as R3-d3 / L); seconds per judgment per model; wall time per candidate for the committee run in parallel.
+- Exploratory, labelled as such (its data were seen): L2 pooled over both agents (list − listqwen).
