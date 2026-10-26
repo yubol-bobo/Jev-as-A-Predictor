@@ -596,6 +596,13 @@ class ScreenClient:
             if str(src) in json.dumps(turns) or str(src) in json.dumps(turns, ensure_ascii=False):
                 raise RuntimeError("replayed turns still name the logged run's directory")
             self.prefix = (turns, fix(final))
+        self.branch = None
+        if self.ranker == "branch":  # F role 2: replay to the question's step, execute one option there, then continue
+            spec = json.loads(Path(os.environ["S1CLIN_BRANCH_SPEC"]).read_text())
+            b = spec[f"{seed.split('|')[0]}|{Path(log_path).parents[3].name}"]
+            self.branch = {**b, "option": fix(b["option"])}  # the logged run's workspace paths point at this run's
+            if str(src) in self.branch["option"]:
+                raise RuntimeError("the branch option still names the logged run's directory")
 
     def _note(self, turns, executed):
         for t in turns:
@@ -744,6 +751,33 @@ class ScreenClient:
         with ThreadPoolExecutor(4) as ex:
             return list(ex.map(one, orders))
 
+    def _branched(self, n_messages, epoch):
+        """F role 2: the logged turn before the branch step, the given option at it (rebuilt from its rendering, so
+        every option of a question, the agent's own included, is executed the same way); then the agent goes on."""
+        from agent.llm_client import ChatResponse
+        rec = {"step": self.step, "prefix": True, "n_messages": n_messages, "msg_epoch": epoch, "pick": 0}
+        if self.step < self.branch["step"]:
+            m = self.prefix[0][self.step - 1]
+            chosen = _as_choice(m.get("content"), m.get("tool_calls"))
+        else:
+            opt, self.done = self.branch["option"], True
+            rec["branch"] = True
+            if opt.startswith("FINISH with final answer:"):
+                chosen = _as_choice(opt[len("FINISH with final answer:"):].strip(), None)
+            else:
+                calls = parse_turn(opt)
+                if not calls:
+                    raise RuntimeError("branch option does not parse into tool calls")
+                chosen = _as_choice(None, [{"id": f"call_branch_{i}", "type": "function", "function": {
+                    "name": n, "arguments": json.dumps(a, ensure_ascii=False)}} for i, (n, a) in enumerate(calls)])
+        rendered = render_turn(chosen.message.content, chosen.message.tool_calls)[:MAX_CANDIDATE_CHARS]
+        rec["candidates"] = [rendered]
+        self._note([rendered], rendered)
+        with self.log_path.open("a") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        return ChatResponse(content=chosen.message.content, tool_calls=chosen.message.tool_calls, prompt_tokens=0,
+                            completion_tokens=0, raw=SimpleNamespace(choices=[chosen], usage=None))
+
     def _replayed(self, messages, common, n_messages, epoch):
         """The logged run's turn for this step (prefix), or at its FINISH the arm's branch."""
         from agent.llm_client import ChatResponse
@@ -772,6 +806,8 @@ class ScreenClient:
         n_messages, epoch = self.msglog.sync(messages)
         common = dict(tools=tools, temperature=temperature, parallel_tool_calls=parallel_tool_calls,
                       reasoning_effort=reasoning_effort)
+        if self.branch is not None and not self.done:
+            return self._branched(n_messages, epoch)
         if self.prefix is not None and not self.done and (self.prefix[1] is not None or self.step <= len(self.prefix[0])):
             return self._replayed(messages, common, n_messages, epoch)
         resp = self.base.chat(messages, n=self.k, **common)
