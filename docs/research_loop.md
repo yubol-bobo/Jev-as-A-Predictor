@@ -1513,3 +1513,42 @@ models are one standard way to get it". If the LLM is better, we report that Sys
 that role.
 Order of work: role 1 on allocation 49854980 (now); role 2 rollouts need about 360 agent continuations, next
 allocation; role 2 judges' answers once the 60 questions are fixed.
+
+### F role 1 result (2026-10-26 19:00; results/pb_f_checker.json; final F verdict waits for role 2)
+133 cases in 42 tasks (Qwen and Gemma logged runs); C2 / C8 on the 15 of the 20 seeded tasks that have a case.
+Judgments complete (AG, B, D 3,576 each; C2, C8 1,347 each; no errors). No answer within the budget: C2 70%, C8 13%.
+Cost measured as pre-registered (200 items, 8 concurrent, one H100; LLM configurations on vLLM with prefix caching,
+System One models on their authors' servers).
+
+| judge | AUROC (open orders) | GPU-s / judgment | frontier |
+|---|---|---|---|
+| A-G (Gemma, logprob) | 0.682 | 0.016 | on |
+| decider31b | 0.730 | 0.058 | on |
+| A (Qwen, logprob) | 0.739 | 0.061 | on |
+| B (stated P) | 0.645 | 0.072 | dominated (A, decider31b) |
+| pplx12 | 0.783 | 0.097 | on |
+| d3 | 0.815 | 0.098 | on |
+| amos | 0.793 | 0.098 | on |
+| Clef | 0.709 | 0.105 | dominated (pplx12, amos, d3) |
+| linne | 0.748 | 0.152 | dominated (d3) |
+| D (5-sample vote) | 0.699 | 0.286 | dominated (A, pplx12, amos, d3) |
+| C2 (thinking 2k) | 0.576 | 3.38 | dominated (all but B, D, C8) |
+| C8 (thinking 8k) | 0.726 | 6.82 | dominated (pplx12, amos, d3) |
+
+- F1: mean of six S1 − A +0.024 [−0.008, 0.057] → no difference. Three of six above A with CI > 0 (d3 +0.076,
+  amos +0.054, pplx12 +0.044); linne +0.009, decider31b −0.009, Clef −0.030 (CIs ∋ 0). Family check
+  mean(linne, decider31b) − A-G +0.057 [0.007, 0.108] > 0.
+- F2: S1 − B +0.118 [0.070, 0.167] > 0; S1 − D +0.065 [0.027, 0.101] > 0; S1 − C8 +0.046 [−0.004, 0.098] ∋ 0
+  (15 tasks); S1 − C2 +0.196 [0.135, 0.254]. Among the LLM configurations A is best: A − B +0.094, A − D +0.041
+  (CIs > 0), A − C8 −0.010 [−0.082, 0.057] at 1/112 of C8's cost.
+- F3: the frontier is A-G, decider31b, A, pplx12, d3, amos. S1 and A share it; S1 models alone hold its upper end
+  (d3, amos, pplx12: higher AUROC than A, CI > 0, at 1.6× A's GPU-seconds). Every practice configuration (B, D,
+  C2, C8) is off it. Secondary: Brier against the task-level label, S1 0.16-0.28, LLM configurations 0.29-0.50.
+- Reading for role 1 (pre-registered): F1 ∋ 0 and S1 and A share the frontier → "a one-pass judge is enough, and
+  System One models are one standard way to get it". The stated-probability, sampling and thinking configurations
+  are worse and/or far costlier. The protagonist reading can still come from role 2 (F1 > 0 or S1 alone there).
+- Caveats: the LLM configurations' cost benefits from vLLM prefix caching across a task's items; the S1 servers are
+  as shipped (decider31b is on vLLM, the others are not), so S1 cost is an upper bound for an optimised stack. C uses
+  15 tasks, so its CIs are wide.
+- Role 2 status: Qwen selector answers A, D, C2, C8 complete (60 questions each); 68 of 539 branch rollouts graded
+  when allocation 49854980 ended (17:40). f2_run.sh resumes on the next allocation (about 6-7 h on four GPUs).

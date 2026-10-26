@@ -253,6 +253,19 @@ def report(path):
     tf = FD / "timing.jsonl"
     if tf.exists():
         res["timing"] = {x["judge"]: x for x in map(json.loads, tf.read_text().splitlines())}
+        # F3: on the frontier unless another judge at <= GPU-seconds has higher AUROC, paired CI excluding 0
+        cost = {j: v["gpu_s_per_judgment"] for j, v in res["timing"].items() if j in task_mean}
+        res["frontier"] = {}
+        for j in sorted(cost, key=cost.get):
+            by = []
+            for k in cost:
+                ks = set(task_mean[k]) & set(task_mean[j])
+                if k == j or cost[k] > cost[j] or not ks:
+                    continue
+                d = {t: task_mean[k][t] - task_mean[j][t] for t in ks}
+                if boot(d)[0] > 0:
+                    by.append(k)
+            res["frontier"][j] = {"gpu_s": cost[j], "auroc_open": res["judges"][j]["auroc_open"], "dominated_by": by}
     Path(path).write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
 
