@@ -1449,3 +1449,67 @@ Open required-order checkpoints; per-case mean over 3 runs; pooled bootstrap str
 - Paper consequence: System One models' contribution is (i) the instrument that found the blind spot (six judges,
   input ablations at scale), (ii) replacing the reasoning LLM as the checker at ~1% of its time with equal or better
   task-only ranking, (iii) a ready-made probability per option. Not: better ranking than the agent LLM in one pass.
+
+### F pre-registration (2026-10-26 14:13, before any F judgment or rollout): the cost-quality frontier of one-pass
+### System One judges against the same-scale LLM used at its best, in two roles
+Question (the user: System One models as the protagonist, through an objective test, not a favourable setting): does
+the training that makes a System One model (a probability over the options in one forward pass) make it a better
+judge than an LLM of the same scale, used in every reasonable way, at the same measured cost? Two roles of the agent
+loop: the checker (is this order indicated, from the task alone) and the selector (which of the agent's candidate
+next turns to execute). No parameter is fitted on F's data; every reading is fixed here, including a System One loss.
+
+**Judges (both roles).** S1: the six System One models of G1 (pplx12, d3, Clef ≈ 26-27B, Qwen3.5-family; amos 27.4B;
+linne, decider31b 31B, Gemma-4-family), each through its own server as in G1 / M. LLM configurations, Qwen3.8-27B
+(bf16, the agent) unless stated:
+- A, one pass, white-box: no thinking, the S1 request as a lettered choice, the distribution from the first token's
+  log-probabilities (`pb_prior.llm_choice`, as L). A-G: the same with Gemma 4 31B-it (FP8, as served for the agent),
+  the base family of linne and decider31b.
+- B, one pass, black-box practice (checker only): no thinking, asked for one line 'P=<0-100>'; unparseable → 0.5.
+  (For the selector a stated choice is A's argmax read as text, so B is not run there.)
+- C2, C8, reasoning: thinking on, max 2,048 / 8,192 generated tokens; checker: the G1 comparator prompt (think, then
+  'P=<0-100>'); selector: think, then the letter. No answer within the budget → 0.5 (checker) / the option the agent
+  executed (selector), counted and reported.
+- D, sampling: no thinking, 5 samples at the model's default temperature, one letter each; checker: share of Yes;
+  selector: the majority letter, ties to the first sample.
+Every judge gets the same content: the same instruction, question, options and option letters (seeded by item, as
+in the exam / L), and in the selector the same rendered state fitted to the same 32k-token budget.
+
+**Cost (both roles).** For every judge, a timing run on the same seeded items (checker: 200 pool items; selector:
+50 questions), one H100, 8 concurrent requests, after 10 warm-up items: GPU-seconds per judgment = wall time × GPUs
+of the server / items; also generated tokens per judgment. Reported with the quality, as a frontier.
+
+**Role 1, checker.** Items: the task-prior pool (54 tasks, 3,576 orders), task text only. Cases: the logged runs with
+a first FINISH (Qwen llm_log_k5 runs 1, 3; Gemma llm_log_k1__gemma4 runs 1, 2) × task, with ≥ 1 required spec open
+at that FINISH and matched by a pool item. Per case, AUROC of pool items matching an open spec against items matching
+no required spec (items matching an already met spec left out); averaged within task, then over tasks; paired
+bootstrap over tasks (2,000). C2 and C8 run on a seeded random 20 of the 54 tasks (all their pool items) for cost;
+every comparison involving C uses those tasks only. Secondary: per-task AUROC of all required vs not required items
+(task-level label); Brier score against that label; no-answer rate.
+- F1 (decision training at the same scale): mean AUROC of the six S1 models − A. CI > 0 → "System One models judge
+  better than the same-scale LLM read out at its best"; CI ∋ 0 → no difference; CI < 0 → the LLM is better. Each of
+  the six reported, with the count above A. Family check: mean(linne, decider31b) − A-G.
+- F2 (against the practice configurations): mean S1 − B, − C8 (on the 20 tasks), − D; the same three-way reading.
+- F3 (frontier): a judge is on the frontier unless another has higher AUROC with the paired CI excluding 0 at lower or
+  equal GPU-seconds. Reading: which of S1 / A / B / C / D are on it.
+
+**Role 2, selector.** Questions: the exam (llm_log_k5/run1 states, the agent's K = 5 sampled next turns,
+deduplicated). Eligible: the options differ in kind (act / document / finish / retrieve) or, all acting, place
+different order sets, and every option reconstructs into a tool-call turn (parse_turn). Sample: eligible questions in
+sha256(id) order, the first 60 with at most 2 per task. Value of an option: replay the logged run to the question's
+step, execute the option, let the agent (Qwen, its run settings, one sample per step) continue to its FINISH, grade;
+2 rollouts per option (1 for a FINISH option, whose outcome is fixed); value = share of the task's checkpoints passed,
+mean over rollouts. A question is informative if its options' values are not all equal. Judges answer from the exam
+request (S1 answers already exist from the exam and are reused unchanged). Baselines without a judge: the option the
+agent executed, the option sampled most often among the 5, and random (the mean option value).
+- Metric per question: value(pick) − mean option value ("gain over random"); also regret = max value − value(pick).
+  Mean over informative questions, within task then over tasks; paired bootstrap over tasks.
+- S1 (selector): mean gain of the six S1 − A (the F1 reading); − C8, − D, − the agent's own pick, − most sampled
+  (the F2 reading); frontier as F3 with the cost per decision.
+- If fewer than 30 questions are informative, role 2 is reported descriptively, without a reading.
+
+**What would make System One models the protagonist, fixed now:** F1 > 0 in either role, or S1 alone on the frontier
+in either role. If F1 ∋ 0 and S1 and A share the frontier, the claim is "a one-pass judge is enough, and System One
+models are one standard way to get it". If the LLM is better, we report that System One training does not help in
+that role.
+Order of work: role 1 on allocation 49854980 (now); role 2 rollouts need about 360 agent continuations, next
+allocation; role 2 judges' answers once the 60 questions are fixed.
