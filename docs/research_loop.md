@@ -1366,3 +1366,31 @@ pool from the same input, without thinking?
   favour of qwen → "the LLM ranks better".
 - Descriptive: listqwen − listrand; unmatched orders; forbidden (expected 0); offline top-8 coverage of open specs
   (`pb_prior.py factorized --name qwen`, as R3-d3) and median seconds per judgment.
+
+### L verdict (2026-10-25 23:57; results/pb_r.json (Qwen agent, 51 cases), results/pb_r_gemma4.json (Gemma agent, 65 cases), results/pb_p10_qwen.json)
+Open required-order checkpoints, mean over 3 runs per case; 95% bootstrap CI over cases.
+
+| | Qwen agent | Gemma agent |
+|---|---|---|
+| none / list (pplx12) / listqwen / listrand | 0.38 / 0.53 / 0.49 / 0.47 | 0.29 / 0.58 / 0.53 / 0.45 |
+| L1 listqwen − none | +0.111 [0.043, 0.196] holds | +0.242 [0.155, 0.330] holds |
+| L2 list − listqwen | +0.036 [−0.011, 0.080] | +0.050 [−0.026, 0.132] |
+| listd3 − listqwen | +0.049 [0.003, 0.095] | — |
+| listqwen − listrand | +0.023 [−0.031, 0.080] | +0.086 [0.015, 0.156] |
+| list − listrand (R3 / XR3, same runs) | +0.059 [0.006, 0.118] | +0.136 [0.065, 0.217] |
+| unmatched orders: listqwen / list | 1.73 / 1.47 (list − listqwen −0.26 [−0.56, 0.02]) | 1.52 / 1.56 |
+| forbidden | 0 | 0 |
+
+- L1 holds on both agents: the agent LLM itself, thinking off, ranking the same task-only pool is also a working
+  checklist ranker.
+- L2: both CIs include 0 → by the reading fixed in advance, **comparable rankers; the System One advantage is
+  latency and cost**. Descriptively, both point estimates favour pplx12 (+3.6, +5.0 points), d3 beats qwen on the
+  Qwen agent with a CI just above 0, and only the System One rankers separate from the random list on the Qwen agent
+  (listqwen − listrand n.s. there). We do not claim the System One ranker ranks better.
+- Offline (Qwen run-1 open specs, 26 tasks, filtered): top-8 coverage qwen 0.51 vs pplx12 0.54 (−0.04 [−0.12, 0.00]);
+  top-5 0.33 vs 0.27; top-3 0.21 vs 0.27. Many qwen scores saturate at P(Yes)=1.0 (ties fall back to pool order).
+- Latency: qwen median 0.93 s per judgment (27B, TP1, 16 concurrent requests) vs ≈0.4 s for pplx12; not a matched
+  benchmark, and the LLM is already loaded for the agent, so the cost argument is about a second large-model pass per
+  order, not a second model.
+- Paper consequence: the checklist effect does not need a System One model; the contribution is the task-only
+  input. System One models are an equally good, cheaper ranker, not a better one.

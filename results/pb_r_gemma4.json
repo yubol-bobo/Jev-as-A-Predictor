@@ -5,7 +5,8 @@
   "full": 195,
   "fresh": 195,
   "list": 195,
-  "listrand": 195
+  "listrand": 195,
+  "listqwen": 195
  },
  "replay_agreement": 0.9955,
  "replay_checkpoints": 441,
@@ -47,6 +48,14 @@
   "all": 0.5115,
   "orders": 2.6923,
   "unmatched": 2.2718,
+  "forbidden": 0.0
+ },
+ "listqwen": {
+  "cases": 65,
+  "open": 0.5316,
+  "all": 0.5332,
+  "orders": 2.0769,
+  "unmatched": 1.5231,
   "forbidden": 0.0
  },
  "fresh_minus_full": {
@@ -256,6 +265,130 @@
    "ci95": [
     -0.7538,
     0.0051
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "listqwen_minus_none": {
+  "cases": 65,
+  "open": {
+   "mean": 0.2419,
+   "ci95": [
+    0.1547,
+    0.3299
+   ]
+  },
+  "all": {
+   "mean": 0.0675,
+   "ci95": [
+    0.0455,
+    0.0926
+   ]
+  },
+  "unmatched": {
+   "mean": 1.5231,
+   "ci95": [
+    1.1026,
+    1.9436
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "listqwen_minus_listrand": {
+  "cases": 65,
+  "open": {
+   "mean": 0.0855,
+   "ci95": [
+    0.0145,
+    0.1556
+   ]
+  },
+  "all": {
+   "mean": 0.0216,
+   "ci95": [
+    0.0076,
+    0.0358
+   ]
+  },
+  "unmatched": {
+   "mean": -0.7487,
+   "ci95": [
+    -1.1026,
+    -0.4103
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "list_minus_listqwen": {
+  "cases": 65,
+  "open": {
+   "mean": 0.0504,
+   "ci95": [
+    -0.0256,
+    0.1321
+   ]
+  },
+  "all": {
+   "mean": 0.0106,
+   "ci95": [
+    -0.0046,
+    0.0274
+   ]
+  },
+  "unmatched": {
+   "mean": 0.041,
+   "ci95": [
+    -0.2205,
+    0.3077
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "fresh_minus_listqwen": {
+  "cases": 65,
+  "open": {
+   "mean": 0.0248,
+   "ci95": [
+    -0.0521,
+    0.1026
+   ]
+  },
+  "all": {
+   "mean": 0.0067,
+   "ci95": [
+    -0.0071,
+    0.0211
+   ]
+  },
+  "unmatched": {
+   "mean": -0.3385,
+   "ci95": [
+    -0.7795,
+    0.1128
    ]
   },
   "forbidden": {
