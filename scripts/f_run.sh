@@ -22,10 +22,12 @@ s1_time() { timed "$1" || { bash scripts/s1_up.sh "$1" "$2" > "logs/f_up_$1.log"
 
 # ---------------------------------------------------------------- phase 1: judgments on four Qwen replicas
 if ! grep -q "F judgments done" logs/f_run.log 2>/dev/null; then
-  $PY scripts/pb_f.py judge --cfg AG --url http://127.0.0.1:8031/v1 --workers 16 >> logs/f_AG.log 2>&1
-  s1_stop pplx12; kill -- -"$(cat logs/gemma4.pid)" 2>/dev/null; gpu_free 1; gpu_free 2
-  curl -s -m 5 localhost:8014/v1/models | grep -q qwen || bash scripts/vllm_qwen_up.sh 1 8014 > logs/qwen1.pid
-  curl -s -m 5 localhost:8012/v1/models | grep -q qwen || bash scripts/vllm_qwen_up.sh 2 8012 > logs/qwen2.pid
+  [ "$(wc -l < "$FD/checker_AG.jsonl" 2>/dev/null)" = 3576 ] || \
+    $PY scripts/pb_f.py judge --cfg AG --url http://127.0.0.1:8031/v1 --workers 16 >> logs/f_AG.log 2>&1
+  curl -s -m 5 localhost:8014/v1/models | grep -q qwen || {
+    s1_stop pplx12; gpu_free 1; bash scripts/vllm_qwen_up.sh 1 8014 > logs/qwen1.pid; }
+  curl -s -m 5 localhost:8012/v1/models | grep -q qwen || {
+    kill -- -"$(cat logs/gemma4.pid)" 2>/dev/null; gpu_free 2; bash scripts/vllm_qwen_up.sh 2 8012 > logs/qwen2.pid; }
   wait_url localhost:8014/v1/models qwen; wait_url localhost:8012/v1/models qwen; echo "$(date +%T) four Qwen replicas up"
   Q4=$(for p in 8011 8012 8013 8014; do echo -n "http://127.0.0.1:$p/v1*1,"; done); Q4=${Q4%,}
   for C in B D; do $PY scripts/pb_f.py judge --cfg $C --url "$Q4" --workers 24 >> logs/f_$C.log 2>&1 & done

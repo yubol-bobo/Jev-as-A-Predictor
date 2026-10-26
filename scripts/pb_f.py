@@ -111,7 +111,7 @@ def judge_one(cfg, url, instruction, t, o):
 
 
 def route(urls, key):
-    """The same replica per task (prefix caching), as pb_run's --llm-url routing."""
+    """A replica per key (here one item), spread by hash."""
     us = [u.split("*")[0] for u in urls.split(",")]
     return us[int(hashlib.sha256(key.encode()).hexdigest(), 16) % len(us)]
 
@@ -122,13 +122,14 @@ def judge(cfg, urls, workers):
     done = {(x["task"], x["order"]) for x in map(json.loads, out.read_text().splitlines())} if out.exists() else set()
     info = tasks()
     todo = [(t, o) for t, o in items(cfg) if (t, render_order(o)) not in done]
+    random.Random(f"F-{cfg}").shuffle(todo)  # spread the load over the replicas (items are routed one by one)
     print(f"{out.name}: {len(todo)} to judge", flush=True)
 
     def run(item):
         t, o = item
         t0 = time.time()
         try:
-            p, extra = judge_one(cfg, route(urls, t), info[t][0], t, o)
+            p, extra = judge_one(cfg, route(urls, f"{t}|{render_order(o)}"), info[t][0], t, o)
         except Exception as e:
             p, extra = None, {"error": repr(e)[:300]}
         with lock, open(out, "a") as f:
