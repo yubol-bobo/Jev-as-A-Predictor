@@ -82,5 +82,5 @@ reading the agent's work is the wrong input.**
 ## Open questions for the user
 - Retitle? The current title fits claims 1-2 only. Candidates: "Fresh Eyes: System One Models as Checkers for
   Clinical Agents", or keep "Who Decides?" with a subtitle on checking.
-- Co-authors: Yubo Li, Rema Krishnan (set 2026-10-22; affiliation line to confirm).
+- Authors: Yubo Li, Rema Padman, Ramayya Krishnan, all Carnegie Mellon University (confirmed 2026-10-26). Title: "Fresh Eyes: Clinical Agents Miss Orders They Already Know, and a Checker That Reads Only the Task Finds Them" (approved 2026-10-26).
 - Second agent model: Gemma 4 31B-it chosen by the user (2026-10-24), run in FP8 (KV memory; amendment a04045c).

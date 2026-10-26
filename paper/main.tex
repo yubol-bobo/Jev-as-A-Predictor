@@ -81,13 +81,13 @@
 \newcommand{\ctl}{\textsc{LLM-Tool}}
 \newcommand{\up}[1]{\textbf{+#1}}
 
-\title{Fresh Eyes: Clinical Agents Miss Orders They Already Know,\\and a One-Pass Model That Reads Only the Task Finds Them}
+\title{Fresh Eyes: Clinical Agents Miss Orders They Already Know,\\and a Checker That Reads Only the Task Finds Them}
 \author{%
-Yubo Li \quad Rema Krishnan\\[3pt]
+Yubo Li \quad Rema Padman \quad Ramayya Krishnan\\[3pt]
 \mdseries Carnegie Mellon University\\
 \mdseries\texttt{yubol@andrew.cmu.edu}\\[3pt]
 }
-\date{25 October 2026}
+\date{26 October 2026}
 
 \begin{document}
 \maketitle
@@ -106,7 +106,8 @@ omissions does not help. The fix is fresh eyes: a System One model reads only th
 under a second each. Shown when the agent first tries to finish, its eight-item checklist raises the pass rate of the required-order
 checkpoints still failing at that point from 38\% to 53\% for Qwen and from 29\% to 58\% for Gemma, beats a random
 checklist from the same pool, and adds orders that blinded LLM judges rate mostly as indicated or reasonable, none as
-potentially harmful.
+potentially harmful. The agent LLM ranking the same pool from the task without thinking does about as well: what the
+checker reads carries the fix, and the one-pass model makes it cheap.
 \end{abstract}
 
 \begin{figure*}[t]
