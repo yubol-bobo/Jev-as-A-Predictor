@@ -107,7 +107,7 @@ under a second each. Shown when the agent first tries to finish, its eight-item 
 checkpoints still failing at that point from 38\% to 53\% for Qwen and from 29\% to 58\% for Gemma, beats a random
 checklist from the same pool, and adds orders that blinded LLM judges rate mostly as indicated or reasonable, none as
 potentially harmful. The agent LLM ranking the same pool from the task without thinking does about as well: what the
-checker reads carries the fix, and the one-pass model makes it cheap.
+checker reads carries the fix.
 \end{abstract}
 
 \begin{figure*}[t]
@@ -172,8 +172,7 @@ System One model from the task text alone raises the pass rate of the still-open
 to 53\% for Qwen and from 29\% to 58\% for Gemma. It beats a random checklist from the same pool, holds with a second
 System One ranker, and does as well as restarting the agent from a fresh context. The agent LLM itself, ranking the
 same pool from the task without thinking, also works and is statistically indistinguishable from the System One
-ranker (pre-registered): what carries the fix is what the checker reads, and the one-pass model supplies it at a
-fraction of a large model's cost per judgment. The orders it adds beyond the
+ranker (pre-registered): what carries the fix is what the checker reads, not which model reads it. The orders it adds beyond the
 rubric are, by blinded LLM judges, mostly indicated or reasonable, and none is rated potentially harmful.
 
 \paragraph{How we tested.} Whole agent runs vary a lot. Two runs of the same agent differ on 28 of 100 tasks, and an
@@ -356,8 +355,8 @@ models read the sentence, since their P(Yes) rises across the board, but the ran
 \paragraph{Fresh eyes are cheap for a System One model.} Given the task text alone, a System One judgment takes
 0.2--0.6 s and always yields a score. Qwen with thinking takes 41--69 s per judgment and leaves 17--31\% unanswered
 within an 8k-token budget, and on the questions it does answer, task-only System One models match or beat it.
-Without thinking, Qwen answers in a median 0.9 s on our serving setup, against 0.2--0.6 s for a System One model of a
-fraction of its size. Screening dozens of candidate orders per task costs seconds with a one-pass model.
+The System One models are of the agent's own scale (26--31B parameters), so the gap is to reasoning, not to the LLM
+as such: without thinking, Qwen also judges in one pass, in a median 0.9 s on our serving setup. Screening dozens of candidate orders per task costs seconds with a one-pass model.
 
 \begin{figure*}[t]
 \centering
@@ -394,7 +393,7 @@ and the System One list beats it by +5.9 [0.6, 11.8] for Qwen and +13.6 [6.5, 21
 ranker, d3, does as well as pplx12 for Qwen (54\%; +16.0 [7.8, 25.2] over the agent's finish, +7.2 [1.1, 13.3] over
 the random list). All of these were pre-registered, and all hold.
 
-\paragraph{The input carries the fix; the System One model makes it cheap.} Is a System One model needed at all? We
+\paragraph{The input carries the fix.} Is a System One model needed at all? We
 let the agent LLM, Qwen without thinking, rank the same pool from exactly the System One model's request, scoring
 P(Yes) from its first-token probabilities (pre-registered). Its checklist also works: \up{11.1} points [4.3, 19.6]
 for the Qwen agent and \up{24.2} [15.5, 33.0] for Gemma over the agent's finish. Against pplx12 the difference is
@@ -402,8 +401,8 @@ for the Qwen agent and \up{24.2} [15.5, 33.0] for Gemma over the agent's finish.
 reading we fixed in advance the two are comparable rankers. Descriptively, both point estimates favour the System One
 ranker, d3 beats the LLM ranking for Qwen (+4.9 [0.3, 9.5]), and for the Qwen agent only the System One lists separate
 from the random list (LLM list +2.3 [$-$3.1, 8.0]). The lesson is the one of \S\ref{sec:inherit}: what helps is a
-checker that reads the task instead of the agent's work. A one-pass model of a fraction of the agent's size is an
-equally good and cheaper way to provide it, not a better one. The checklist does as well as the fresh-context restart of \S\ref{sec:why} ($-$0.4 points for
+checker that reads the task instead of the agent's work. A System One model is one equally good way to provide it, not a
+better one. The checklist does as well as the fresh-context restart of \S\ref{sec:why} ($-$0.4 points for
 Qwen, $-$2.6 for Gemma, both n.s.): two routes to the same fix, changing what the agent reads before it stops. Over all checkpoints,
 not only the open ones, the pass rate rises by 4.7 points for Qwen and 7.8 for Gemma.
 
@@ -457,8 +456,8 @@ a reviewer, human or model, should read the request and the chart, not the agent
 pull its judgment toward conformity. \emph{Plan before acting, review before finishing:} the agent loses orders by
 committing before the plan exists and by stopping once its own orders look complete. \emph{Use the one-pass model for
 breadth:} its value is in screening many candidates from the task in under a second each, while the LLM generates
-the candidates and keeps the decision. The LLM can rank them too, about as well, at a larger model's cost per
-judgment; what must not change is that the ranker reads the task, not the agent's work.
+the candidates and keeps the decision. The LLM can rank them too, about as well, in one pass without thinking;
+what must not change is that the ranker reads the task, not the agent's work.
 
 \paragraph{Why the decision seat failed.} A System One model in the decision seat can only choose among what the
 agent proposes, and the agent's costly misses are never proposed. Its commitment bias may make this worse: it ends
