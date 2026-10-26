@@ -16,6 +16,8 @@ FINISH. Aggregates only in results/.
   .venv/bin/python scripts/pb_prior.py factorized   (-> results/pb_p10.json)
   S1CLIN_DECIDER=qwen .venv/bin/python scripts/pb_prior.py score --full   (L: the LLM, thinking off, as the ranker:
       the same input, question and options, P(Yes) from the answer letter's log-probabilities; QWEN_URL)
+  .venv/bin/python scripts/pb_prior.py ensemble   (M: the six System One models' task-only scores, each turned into a
+      percentile rank within the task's pool, averaged -> prior_scores_ens.jsonl; then export / factorized --name ens)
 Patient content stays under data/offline/pb_screen/.
 """
 
@@ -163,7 +165,7 @@ def score(workers, placed=False, full=False):
         except Exception as e:
             p = None
             print(repr(e)[:200], flush=True)
-        rec = {"task": t, "order": render_order(o), "p": p} | ({"s": round(time.time() - t0, 3)} if name == "qwen" else {})
+        rec = {"task": t, "order": render_order(o), "p": p, "s": round(time.time() - t0, 3)}
         with lock, open(path, "a") as f:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
@@ -254,6 +256,30 @@ def factorized(path, name="pplx12"):
     print(json.dumps(res, indent=1))
 
 
+ENSEMBLE = ("pplx12", "clef", "d3", "linne", "amos", "decider31b")
+
+
+def ensemble(name="ens", members=ENSEMBLE):
+    """M: per task, each member's P(Yes) as a percentile rank within the pool (ties averaged, in [0, 1]); the members
+    are averaged, a member's missing score left out of that item's mean."""
+    pct = {}
+    for m in members:
+        by = {}
+        for x in map(json.loads, (OD / f"prior_scores_{m}.jsonl").read_text().splitlines()):
+            if x["p"] is not None:
+                by.setdefault(x["task"], {})[x["order"]] = x["p"]
+        for t, sc in by.items():
+            vals = sorted(sc.values())
+            for o, v in sc.items():
+                lo, hi = vals.index(v), len(vals) - 1 - vals[::-1].index(v)
+                pct.setdefault((t, o), []).append((lo + hi) / 2 / max(1, len(vals) - 1))
+    with open(OD / f"prior_scores_{name}.jsonl", "w") as f:
+        for (t, o), v in pct.items():
+            f.write(json.dumps({"task": t, "order": o, "p": sum(v) / len(v), "n": len(v)}, ensure_ascii=False) + "\n")
+    full = sum(len(v) == len(members) for v in pct.values())
+    print(f"prior_scores_{name}.jsonl: {len(pct)} orders, {full} scored by all {len(members)} members")
+
+
 def export(name="pplx12"):
     """The online arm's input (P9): per task, the whole pool (nothing dropped) ranked by the decider, best first."""
     sc = {(x["task"], x["order"]): x["p"] for x in map(json.loads, (OD / f"prior_scores_{name}.jsonl").read_text().splitlines())}
@@ -307,7 +333,7 @@ def report(path, name="pplx12"):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["gen", "score", "report", "export", "dedup", "factorized"])
+    ap.add_argument("cmd", choices=["gen", "score", "report", "export", "dedup", "factorized", "ensemble"])
     ap.add_argument("--url", default="http://127.0.0.1:8013/v1")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", default=str(REPO / "results/pb_prior.json"))
@@ -318,7 +344,7 @@ def main():
     os.umask(0o077)
     {"gen": lambda: gen(a.url, a.workers), "score": lambda: score(a.workers, a.placed, a.full),
      "report": lambda: report(a.out, "pplx12_placed" if a.placed else "pplx12"), "export": lambda: export(a.name),
-     "dedup": lambda: dedup(a.workers), "factorized": lambda: factorized(REPO / f"results/pb_p10{'' if a.name == 'pplx12' else '_' + a.name}.json", a.name)}[a.cmd]()
+     "dedup": lambda: dedup(a.workers), "ensemble": lambda: ensemble(), "factorized": lambda: factorized(REPO / f"results/pb_p10{'' if a.name == 'pplx12' else '_' + a.name}.json", a.name)}[a.cmd]()
 
 
 if __name__ == "__main__":

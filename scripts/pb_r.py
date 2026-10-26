@@ -11,7 +11,9 @@ all checkpoints that pass, orders placed after the branch, those matching no req
 ones. Paired over cases, bootstrap CIs. Replay check: agreement of `none` with the logged run, checkpoint by
 checkpoint.
 
-  .venv/bin/python scripts/pb_r.py [--out results/pb_r.json] [--runs 1,2,3,4]
+  .venv/bin/python scripts/pb_r.py [--out results/pb_r.json] [--runs 1,2,3,4] [--percase PATH]
+--percase writes each case's per-arm values (not aggregates: keep it under data/, as scripts/pb_m.py does) for the
+pooled M analysis.
 With S1CLIN_AGENT=gemma4 (XR): the Gemma 4 agent's cases (llm_log_k1__gemma4 runs 1 and 2), arms none / full /
 fresh with exact-name repeats filtered only (job tags __rjnone__gemma4), and (XR3) list / listrand from the same
 pools without the -dedup repeat judge; results/pb_r_gemma4.json.
@@ -34,10 +36,11 @@ from pb_summarize import JOBS  # noqa: E402
 RANKER = {"none": "restart-none", "full": "restart-full", "fresh": "restart-fresh", "list": "prior-pplx12-dedup",
           "listrand": "prior-random-dedup",
           "listd3": "prior-d3-dedup",  # R3-d3
-          "listqwen": "prior-qwen-dedup"}  # L: the LLM (thinking off) as the ranker
-ARMS = tuple(RANKER) if AGENT == "qwen" else ("none", "full", "fresh", "list", "listrand", "listqwen")
+          "listqwen": "prior-qwen-dedup",  # L: the LLM (thinking off) as the ranker
+          "listens": "prior-ens-dedup"}  # M: the committee of six System One models
+ARMS = tuple(RANKER) if AGENT == "qwen" else ("none", "full", "fresh", "list", "listrand", "listqwen", "listens")
 if AGENT != "qwen":  # XR3: the same checklists with the exact-name filter only (no repeat judge, as XR)
-    RANKER |= {"list": "prior-pplx12", "listrand": "prior-random", "listqwen": "prior-qwen"}
+    RANKER |= {"list": "prior-pplx12", "listrand": "prior-random", "listqwen": "prior-qwen", "listens": "prior-ens"}
 TAG = "" if AGENT == "qwen" else f"__rjnone__{AGENT}"  # XR: exact-name repeat filter only
 CP = re.compile(r"^(PASSED|FAILED) \S*test_checkpoint_(\S+)", re.M)
 
@@ -64,6 +67,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(REPO / f"results/pb_r{SUFFIX}.json"))
     ap.add_argument("--runs", help="only these runs, e.g. 1,2,3,4 (default: all finished jobs)")
+    ap.add_argument("--percase", help="also write each case's per-arm values here (patient-free, but per task)")
     a = ap.parse_args()
     keep = {f"run{r}" for r in a.runs.split(",")} if a.runs else None
     per, agree, n_jobs = {arm: {} for arm in ARMS}, [], {arm: 0 for arm in ARMS}
@@ -108,7 +112,9 @@ def main():
                  ("listrand", "none"), ("fresh", "list"),
                  ("listd3", "none"), ("listd3", "listrand"), ("listd3", "list"),
                  ("listqwen", "none"), ("listqwen", "listrand"), ("list", "listqwen"), ("listd3", "listqwen"),
-                 ("fresh", "listqwen")):
+                 ("fresh", "listqwen"),
+                 ("listens", "none"), ("listens", "listrand"), ("listens", "listqwen"), ("listens", "list"),
+                 ("listens", "listd3"), ("fresh", "listens")):
         if x not in ARMS or y not in ARMS:
             continue
         ks = [k for k in per[x] if k in per[y] and per[x][k]["open"] is not None and per[y][k]["open"] is not None]
@@ -117,6 +123,8 @@ def main():
             for d in [[per[x][c][k] - per[y][c][k] for c in ks]] if d}
     Path(a.out).write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
+    if a.percase:
+        Path(a.percase).write_text(json.dumps({arm: {"|".join(k): v for k, v in per[arm].items()} for arm in ARMS}))
 
 
 if __name__ == "__main__":
