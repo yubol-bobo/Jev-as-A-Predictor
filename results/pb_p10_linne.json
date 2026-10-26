@@ -1,0 +1,185 @@
+{
+ "top3": {
+  "name_drop": {
+   "coverage": 0.1538,
+   "ci95": [
+    0.0385,
+    0.3077
+   ],
+   "variant_share": 0.2692,
+   "tasks": 26
+  },
+  "factorized": {
+   "coverage": 0.2244,
+   "ci95": [
+    0.0897,
+    0.3846
+   ],
+   "variant_share": 0.0385,
+   "tasks": 26
+  },
+  "dedup_only": {
+   "coverage": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "variant_share": 0.0,
+   "tasks": 26
+  },
+  "filtered": {
+   "coverage": 0.2885,
+   "ci95": [
+    0.1154,
+    0.4615
+   ],
+   "variant_share": 0.0769,
+   "tasks": 26
+  },
+  "filtered_pplx12": {
+   "coverage": 0.2692,
+   "ci95": [
+    0.1154,
+    0.4423
+   ],
+   "variant_share": 0.0897,
+   "tasks": 26
+  },
+  "factorized_minus_name_drop": {
+   "mean": 0.0705,
+   "ci95": [
+    -0.0256,
+    0.1923
+   ]
+  },
+  "filtered_linne_minus_pplx12": {
+   "mean": 0.0192,
+   "ci95": [
+    -0.1923,
+    0.2308
+   ]
+  }
+ },
+ "top5": {
+  "name_drop": {
+   "coverage": 0.1923,
+   "ci95": [
+    0.0769,
+    0.3462
+   ],
+   "variant_share": 0.2846,
+   "tasks": 26
+  },
+  "factorized": {
+   "coverage": 0.2436,
+   "ci95": [
+    0.0897,
+    0.4231
+   ],
+   "variant_share": 0.0385,
+   "tasks": 26
+  },
+  "dedup_only": {
+   "coverage": 0.0385,
+   "ci95": [
+    0.0,
+    0.1154
+   ],
+   "variant_share": 0.0,
+   "tasks": 26
+  },
+  "filtered": {
+   "coverage": 0.3013,
+   "ci95": [
+    0.141,
+    0.4808
+   ],
+   "variant_share": 0.0846,
+   "tasks": 26
+  },
+  "filtered_pplx12": {
+   "coverage": 0.2692,
+   "ci95": [
+    0.1154,
+    0.4423
+   ],
+   "variant_share": 0.0692,
+   "tasks": 26
+  },
+  "factorized_minus_name_drop": {
+   "mean": 0.0513,
+   "ci95": [
+    -0.0769,
+    0.1795
+   ]
+  },
+  "filtered_linne_minus_pplx12": {
+   "mean": 0.0321,
+   "ci95": [
+    -0.1859,
+    0.25
+   ]
+  }
+ },
+ "top8": {
+  "name_drop": {
+   "coverage": 0.3333,
+   "ci95": [
+    0.1667,
+    0.5128
+   ],
+   "variant_share": 0.2452,
+   "tasks": 26
+  },
+  "factorized": {
+   "coverage": 0.2949,
+   "ci95": [
+    0.141,
+    0.4744
+   ],
+   "variant_share": 0.0288,
+   "tasks": 26
+  },
+  "dedup_only": {
+   "coverage": 0.0513,
+   "ci95": [
+    0.0,
+    0.141
+   ],
+   "variant_share": 0.0,
+   "tasks": 26
+  },
+  "filtered": {
+   "coverage": 0.4103,
+   "ci95": [
+    0.2308,
+    0.6026
+   ],
+   "variant_share": 0.0769,
+   "tasks": 26
+  },
+  "filtered_pplx12": {
+   "coverage": 0.5449,
+   "ci95": [
+    0.359,
+    0.7308
+   ],
+   "variant_share": 0.0625,
+   "tasks": 26
+  },
+  "factorized_minus_name_drop": {
+   "mean": -0.0385,
+   "ci95": [
+    -0.2308,
+    0.1154
+   ]
+  },
+  "filtered_linne_minus_pplx12": {
+   "mean": -0.1346,
+   "ci95": [
+    -0.2692,
+    -0.0192
+   ]
+  }
+ }
+}

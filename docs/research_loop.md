@@ -1418,3 +1418,34 @@ rankings are pooled. M asks whether that committee ranks better than the agent L
   (expected 0); offline top-8 filtered coverage of open specs (`pb_prior.py factorized --name ens` and per model,
   as R3-d3 / L); seconds per judgment per model; wall time per candidate for the committee run in parallel.
 - Exploratory, labelled as such (its data were seen): L2 pooled over both agents (list − listqwen).
+
+### M verdict (2026-10-26 13:25; results/pb_m.json (pooled), results/pb_r.json, results/pb_r_gemma4.json, results/pb_p10_{ens,clef,linne,amos,decider31b}.json)
+Open required-order checkpoints; per-case mean over 3 runs; pooled bootstrap stratified by agent (51 + 65 cases).
+
+| | Qwen agent | Gemma agent | pooled (116) |
+|---|---|---|---|
+| none / list (pplx12) / listqwen / listens | 0.38 / 0.53 / 0.49 / 0.53 | 0.29 / 0.58 / 0.53 / 0.53 | |
+| **M1** listens − listqwen | +0.039 [0.013, 0.069] | +0.003 [−0.075, 0.083] | **+0.019 [−0.027, 0.064] fails** |
+| **M2** listens − list | +0.003 [−0.043, 0.051] | −0.048 [−0.105, −0.003] | −0.025 [−0.060, 0.008] |
+| listens − none | +0.150 [0.075, 0.239] | +0.244 [0.159, 0.338] | +0.203 [0.147, 0.267] |
+| listens − listrand | +0.062 [0.013, 0.118] | +0.088 [0.029, 0.152] | +0.077 [0.039, 0.117] |
+| unmatched orders, listens − listqwen | −0.31 [−0.65, 0.01] | −0.19 [−0.38, 0.01] | |
+| forbidden | 0 | 0 | |
+| L2 pooled (exploratory, data seen): list − listqwen | | | +0.044 [−0.003, 0.093] |
+
+- M1 fails: a committee of the six System One models does not rank better than the agent LLM without thinking
+  (pooled CI includes 0; the Qwen-agent CI excludes 0 but the primary was pooled). L's reading stands: comparable.
+- M2: one model suffices; on the Gemma agent the committee is slightly worse than pplx12 alone. Offline the committee
+  is best at top 5 (0.46 vs pplx12 0.27, +0.19 [0.06, 0.35]) but not at top 8 (0.49 vs 0.54): Clef, linne and
+  decider31b are weak alone at top 8 (0.37, 0.41, 0.31; d3 0.57, amos 0.50, qwen 0.51) and pull the mean down.
+- Pattern across every online System One ranker vs the LLM ranker (pplx12 ×2 agents, d3, committee ×2): +3.6, +5.0,
+  +4.9, +3.9, +0.3 points, all ≥ 0, one CI excluding 0 alone; System One lists also add fewer orders outside the
+  rubric than the LLM's on both agents (−0.2 to −0.3 per case, CIs touching 0). A consistent small lean, not a
+  demonstrated advantage.
+- Latency at 8 concurrent requests, one H100 each: decider31b 0.40 s, amos 0.75, Clef 0.79, linne 1.12 (median per
+  judgment) vs Qwen without thinking 0.93 s at 16. The System One models are 26-31B (pplx12, d3, Clef, amos ≈ 26-27B;
+  linne, decider31b 31B), the agent's scale, and the LLM without thinking also judges in one pass: there is no speed
+  or size advantage over it, only over reasoning (41-69 s, 17-31% unanswered within 8k tokens).
+- Paper consequence: System One models' contribution is (i) the instrument that found the blind spot (six judges,
+  input ablations at scale), (ii) replacing the reasoning LLM as the checker at ~1% of its time with equal or better
+  task-only ranking, (iii) a ready-made probability per option. Not: better ranking than the agent LLM in one pass.

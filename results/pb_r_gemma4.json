@@ -6,7 +6,8 @@
   "fresh": 195,
   "list": 195,
   "listrand": 195,
-  "listqwen": 195
+  "listqwen": 195,
+  "listens": 195
  },
  "replay_agreement": 0.9955,
  "replay_checkpoints": 441,
@@ -56,6 +57,14 @@
   "all": 0.5332,
   "orders": 2.0769,
   "unmatched": 1.5231,
+  "forbidden": 0.0
+ },
+ "listens": {
+  "cases": 65,
+  "open": 0.5342,
+  "all": 0.5305,
+  "orders": 1.8974,
+  "unmatched": 1.3282,
   "forbidden": 0.0
  },
  "fresh_minus_full": {
@@ -389,6 +398,161 @@
    "ci95": [
     -0.7795,
     0.1128
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "listens_minus_none": {
+  "cases": 65,
+  "open": {
+   "mean": 0.2444,
+   "ci95": [
+    0.1594,
+    0.338
+   ]
+  },
+  "all": {
+   "mean": 0.0648,
+   "ci95": [
+    0.0424,
+    0.0901
+   ]
+  },
+  "unmatched": {
+   "mean": 1.3282,
+   "ci95": [
+    0.9846,
+    1.6615
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "listens_minus_listrand": {
+  "cases": 65,
+  "open": {
+   "mean": 0.088,
+   "ci95": [
+    0.0291,
+    0.1521
+   ]
+  },
+  "all": {
+   "mean": 0.019,
+   "ci95": [
+    0.006,
+    0.0329
+   ]
+  },
+  "unmatched": {
+   "mean": -0.9436,
+   "ci95": [
+    -1.2564,
+    -0.641
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "listens_minus_listqwen": {
+  "cases": 65,
+  "open": {
+   "mean": 0.0026,
+   "ci95": [
+    -0.0752,
+    0.0829
+   ]
+  },
+  "all": {
+   "mean": -0.0026,
+   "ci95": [
+    -0.017,
+    0.013
+   ]
+  },
+  "unmatched": {
+   "mean": -0.1949,
+   "ci95": [
+    -0.3795,
+    0.0051
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "listens_minus_list": {
+  "cases": 65,
+  "open": {
+   "mean": -0.0479,
+   "ci95": [
+    -0.1051,
+    -0.0034
+   ]
+  },
+  "all": {
+   "mean": -0.0132,
+   "ci95": [
+    -0.0276,
+    -0.0009
+   ]
+  },
+  "unmatched": {
+   "mean": -0.2359,
+   "ci95": [
+    -0.4513,
+    -0.0205
+   ]
+  },
+  "forbidden": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "fresh_minus_listens": {
+  "cases": 65,
+  "open": {
+   "mean": 0.0222,
+   "ci95": [
+    -0.0333,
+    0.0744
+   ]
+  },
+  "all": {
+   "mean": 0.0093,
+   "ci95": [
+    -0.0038,
+    0.0239
+   ]
+  },
+  "unmatched": {
+   "mean": -0.1436,
+   "ci95": [
+    -0.5077,
+    0.2154
    ]
   },
   "forbidden": {

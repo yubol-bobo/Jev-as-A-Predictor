@@ -1,0 +1,128 @@
+{
+ "listens_minus_listqwen": {
+  "qwen": {
+   "cases": 51,
+   "mean": 0.0392
+  },
+  "gemma4": {
+   "cases": 65,
+   "mean": 0.0026
+  },
+  "pooled": {
+   "cases": 116,
+   "mean": 0.0187,
+   "ci95": [
+    -0.0268,
+    0.0635
+   ]
+  }
+ },
+ "listens_minus_list": {
+  "qwen": {
+   "cases": 51,
+   "mean": 0.0033
+  },
+  "gemma4": {
+   "cases": 65,
+   "mean": -0.0479
+  },
+  "pooled": {
+   "cases": 116,
+   "mean": -0.0254,
+   "ci95": [
+    -0.0598,
+    0.0081
+   ]
+  }
+ },
+ "list_minus_listqwen": {
+  "qwen": {
+   "cases": 51,
+   "mean": 0.0359
+  },
+  "gemma4": {
+   "cases": 65,
+   "mean": 0.0504
+  },
+  "pooled": {
+   "cases": 116,
+   "mean": 0.0441,
+   "ci95": [
+    -0.0034,
+    0.0925
+   ]
+  }
+ },
+ "listens_minus_none": {
+  "qwen": {
+   "cases": 51,
+   "mean": 0.1503
+  },
+  "gemma4": {
+   "cases": 65,
+   "mean": 0.2444
+  },
+  "pooled": {
+   "cases": 116,
+   "mean": 0.2031,
+   "ci95": [
+    0.147,
+    0.2672
+   ]
+  }
+ },
+ "listens_minus_listrand": {
+  "qwen": {
+   "cases": 51,
+   "mean": 0.0621
+  },
+  "gemma4": {
+   "cases": 65,
+   "mean": 0.088
+  },
+  "pooled": {
+   "cases": 116,
+   "mean": 0.0766,
+   "ci95": [
+    0.0385,
+    0.1172
+   ]
+  }
+ },
+ "listqwen_minus_none": {
+  "qwen": {
+   "cases": 51,
+   "mean": 0.1111
+  },
+  "gemma4": {
+   "cases": 65,
+   "mean": 0.2419
+  },
+  "pooled": {
+   "cases": 116,
+   "mean": 0.1844,
+   "ci95": [
+    0.1298,
+    0.2471
+   ]
+  }
+ },
+ "list_minus_none": {
+  "qwen": {
+   "cases": 51,
+   "mean": 0.1471
+  },
+  "gemma4": {
+   "cases": 65,
+   "mean": 0.2923
+  },
+  "pooled": {
+   "cases": 116,
+   "mean": 0.2284,
+   "ci95": [
+    0.1693,
+    0.2955
+   ]
+  }
+ }
+}
