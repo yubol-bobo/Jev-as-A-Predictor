@@ -252,7 +252,8 @@ def fig_anchor():
 AGENTS = [("", "Qwen3.8\n27B"), ("_gemma4", "Gemma 4\n31B")]
 ARM = {"none": ("agent finishes", "#C9CFDB"), "full": ("asked again,\nfull context", "#B9B2F5"),
        "fresh": ("asked again,\nown decisions removed", C["llm"]), "listrand": ("random checklist", "#9EC5F5"),
-       "list": ("S1 checklist (pplx12)", C["clef_k5"]), "listd3": ("S1 checklist (d3)", "#0B4FA8")}
+       "list": ("S1 checklist (pplx12)", C["clef_k5"]), "listd3": ("S1 checklist (d3)", "#0B4FA8"),
+       "listqwen": ("LLM checklist\n(Qwen, no thinking)", "#A99DF2")}
 
 
 def bar_group(ax, groups, arms, get, fmt="{:.0f}", scale=100, ylim=None):
@@ -335,7 +336,7 @@ def fig_loop():
     gs = fig.add_gridspec(1, 2, width_ratios=[1.05, 1], wspace=0.5)
 
     ax = fig.add_subplot(gs[0])
-    arms = ["none", "listrand", "list", "listd3", "fresh"]
+    arms = ["none", "listrand", "list", "listd3", "listqwen", "fresh"]
     bar_group(ax, [suf for suf, _ in AGENTS], arms, lambda g, a: (rr[g].get(a) or {}).get("open"), ylim=70)
     ax.set_xticks(range(len(AGENTS)), [f"{n.replace(chr(10), ' ')}\n({rr[s]['none']['cases']} cases)" for s, n in AGENTS],
                   fontsize=7.6, fontweight="bold")
