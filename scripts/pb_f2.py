@@ -246,6 +246,7 @@ def report(path):
                 regret[j].setdefault(q["task"], []).append(max(v) - v[a[q["id"]]])
     per = {j: {t: sum(x) / len(x) for t, x in d.items()} for j, d in gain.items()}
     per["S1mean"] = {t: sum(per[s][t] for s in S1) / len(S1) for t in set.intersection(*(set(per[s]) for s in S1))}
+    per["S1gemma"] = {t: (per["linne"][t] + per["decider31b"][t]) / 2 for t in set(per["linne"]) & set(per["decider31b"])}
     res = {"questions": len(qs), "informative": info_q, "rollouts_graded": sum(map(len, vals.values())),
            "rollouts_planned": len(spec), "judges": {}, "diff": {}}
     for j, d in per.items():
@@ -254,7 +255,7 @@ def report(path):
             r = [x for v in regret[j].values() for x in v]
             res["judges"][j]["regret"] = round(sum(r) / len(r), 4)
     for x, y in (("S1mean", "A"), ("S1mean", "AG"), ("S1mean", "C8"), ("S1mean", "C2"), ("S1mean", "D"),
-                 ("S1mean", "own"), ("S1mean", "most_sampled"), ("A", "own")) + tuple((s, "A") for s in S1):
+                 ("S1mean", "own"), ("S1mean", "most_sampled"), ("A", "own"), ("S1gemma", "AG")) + tuple((s, "A") for s in S1):
         if x in per and y in per:
             d = {t: per[x][t] - per[y][t] for t in set(per[x]) & set(per[y])}
             if d:
@@ -262,6 +263,18 @@ def report(path):
     tf = FD / "sel_timing.jsonl"
     if tf.exists():
         res["timing"] = {x["judge"]: x for x in map(json.loads, tf.read_text().splitlines())}
+        # as F3: on the frontier unless another judge at <= GPU-seconds has higher gain, paired CI excluding 0
+        cost = {j: v["gpu_s_per_judgment"] for j, v in res["timing"].items() if j in per}
+        res["frontier"] = {}
+        for j in sorted(cost, key=cost.get):
+            by = []
+            for k in cost:
+                ks = set(per[k]) & set(per[j])
+                if k == j or cost[k] > cost[j] or not ks:
+                    continue
+                if boot({t: per[k][t] - per[j][t] for t in ks})[0] > 0:
+                    by.append(k)
+            res["frontier"][j] = {"gpu_s": cost[j], "gain": res["judges"][j]["gain"], "dominated_by": by}
     Path(path).write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
 

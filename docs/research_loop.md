@@ -1552,3 +1552,40 @@ System One models on their authors' servers).
   15 tasks, so its CIs are wide.
 - Role 2 status: Qwen selector answers A, D, C2, C8 complete (60 questions each); 68 of 539 branch rollouts graded
   when allocation 49854980 ended (17:40). f2_run.sh resumes on the next allocation (about 6-7 h on four GPUs).
+
+### F verdict (2026-10-27 01:35; results/pb_f_checker.json, results/pb_f_selector.json)
+Role 2 (selector): 60 questions, 539 of 539 rollouts graded (runs 101-120; allocations 49854980 and 49902286, one
+H100 replica of Qwen per GPU), 37 informative questions in 31 tasks (≥ 30, so the readings apply). Gain = value of the
+pick − mean option value (share of checkpoints), within task then over tasks.
+
+| judge | gain | regret | GPU-s / decision | frontier |
+|---|---|---|---|---|
+| A-G (Gemma, logprob) | +0.032 [0.001, 0.065] | 0.083 | 3.07 | on |
+| A (Qwen, logprob) | +0.050 [0.018, 0.086] | 0.068 | 3.13 | on |
+| Clef | +0.003 | 0.112 | 4.32 | dominated (A) |
+| amos | +0.025 | 0.090 | 4.68 | on |
+| D (5-sample vote) | +0.039 [0.010, 0.074] | 0.077 | 6.73 | on |
+| pplx12 | +0.029 [0.000, 0.060] | 0.093 | 6.92 | on |
+| d3 | +0.035 [0.004, 0.065] | 0.083 | 6.99 | on |
+| C2 (thinking 2k) | +0.012 | 0.107 | 9.38 | on |
+| decider31b | +0.021 | 0.098 | 20.5 | dominated (A) |
+| C8 (thinking 8k) | +0.025 | 0.093 | 24.0 | on |
+| agent's own pick (= most sampled on all but one question) | +0.015 [−0.023, 0.053] | 0.104 | 0 | |
+
+- F1 (selector): mean S1 − A −0.026 [−0.063, −0.001] → the LLM read out in one pass is better. Each of the six is
+  below A (Clef −0.047, decider31b −0.029 with CI < 0; the others ∋ 0). Family check mean(linne, decider31b) − A-G
+  −0.005 [−0.020, 0.010] ∋ 0.
+- F2 (selector): S1 − C8 −0.001 [−0.026, 0.025], − D −0.015 [−0.051, 0.011], − own pick +0.009 [−0.028, 0.057],
+  − most sampled the same: no difference. A − own pick +0.035 [−0.011, 0.089]: no judge beats the agent's own pick
+  reliably; all gains are at most 5 points of checkpoints over a random pick.
+- F3 (selector): only Clef and decider31b are dominated (by A); the rest are not separable at this power. A has the
+  highest gain at the second-lowest cost. S1 is not alone on the frontier.
+
+**Overall reading (pre-registered).** The protagonist condition (F1 > 0 in either role, or S1 alone on the frontier in
+either role) is not met. Checker: F1 ∋ 0 and S1 and A share the frontier → "a one-pass judge is enough, and System One
+models are one standard way to get it"; the best S1 models (d3, amos, pplx12) top the checker frontier at 1.6× A's
+cost, and S1 probabilities are better calibrated. Selector: the LLM is better → System One training does not help in
+that role (consistent with the decision-seat study). Robust across both roles: the practice configurations (stated
+probability, voting, thinking) never beat a one-pass read-out and cost 1.2-112× more.
+Paper: S1 is not the protagonist; the protagonist is the protocol (task-only input, one pass). F goes in as a
+pre-registered cost-quality test (abstract, intro, §3, §6 "Fresh eyes need no reasoning", Discussion, appendix).

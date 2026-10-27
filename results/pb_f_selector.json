@@ -1,0 +1,401 @@
+{
+ "questions": 60,
+ "informative": 37,
+ "rollouts_graded": 539,
+ "rollouts_planned": 539,
+ "judges": {
+  "pplx12": {
+   "gain": 0.0287,
+   "ci95": [
+    0.0,
+    0.0601
+   ],
+   "tasks": 31,
+   "regret": 0.0925
+  },
+  "d3": {
+   "gain": 0.0345,
+   "ci95": [
+    0.0036,
+    0.0651
+   ],
+   "tasks": 31,
+   "regret": 0.0827
+  },
+  "clef": {
+   "gain": 0.0033,
+   "ci95": [
+    -0.0457,
+    0.0449
+   ],
+   "tasks": 31,
+   "regret": 0.1119
+  },
+  "linne": {
+   "gain": 0.0319,
+   "ci95": [
+    -0.0009,
+    0.0636
+   ],
+   "tasks": 31,
+   "regret": 0.0801
+  },
+  "amos": {
+   "gain": 0.0253,
+   "ci95": [
+    -0.0126,
+    0.0598
+   ],
+   "tasks": 31,
+   "regret": 0.0904
+  },
+  "decider31b": {
+   "gain": 0.0213,
+   "ci95": [
+    -0.0117,
+    0.0553
+   ],
+   "tasks": 31,
+   "regret": 0.0976
+  },
+  "A": {
+   "gain": 0.0501,
+   "ci95": [
+    0.0181,
+    0.0859
+   ],
+   "tasks": 31,
+   "regret": 0.0681
+  },
+  "AG": {
+   "gain": 0.0317,
+   "ci95": [
+    0.0006,
+    0.0647
+   ],
+   "tasks": 31,
+   "regret": 0.0828
+  },
+  "C2": {
+   "gain": 0.0117,
+   "ci95": [
+    -0.0261,
+    0.0495
+   ],
+   "tasks": 31,
+   "regret": 0.1065
+  },
+  "C8": {
+   "gain": 0.0249,
+   "ci95": [
+    -0.0016,
+    0.0531
+   ],
+   "tasks": 31,
+   "regret": 0.0925
+  },
+  "D": {
+   "gain": 0.0388,
+   "ci95": [
+    0.0095,
+    0.074
+   ],
+   "tasks": 31,
+   "regret": 0.0769
+  },
+  "own": {
+   "gain": 0.0149,
+   "ci95": [
+    -0.023,
+    0.0525
+   ],
+   "tasks": 31,
+   "regret": 0.1038
+  },
+  "most_sampled": {
+   "gain": 0.0149,
+   "ci95": [
+    -0.023,
+    0.0525
+   ],
+   "tasks": 31,
+   "regret": 0.1038
+  },
+  "S1mean": {
+   "gain": 0.0242,
+   "ci95": [
+    -0.0024,
+    0.0508
+   ],
+   "tasks": 31
+  },
+  "S1gemma": {
+   "gain": 0.0266,
+   "ci95": [
+    -0.0047,
+    0.0569
+   ],
+   "tasks": 31
+  }
+ },
+ "diff": {
+  "S1mean_minus_A": {
+   "tasks": 31,
+   "mean": -0.026,
+   "ci95": [
+    -0.0625,
+    -0.0012
+   ]
+  },
+  "S1mean_minus_AG": {
+   "tasks": 31,
+   "mean": -0.0075,
+   "ci95": [
+    -0.0279,
+    0.0133
+   ]
+  },
+  "S1mean_minus_C8": {
+   "tasks": 31,
+   "mean": -0.0008,
+   "ci95": [
+    -0.0256,
+    0.0254
+   ]
+  },
+  "S1mean_minus_C2": {
+   "tasks": 31,
+   "mean": 0.0125,
+   "ci95": [
+    -0.0247,
+    0.0595
+   ]
+  },
+  "S1mean_minus_D": {
+   "tasks": 31,
+   "mean": -0.0146,
+   "ci95": [
+    -0.0508,
+    0.0112
+   ]
+  },
+  "S1mean_minus_own": {
+   "tasks": 31,
+   "mean": 0.0093,
+   "ci95": [
+    -0.0279,
+    0.0569
+   ]
+  },
+  "S1mean_minus_most_sampled": {
+   "tasks": 31,
+   "mean": 0.0093,
+   "ci95": [
+    -0.0279,
+    0.0569
+   ]
+  },
+  "A_minus_own": {
+   "tasks": 31,
+   "mean": 0.0352,
+   "ci95": [
+    -0.0114,
+    0.0886
+   ]
+  },
+  "S1gemma_minus_AG": {
+   "tasks": 31,
+   "mean": -0.005,
+   "ci95": [
+    -0.02,
+    0.0098
+   ]
+  },
+  "pplx12_minus_A": {
+   "tasks": 31,
+   "mean": -0.0214,
+   "ci95": [
+    -0.0588,
+    0.0092
+   ]
+  },
+  "d3_minus_A": {
+   "tasks": 31,
+   "mean": -0.0156,
+   "ci95": [
+    -0.0513,
+    0.0101
+   ]
+  },
+  "clef_minus_A": {
+   "tasks": 31,
+   "mean": -0.0469,
+   "ci95": [
+    -0.1075,
+    -0.0019
+   ]
+  },
+  "linne_minus_A": {
+   "tasks": 31,
+   "mean": -0.0182,
+   "ci95": [
+    -0.0611,
+    0.0141
+   ]
+  },
+  "amos_minus_A": {
+   "tasks": 31,
+   "mean": -0.0248,
+   "ci95": [
+    -0.0723,
+    0.0103
+   ]
+  },
+  "decider31b_minus_A": {
+   "tasks": 31,
+   "mean": -0.0288,
+   "ci95": [
+    -0.0645,
+    -0.004
+   ]
+  }
+ },
+ "timing": {
+  "A": {
+   "judge": "A",
+   "items": 45,
+   "wall_s": 140.73,
+   "gpu_s_per_judgment": 3.1274,
+   "tokens_per_judgment": 1.0,
+   "concurrency": 8
+  },
+  "D": {
+   "judge": "D",
+   "items": 45,
+   "wall_s": 303.05,
+   "gpu_s_per_judgment": 6.7344,
+   "tokens_per_judgment": 5.0,
+   "concurrency": 8
+  },
+  "pplx12": {
+   "judge": "pplx12",
+   "items": 45,
+   "wall_s": 311.31,
+   "gpu_s_per_judgment": 6.9181,
+   "tokens_per_judgment": 0.0,
+   "concurrency": 8
+  },
+  "d3": {
+   "judge": "d3",
+   "items": 45,
+   "wall_s": 314.49,
+   "gpu_s_per_judgment": 6.9886,
+   "tokens_per_judgment": 0.0,
+   "concurrency": 8
+  },
+  "C2": {
+   "judge": "C2",
+   "items": 45,
+   "wall_s": 422.06,
+   "gpu_s_per_judgment": 9.3792,
+   "tokens_per_judgment": 1917.1,
+   "concurrency": 8
+  },
+  "AG": {
+   "judge": "AG",
+   "items": 45,
+   "wall_s": 138.01,
+   "gpu_s_per_judgment": 3.0668,
+   "tokens_per_judgment": 1.0,
+   "concurrency": 8
+  },
+  "amos": {
+   "judge": "amos",
+   "items": 45,
+   "wall_s": 210.58,
+   "gpu_s_per_judgment": 4.6796,
+   "tokens_per_judgment": 0.0,
+   "concurrency": 8
+  },
+  "C8": {
+   "judge": "C8",
+   "items": 45,
+   "wall_s": 1080.06,
+   "gpu_s_per_judgment": 24.0014,
+   "tokens_per_judgment": 5431.8,
+   "concurrency": 8
+  },
+  "decider31b": {
+   "judge": "decider31b",
+   "items": 45,
+   "wall_s": 923.32,
+   "gpu_s_per_judgment": 20.5183,
+   "tokens_per_judgment": 0.0,
+   "concurrency": 8
+  },
+  "clef": {
+   "judge": "clef",
+   "items": 45,
+   "wall_s": 194.21,
+   "gpu_s_per_judgment": 4.3159,
+   "tokens_per_judgment": 0.0,
+   "concurrency": 8
+  }
+ },
+ "frontier": {
+  "AG": {
+   "gpu_s": 3.0668,
+   "gain": 0.0317,
+   "dominated_by": []
+  },
+  "A": {
+   "gpu_s": 3.1274,
+   "gain": 0.0501,
+   "dominated_by": []
+  },
+  "clef": {
+   "gpu_s": 4.3159,
+   "gain": 0.0033,
+   "dominated_by": [
+    "A"
+   ]
+  },
+  "amos": {
+   "gpu_s": 4.6796,
+   "gain": 0.0253,
+   "dominated_by": []
+  },
+  "D": {
+   "gpu_s": 6.7344,
+   "gain": 0.0388,
+   "dominated_by": []
+  },
+  "pplx12": {
+   "gpu_s": 6.9181,
+   "gain": 0.0287,
+   "dominated_by": []
+  },
+  "d3": {
+   "gpu_s": 6.9886,
+   "gain": 0.0345,
+   "dominated_by": []
+  },
+  "C2": {
+   "gpu_s": 9.3792,
+   "gain": 0.0117,
+   "dominated_by": []
+  },
+  "decider31b": {
+   "gpu_s": 20.5183,
+   "gain": 0.0213,
+   "dominated_by": [
+    "A"
+   ]
+  },
+  "C8": {
+   "gpu_s": 24.0014,
+   "gain": 0.0249,
+   "dominated_by": []
+  }
+ }
+}
