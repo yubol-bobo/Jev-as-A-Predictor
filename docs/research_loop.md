@@ -1589,3 +1589,6 @@ that role (consistent with the decision-seat study). Robust across both roles: t
 probability, voting, thinking) never beat a one-pass read-out and cost 1.2-112× more.
 Paper: S1 is not the protagonist; the protagonist is the protocol (task-only input, one pass). F goes in as a
 pre-registered cost-quality test (abstract, intro, §3, §6 "Fresh eyes need no reasoning", Discussion, appendix).
+- Note (01:50): linne has no selector timing: its server ran out of GPU memory at 8 concurrent 32k-token selector
+  states on one H100 (logs/s1_linne_server.log); reported as such, not re-timed at a lower concurrency (that would
+  depart from the pre-registered cost protocol).

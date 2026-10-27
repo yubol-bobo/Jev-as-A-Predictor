@@ -107,7 +107,9 @@ under a second each. Shown when the agent first tries to finish, its eight-item 
 checkpoints still failing at that point from 38\% to 53\% for Qwen and from 29\% to 58\% for Gemma, beats a random
 checklist from the same pool, and adds orders that blinded LLM judges rate mostly as indicated or reasonable, none as
 potentially harmful. The agent LLM ranking the same pool from the task without thinking does about as well: what the
-checker reads carries the fix.
+checker reads carries the fix. In a pre-registered cost--quality test, one-pass checker judgments, from a System One
+model or the LLM's first-token probability, match or beat stated probabilities, voting and thinking at a few percent
+of thinking's GPU time.
 \end{abstract}
 
 \begin{figure*}[t]
@@ -173,7 +175,8 @@ to 53\% for Qwen and from 29\% to 58\% for Gemma. It beats a random checklist fr
 System One ranker, and does as well as restarting the agent from a fresh context. The agent LLM itself, ranking the
 same pool from the task without thinking, also works and is statistically indistinguishable from the System One
 ranker, and a committee of all six System One models does no better than one (both pre-registered): what carries the
-fix is what the checker reads, not which model reads it. The orders it adds beyond the
+fix is what the checker reads, not which model reads it. A pre-registered cost--quality test adds how to ask: in
+one forward pass, since stated probabilities, voting and thinking are worse or far costlier. The orders it adds beyond the
 rubric are, by blinded LLM judges, mostly indicated or reasonable, and none is rated potentially harmful.
 
 \paragraph{How we tested.} Whole agent runs vary a lot. Two runs of the same agent differ on 28 of 100 tasks, and an
@@ -229,8 +232,9 @@ LLM places 69\%. Only 11\% are proposed at some step and never executed, which i
 19\% are never proposed by any of the five samples at any step. Even the step-level omissions are mostly a matter of
 timing: 79\% of the required orders the LLM's sample skips at an order step are placed later in the same run. The
 pre-registered tests agree. The best decider's early gain on required orders failed replication on unseen tasks, and
-a decider consulted only at order steps adds orders, mostly outside the rubric, without adding required ones. The
-errors that matter happen before the decision, at generation. The rest of the paper asks why the agent never
+a decider consulted only at order steps adds orders, mostly outside the rubric, without adding required ones. A
+rollout test of the selector alone (Appendix~\ref{app:frontier}) agrees: no judge beats the agent's own pick
+reliably, and the LLM's first-token choice beats the System One average. The errors that matter happen before the decision, at generation. The rest of the paper asks why the agent never
 proposes orders it needs.
 
 \begin{table}[t]
@@ -353,11 +357,13 @@ candidates by their conformity to that work, so it inherits exactly the agent's 
 each one independently'' recovers 1--6\% of the gap for System One models and 8\% for Qwen (pre-registered). The
 models read the sentence, since their P(Yes) rises across the board, but the ranking does not change.
 
-\paragraph{Fresh eyes need no reasoning.} Given the task text alone, a System One judgment takes
-0.2--1.1 s, depending on the model and the load, and always yields a score. Qwen with thinking takes 41--69 s per judgment and leaves 17--31\% unanswered
-within an 8k-token budget, and on the questions it does answer, task-only System One models match or beat it.
-The System One models are of the agent's own scale (26--31B parameters), so the gap is to reasoning, not to the LLM
-as such: without thinking, Qwen also judges in one pass, in a median 0.9 s under a similar load. Screening dozens of candidate orders per task costs seconds with a one-pass model.
+\paragraph{Fresh eyes need no reasoning.} In a pre-registered test (Appendix~\ref{app:frontier}), judges scored
+the pool from the task alone, and we measured how well each ranks the orders the agents left open (133 cases) and
+its GPU time. One-pass judgments form the cost--quality frontier: Qwen's first-token probability (AUROC 0.74, 0.06
+GPU-s) and System One models of the agent's scale (0.71--0.82, 0.06--0.15 GPU-s). d3, amos and pplx12 beat Qwen by
+0.04--0.08 at 1.6$\times$ its cost; the six on average are level with it. A stated probability (0.64), a five-sample
+vote (0.70) and thinking with 2k or 8k tokens (0.58, 0.73) all fall off the frontier, at up to 112$\times$ the cost.
+System One probabilities are also better calibrated (Brier 0.16--0.28 against 0.29--0.50).
 
 \begin{figure*}[t]
 \centering
@@ -463,16 +469,16 @@ pull its judgment toward conformity. \emph{Plan before acting, review before fin
 committing before the plan exists and by stopping once its own orders look complete. \emph{Use the one-pass model for
 breadth:} its value is in screening many candidates from the task in under a second each, while the LLM generates
 the candidates and keeps the decision. The LLM can rank them too, about as well, in one pass without thinking;
-what must not change is that the ranker reads the task, not the agent's work.
+what must not change is that the ranker reads the task, not the agent's work. Stating, voting or thinking does
+not help.
 
 \paragraph{What System One models add.} Three things, and one they do not. They are the instrument that found the
 blind spot: six independently trained one-pass judges, each asked the same question with and without the agent's
 work, let us run the input ablations of \S\ref{sec:inherit} over thousands of judgments and show that the anchor is
-not a quirk of one model. They replace the reasoning LLM as the checker: from the task alone they rank the missed
-orders as well as Qwen with thinking or better, in about a second instead of a minute, and never fail to answer. And
-they return a probability per option directly, with no prompt engineering or answer parsing. What they do not add, at
-the agent's own scale, is ranking skill over the agent LLM asked without thinking, which is also one forward pass:
-their lead is small and consistent, and pooling six of them does not enlarge it.
+not a quirk of one model. As checkers they are a ready-made one-pass judge: the best top the cost--quality
+frontier, and all return a calibrated probability per option without prompt engineering. What they do not add, at
+the agent's scale, is a reliable edge over the agent LLM read out in one pass: level as checkers on average, behind
+as selectors (Appendix~\ref{app:frontier}). The protocol, one pass over the task alone, matters more than the model.
 
 \paragraph{Why the decision seat failed.} A System One model in the decision seat can only choose among what the
 agent proposes, and the agent's costly misses are never proposed. Its commitment bias may make this worse: it ends
@@ -489,7 +495,9 @@ procurement.
 
 We study one benchmark of outpatient consultations with two agent LLMs; the second, in FP8, is much weaker, and
 all our tests compare arms within one agent. An LLM ranker without thinking does about as well as the System One
-ranker; our comparison has the power to rule out large differences, not small ones. The rubric names one acceptable set of orders. Our judgments of
+ranker; our comparison has the power to rule out large differences, not small ones. Costs are measured on each
+model's own serving stack (vLLM with prefix caching for the LLM), and the selector test rests on 37 informative
+decisions. The rubric names one acceptable set of orders. Our judgments of
 orders outside it come from two LLM judges with moderate agreement, not physicians. The grader's judge is the local
 Qwen model shared by every arm, so absolute scores are not comparable with the leaderboard. Online effects are
 measured from shared prefixes at the agent's first finish. An end-to-end deployment that combines planning first with
@@ -572,6 +580,68 @@ we report the single-order ratings in the main text, and the list version (in wh
 harmful either) in the research log.
 
 \FloatBarrier
+\section{The cost--quality frontier of one-pass judges}\label{app:frontier}
+
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{2.5pt}\begin{tabular}{@{}lrrrr@{}}\toprule
+ & \multicolumn{2}{c}{Checker} & \multicolumn{2}{c}{Selector} \\
+Judge & AUROC & GPU-s & gain & GPU-s \\\midrule
+d3 & \textbf{0.815}$^*$ & 0.10 & 0.035$^*$ & 7.0 \\
+amos & 0.793$^*$ & 0.10 & 0.025$^*$ & 4.7 \\
+pplx12 & 0.783$^*$ & 0.10 & 0.029$^*$ & 6.9 \\
+linne & 0.748 & 0.15 & 0.032 & OOM \\
+decider-31b & 0.730$^*$ & 0.06 & 0.021 & 20.5 \\
+Clef & 0.709 & 0.11 & 0.003 & 4.3 \\\midrule
+A, Qwen first-token & 0.739$^*$ & 0.06 & \textbf{0.050}$^*$ & 3.1 \\
+A-G, Gemma first-token & 0.682$^*$ & 0.02 & 0.032$^*$ & 3.1 \\
+B, stated P & 0.645 & 0.07 & -- & -- \\
+D, 5-sample vote & 0.699 & 0.29 & 0.039$^*$ & 6.7 \\
+C2, thinking 2k & 0.576 & 3.38 & 0.012$^*$ & 9.4 \\
+C8, thinking 8k & 0.726 & 6.82 & 0.025$^*$ & 24.0 \\
+Agent's own pick & -- & -- & 0.015 & 0 \\\bottomrule
+\end{tabular}
+\caption{\textbf{One-pass judges against every way of asking the LLM.} $^*$ on the cost--quality frontier. Checker:
+AUROC of the open required orders; selector: gain in share of checkpoints over a random pick. Checker C2 and C8 on 15
+tasks. OOM: linne's server ran out of GPU memory with 8 concurrent selector states of up to 32k tokens, so it
+has no selector cost. At this power most selector judges are not separable, so the selector frontier is wide.}
+\label{tab:frontier}
+\end{table}
+
+This test (pre-registered as F) asks whether the training that makes a System One model makes it a better judge than
+an LLM of the same scale used in every reasonable way, at the same measured cost, in two roles. Every judge gets the
+same instruction, question, options and option letters. The LLM configurations are Qwen3.8-27B unless stated.
+\emph{A}: no thinking, the System One request as a lettered choice, the distribution from the first token's
+log-probabilities; \emph{A-G} the same with Gemma 4 31B, the base family of linne and decider-31b. \emph{B} (checker
+only): no thinking, one line `P=<0-100>'. \emph{C2, C8}: thinking on, at most 2,048 or 8,192 generated tokens, then the
+answer; no answer counts as 0.5 (checker) or the agent's own pick (selector). \emph{D}: no thinking, five samples at
+the default temperature, the share of Yes or the majority letter. Cost is GPU-seconds per judgment on one H100 with 8
+concurrent requests after a warm-up (checker: 200 seeded pool items; selector: 45 questions), each model on its own
+serving stack. A judge is on the frontier unless another has a higher score, with the paired 95\% interval over tasks
+excluding 0, at no higher cost.
+
+\paragraph{Checker.} Items are the 3,576 task-prior pool orders, scored from the task text alone. For each logged run's
+first finish (Qwen runs 1 and 3, Gemma runs 1 and 2; 133 cases in 42 tasks) we take the AUROC of pool orders matching
+an open required order against orders matching none, averaged within and then over tasks. C2 and C8 ran on a seeded 20
+tasks (15 with a case) and are compared on those only.
+
+\paragraph{Selector.} 60 exam decisions (the agent's five sampled next turns, differing in kind or in the orders
+placed; at most two per task). Each option is executed from the replayed state and the agent continues to its finish,
+twice (once for a finish option); an option's value is its mean share of checkpoints passed (539 graded runs). On the
+37 decisions whose options differ in value, a judge's gain is the value of its pick minus the mean option value.
+
+
+\paragraph{Readings.} As checker, the six System One models on average are level with A (+0.024 [$-$0.008, 0.057]);
+three are above it (d3 +0.076 [0.033, 0.120], amos +0.054 [0.011, 0.096], pplx12 +0.044 [0.001, 0.086]). The
+Gemma-family pair beats Gemma's own read-out (+0.057 [0.007, 0.108]). The System One mean beats a stated probability
+(+0.118 [0.070, 0.167]) and the vote (+0.065 [0.027, 0.101]) and is level with thinking at 8k (+0.046 [$-$0.004,
+0.098]), which costs 112$\times$ A. The frontier is A-G, decider-31b, A, pplx12, d3 and amos; B, D, C2, C8, Clef and
+linne are off it. As selector, the System One mean trails A ($-$0.026 [$-$0.063, $-$0.001]) and is level with thinking,
+the vote and the agent's own pick; no judge beats the agent's own pick reliably (A +0.035 [$-$0.011, 0.089]). By the
+readings fixed in advance, System One training is not a reliable edge over the same LLM read out in one pass in
+either role, while one-pass judging is never worse than the costlier configurations.
+
+\FloatBarrier
 \section{Pre-registered tests}\label{app:prereg}
 
 Every confirmatory test was written into a dated research log, with its prediction and bar, before any of its data
@@ -621,7 +691,13 @@ H & checklist orders not less appropriate than the agent's; none harmful & harmf
 L1 & LLM checklist (Qwen, no thinking) $-$ finish $\ge$ +8, per agent & +11.1 [4.3, 19.6]; +24.2 [15.5, 33.0] & holds \\
 L2 & S1 (pplx12) $-$ LLM checklist; no direction predicted & +3.6 [$-$1.1, 8.0]; +5.0 [$-$2.6, 13.2] & comparable \\
 M1 & committee of six S1 models $-$ LLM checklist $>$ 0 (pooled) & +1.9 [$-$2.7, 6.4] & fails \\
-M2 & committee $-$ pplx12 alone (pooled) & $-$2.5 [$-$6.0, 0.8] & one suffices \\\midrule
+M2 & committee $-$ pplx12 alone (pooled) & $-$2.5 [$-$6.0, 0.8] & one suffices \\
+F1 & checker: mean of six S1 $-$ LLM first-token P (AUROC) & +0.024 [$-$0.008, 0.057] & no difference \\
+F2 & checker: S1 $-$ stated P; $-$ 5-sample vote; $-$ thinking 8k & +0.118; +0.065; +0.046 n.s. & 2 of 3 better \\
+F3 & checker: cost--quality frontier & S1 and the LLM's first-token P & shared \\
+F1$'$ & selector: mean of six S1 $-$ LLM first-token choice (gain) & $-$0.026 [$-$0.063, $-$0.001] & LLM better \\
+F2$'$ & selector: S1 $-$ thinking 8k; $-$ vote; $-$ agent's own pick & all n.s. & no difference \\
+F3$'$ & selector: cost--quality frontier & 2 S1 dominated by the LLM & S1 not alone \\\midrule
 Harms & orders outside the rubric, checklist $-$ finish $\le$ +1.0 & +1.47 (Qwen), +1.56 (Gemma) & fail \\
 \bottomrule
 \end{tabular}
