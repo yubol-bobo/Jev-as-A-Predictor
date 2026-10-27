@@ -381,45 +381,65 @@ def fig_loop():
 
 
 def fig_frontier():
-    """Checker cost-quality frontier (F): AUROC of the open required orders from the task alone against GPU-seconds per
-    judgment (one H100, 8 concurrent); System One models in their colours, the LLM configurations in purple/grey."""
-    r = load("pb_f_checker.json")
-    if not r or "frontier" not in r:
+    """F: (a) checker cost-quality frontier: AUROC of the open required orders from the task alone against GPU-seconds
+    per judgment (one H100, 8 concurrent); (b) selector: gain over a random pick among the agent's proposals against
+    GPU-seconds per decision. System One models in their colours, the LLM configurations as crosses."""
+    r, q = load("pb_f_checker.json"), load("pb_f_selector.json")
+    if not r or "frontier" not in r or not q or "frontier" not in q:
         return
-    J, fr = r["judges"], r["frontier"]
-    fig, ax = plt.subplots(figsize=(3.4, 2.5))
-    pts = [(fr[j]["gpu_s"], J[j]["auroc_open"]) for j in fr if not fr[j]["dominated_by"]]
-    pts.sort()
-    xs, ys, best = [], [], -1
-    for x, y in pts:
-        if y > best:
-            if xs:
-                xs.append(x); ys.append(best)
-            xs.append(x); ys.append(y); best = y
-    xs.append(12); ys.append(best)
-    ax.plot(xs, ys, color=C["sub"], lw=0.9, ls=(0, (3, 2)), zorder=2)
-    for m, name, col, mk in S1:
-        ax.scatter(fr[m]["gpu_s"], J[m]["auroc_open"], s=34, color=col, marker=mk, edgecolor="white", linewidth=0.6,
-                   zorder=4, label=name)
-    LLM = [("A", "Qwen, one pass", C["llm"], (4, -9)), ("AG", "Gemma, one pass", "#A99DF2", (-8, -11)),
-           ("B", "stated P", C["llm_tool"], (5, -3)), ("D", "5-sample vote", C["llm_tool"], (5, -3)),
-           ("C2", "thinking 2k", C["llm_tool"], (-14, 5)), ("C8", "thinking 8k", C["llm_tool"], (-30, 6))]
-    for j, name, col, off in LLM:
-        x, y = fr[j]["gpu_s"], J[j]["auroc_open"]
-        ax.scatter(x, y, s=34, color=col, marker="X", edgecolor="white", linewidth=0.6, zorder=4)
-        ax.annotate(name, (x, y), xytext=off, textcoords="offset points", fontsize=6.6, color=col if j in ("A", "AG")
-                    else C["sub"], fontweight="bold")
-    ax.set_xscale("log")
-    ax.set_xlim(0.01, 12)
-    ax.set_ylim(0.55, 0.84)
-    label(ax, x="GPU-seconds per judgment (log)", y="AUROC, missed orders")
-    title(ax, "One pass is enough")
-    ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.45, -0.25), fontsize=6.8, handletextpad=0.2,
-              columnspacing=0.8, markerscale=0.9)
+    fig, axs = plt.subplots(1, 2, figsize=(7.0, 2.55), gridspec_kw={"wspace": 0.32})
+    LLM = {"A": ("Qwen, one pass", C["llm"]), "AG": ("Gemma, one pass", "#A99DF2"), "B": ("stated P", C["llm_tool"]),
+           "D": ("5-sample vote", C["llm_tool"]), "C2": ("thinking 2k", C["llm_tool"]),
+           "C8": ("thinking 8k", C["llm_tool"])}
+    panels = [(axs[0], r, "auroc_open", "AUROC, missed orders", "GPU-seconds per judgment (log)",
+               "(a) Checking from the task", (0.01, 12), (0.55, 0.84),
+               {"A": (4, -9), "AG": (-8, -11), "B": (5, -3), "D": (5, -3), "C2": (-14, 5), "C8": (-30, 6)}),
+              (axs[1], q, "gain", "Gain over a random pick", "GPU-seconds per decision (log)",
+               "(b) Choosing among the agent's proposals", (2, 40), (-0.005, 0.058),
+               {"A": (5, 3), "AG": (-10, -11), "D": (5, -3), "C2": (5, -9), "C8": (-22, 6)})]
+    for ax, res, key, ylab, xlab, ttl, xl, yl, offs in panels:
+        J, fr = res["judges"], res["frontier"]
+        pts = sorted((fr[j]["gpu_s"], J[j][key]) for j in fr if not fr[j]["dominated_by"])
+        xs, ys, best = [], [], -1
+        for x, y in pts:
+            if y > best:
+                if xs:
+                    xs.append(x); ys.append(best)
+                xs.append(x); ys.append(y); best = y
+        xs.append(xl[1]); ys.append(best)
+        if key != "gain":  # the selector's judges are mostly not separable: no frontier line (see the caption)
+            ax.plot(xs, ys, color=C["sub"], lw=0.9, ls=(0, (3, 2)), zorder=2)
+        for m, name, col, mk in S1:
+            if m in fr:
+                ax.scatter(fr[m]["gpu_s"], J[m][key], s=34, color=col, marker=mk, edgecolor="white", linewidth=0.6,
+                           zorder=4, label=name)
+        for j, (name, col) in LLM.items():
+            if j not in fr:
+                continue
+            x, y = fr[j]["gpu_s"], J[j][key]
+            ax.scatter(x, y, s=34, color=col, marker="X", edgecolor="white", linewidth=0.6, zorder=4)
+            ax.annotate(name, (x, y), xytext=offs[j], textcoords="offset points", fontsize=6.6,
+                        color=col if j in ("A", "AG") else C["sub"], fontweight="bold")
+        if key == "gain":
+            own = J["own"]["gain"]
+            ax.axhline(own, color=C["ink"], lw=0.9, ls=(0, (1, 1.5)), zorder=1)
+            ax.text(xl[0] * 1.08, own + 0.0012, "agent's own pick", ha="left", fontsize=6.6, color=C["ink"],
+                    fontweight="bold")
+            ax.axhline(0, color=C["bad"], lw=0.9, ls=(0, (4, 2)), zorder=1)
+            ax.text(xl[1] * 0.92, 0.0012, "random pick", ha="right", fontsize=6.6, color=C["bad"], fontweight="bold")
+        ax.set_xscale("log")
+        ax.set_xlim(*xl)
+        if key == "gain":
+            ax.set_xticks([2, 5, 10, 20, 40], ["2", "5", "10", "20", "40"])
+            ax.xaxis.set_minor_formatter(mpl.ticker.NullFormatter())
+        ax.set_ylim(*yl)
+        label(ax, x=xlab, y=ylab)
+        title(ax, ttl)
+    axs[0].legend(ncol=6, loc="upper center", bbox_to_anchor=(1.12, -0.24), fontsize=7, handletextpad=0.2,
+                  columnspacing=1.0, markerscale=0.9)
     fig.savefig(OUT / "fig9_frontier.pdf")
     fig.savefig(OUT / "fig9_frontier_preview.png", dpi=200)
     plt.close(fig)
-
 
 if __name__ == "__main__":
     for f in (fig_main, fig_orders, fig_tools, fig_clinenv, fig_anchor, fig_why, fig_loop, fig_frontier):

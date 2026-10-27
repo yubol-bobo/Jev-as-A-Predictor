@@ -347,16 +347,19 @@ rate of the agents' own extra orders (78\%, 80\%) and above the random list's (6
 potentially harmful, against 2.9\% and 3.9\% of the agents' own. A second judge, Qwen, agrees in direction. What the
 rubric counts as excess is mostly care it does not list.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig9_frontier.pdf}
-\caption{\textbf{One pass is enough.} Each judge scores the task-prior pool from the task text alone. AUROC of the
-orders the agents left open at their first finish (133 cases in 42 tasks; the two thinking budgets on a seeded 15 of
-them) against GPU-seconds per judgment on one H100 with 8 concurrent requests. Coloured: System One models; crosses:
-the LLMs. Dashed: the frontier, off which a judge falls when a cheaper one ranks better (paired 95\% interval
-excluding 0). Appendix~\ref{app:frontier} gives every interval and the selector role.}
+\includegraphics[width=\textwidth]{fig9_frontier.pdf}
+\caption{\textbf{One pass is enough.} Quality against measured cost (one H100, 8 concurrent requests) for six System
+One models (coloured) and every way of asking the LLMs (crosses). (a) Checking: each judge scores the task-prior pool
+from the task text alone; AUROC of the orders the agents left open at their first finish (133 cases in 42 tasks; the
+two thinking budgets on a seeded 15 of them). Dashed: the frontier, off which a judge falls when a cheaper one ranks
+better (paired 95\% interval excluding 0). (b) Choosing: 60 decisions among the agent's sampled next turns, each
+option continued to the agent's finish (539 graded runs); gain in share of checkpoints over a random pick, on the 37
+decisions whose options differ. Most judges here are not separable from one another; linne has no cost
+(Appendix~\ref{app:frontier}).}
 \label{fig:frontier}
-\end{figure}
+\end{figure*}
 
 \section{One pass is enough}\label{sec:onepass}
 
@@ -375,6 +378,14 @@ samples rank worse. The three best System One models (d3, amos, pplx12) rank abo
 1.6 times its cost, and System One probabilities are better calibrated (Brier 0.16--0.28 against 0.29--0.50); the six
 on average are level with it. What carries the fix is what the checker reads, not which model reads it or how long
 it thinks.
+
+\paragraph{Choosing is the smaller lever.} A judge could also sit in the agent's decision seat and choose among its
+five sampled next turns. We continued every option of 60 such decisions to the agent's finish (539 graded runs;
+Figure~\ref{fig:frontier}b). Every judge picks better than at random, but by at most 5 points of checkpoints, and none
+beats the agent's own first sample reliably. The LLM's one-pass choice is again the cheapest good judge, here ahead of
+the System One models on average ($-$2.6 points [$-$6.3, $-$0.1]). This is \S\ref{sec:know} seen from the other side:
+the orders that matter are lost in what the agent generates, not in what it chooses, so the judge belongs beside the
+agent, reading the task.
 
 \section{Related work}
 
@@ -411,6 +422,13 @@ decisions pull its judgment toward conformity. \emph{Plan before acting, review 
 orders by committing before the plan exists and by stopping once its own orders look complete. \emph{Screen broadly
 in one pass:} a one-pass judge, a System One model or the LLM without thinking, scores dozens of candidates from the
 task in seconds, while the LLM generates the candidates and keeps the decision; reasoning adds cost, not accuracy.
+
+\paragraph{Fresh eyes in practice.} The recipe needs no training and no change to the agent. Before the run, the
+LLM lists candidate orders from the task in eight short samples, and a one-pass judge scores the 60--70 candidates
+from the task alone, about 4--7 GPU-seconds per task on one H100. When the agent first tries to finish, it sees the
+top eight it has not placed and decides which to place. The same pattern, a screen built from the task and shown at
+the moment of commitment, fits any agent whose costly errors are omissions; in a clinic, the physician who signs the
+orders stays in the loop.
 
 \paragraph{What System One models made possible.} Six independently trained one-pass judges, each asked the same
 question with and without the agent's work, let us run the input ablations of \S\ref{sec:inherit} over thousands of
