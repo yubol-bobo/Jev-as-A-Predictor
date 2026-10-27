@@ -380,7 +380,48 @@ def fig_loop():
     plt.close(fig)
 
 
+def fig_frontier():
+    """Checker cost-quality frontier (F): AUROC of the open required orders from the task alone against GPU-seconds per
+    judgment (one H100, 8 concurrent); System One models in their colours, the LLM configurations in purple/grey."""
+    r = load("pb_f_checker.json")
+    if not r or "frontier" not in r:
+        return
+    J, fr = r["judges"], r["frontier"]
+    fig, ax = plt.subplots(figsize=(3.4, 2.5))
+    pts = [(fr[j]["gpu_s"], J[j]["auroc_open"]) for j in fr if not fr[j]["dominated_by"]]
+    pts.sort()
+    xs, ys, best = [], [], -1
+    for x, y in pts:
+        if y > best:
+            if xs:
+                xs.append(x); ys.append(best)
+            xs.append(x); ys.append(y); best = y
+    xs.append(12); ys.append(best)
+    ax.plot(xs, ys, color=C["sub"], lw=0.9, ls=(0, (3, 2)), zorder=2)
+    for m, name, col, mk in S1:
+        ax.scatter(fr[m]["gpu_s"], J[m]["auroc_open"], s=34, color=col, marker=mk, edgecolor="white", linewidth=0.6,
+                   zorder=4, label=name)
+    LLM = [("A", "Qwen, one pass", C["llm"], (4, -9)), ("AG", "Gemma, one pass", "#A99DF2", (-8, -11)),
+           ("B", "stated P", C["llm_tool"], (5, -3)), ("D", "5-sample vote", C["llm_tool"], (5, -3)),
+           ("C2", "thinking 2k", C["llm_tool"], (-14, 5)), ("C8", "thinking 8k", C["llm_tool"], (-30, 6))]
+    for j, name, col, off in LLM:
+        x, y = fr[j]["gpu_s"], J[j]["auroc_open"]
+        ax.scatter(x, y, s=34, color=col, marker="X", edgecolor="white", linewidth=0.6, zorder=4)
+        ax.annotate(name, (x, y), xytext=off, textcoords="offset points", fontsize=6.6, color=col if j in ("A", "AG")
+                    else C["sub"], fontweight="bold")
+    ax.set_xscale("log")
+    ax.set_xlim(0.01, 12)
+    ax.set_ylim(0.55, 0.84)
+    label(ax, x="GPU-seconds per judgment (log)", y="AUROC, missed orders")
+    title(ax, "One pass is enough")
+    ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.45, -0.25), fontsize=6.8, handletextpad=0.2,
+              columnspacing=0.8, markerscale=0.9)
+    fig.savefig(OUT / "fig9_frontier.pdf")
+    fig.savefig(OUT / "fig9_frontier_preview.png", dpi=200)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
-    for f in (fig_main, fig_orders, fig_tools, fig_clinenv, fig_anchor, fig_why, fig_loop):
+    for f in (fig_main, fig_orders, fig_tools, fig_clinenv, fig_anchor, fig_why, fig_loop, fig_frontier):
         f()
     print("figures:", sorted(p.name for p in OUT.glob("fig*.pdf")))

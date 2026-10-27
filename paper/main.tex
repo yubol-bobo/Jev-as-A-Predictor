@@ -93,21 +93,18 @@ Yubo Li \quad Rema Padman \quad Ramayya Krishnan\\[3pt]
 \maketitle
 
 \begin{abstract}
-LLM agents working in the electronic health record finish consultations with required orders unplaced. Most are
-not gaps in knowledge: across five logged runs of each task the agent proposes 91\% of the required orders but 75\% in
-a single run, and from the task text alone it names 84\% of the orders it went on to miss. In mostly pre-registered
-tests on two agents from different model families (Qwen3.8-27B and Gemma 4 31B), two mechanisms turn knowledge into
-omission: agents order before they have written a plan, and they anchor on the orders they have already placed. The
-anchor extends to anything that reads the agent's work. Six System One decision models and the LLM itself rank the
-missed orders \emph{below chance} when they read the agent's trajectory (AUROC 0.37--0.46) and above chance when they
-read only the task. The agent's orders, not its notes, are the anchor, and telling the checker to look for omissions
-does not help. The fix is fresh eyes: a judge that reads only the task ranks candidate orders in one forward pass.
-Shown when the agent first tries to finish, an eight-item checklist ranked by a System One model raises the pass rate
-of the still-failing required-order checkpoints from 38\% to 53\% for Qwen and from 29\% to 58\% for Gemma, beats a
-random checklist from the same pool, and adds orders that blinded LLM judges rate mostly as indicated or reasonable,
-none as potentially harmful. The agent LLM ranking the same pool in one pass without thinking does about as well, and
-one-pass judgments match or beat stated probabilities, voting and thinking at a few percent of thinking's GPU time:
-what carries the fix is what the checker reads, not which model reads it or how long it thinks.
+LLM agents that work in the electronic health record finish consultations with required orders unplaced, and most
+of these are orders they know: from the task text alone, the same agent names 84\% of the orders it went on to miss.
+We show why, and how to recover them. On PhysicianBench, with two agents from different model families
+(Qwen3.8-27B and Gemma 4 31B), agents order before they have written a plan and then anchor on the orders they have
+placed. The anchor spreads to anything that reads their work: six System One decision models and the reasoning LLM
+itself, reviewing the agent's trajectory, rank the orders it missed \emph{below chance} (AUROC 0.37--0.46), and
+reading only the task, they rank them above chance. The agent's orders are the anchor, and telling the reviewer to
+look for omissions does not remove it. The fix is fresh eyes: a judge that reads only the task ranks candidate orders
+in one forward pass, and the agent sees the top eight before it finishes. The pass rate of the required-order
+checkpoints still failing at that point rises from 38\% to 53\% for Qwen and from 29\% to 58\% for Gemma, and the
+orders it adds are rated mostly indicated or reasonable, none harmful. Any one-pass judge works, a System One model
+or the agent LLM itself; asking the LLM to think instead costs up to a hundred times more and ranks no better.
 \end{abstract}
 
 \begin{figure*}[t]
@@ -130,57 +127,45 @@ A physician who has just finished a workup is the person least likely to spot wh
 answers this with second readers, consults and checklists: a fresh pair of eyes that has not followed the same path
 \citep{croskerry2003cognitive,haynes2009checklist}. LLM agents now do physicians' work in the electronic health record.
 They look up the problem list, pull the labs, order the workup and write the note \citep{physicianbench2026,yao2023react}.
-We find that they miss orders for the same reason, and that the fresh-eyes remedy works for them too, provided the
-second reader really has fresh eyes.
+We find that they miss orders for the same reason a physician does, that the usual machine remedy, a second model
+reviewing the agent's work, fails in the same way, and that a second reader with genuinely fresh eyes recovers the
+orders.
 
-We began with a different question. \emph{System One} decision models, named after the fast mode of human judgment \citep{kahneman2011thinking}, read a
-state and a set of options and return a probability for each option in a single forward pass
-\citep{typesafe2026jev,clef2026}. They are fast and cheap, and
-choosing among options is what an agent does at every step. So we put six of them in the decision seat of a clinical
-agent on PhysicianBench, 100 real consultations on a running FHIR server. They are safe there, and they do not help
-(\S\ref{sec:seat}). Following every required order along the agent's trajectories shows why: only 11\% of required
-orders are ever proposed and then not executed, so no selector can recover much, while 19\% are never proposed at all.
-The orders are not lost when the agent chooses among its options. They are lost before that, when the agent
-generates them.
+The missed orders are not gaps in knowledge. On PhysicianBench, 100 real outpatient consultations on a live FHIR
+server, a Qwen3.8-27B agent proposes 75\% of the required orders in a single run but 91\% across five runs of the same
+task, and given nothing but the task text it names 84\% of the orders its run went on to miss. Nor are they lost when
+the agent chooses among its options: only 11\% of required orders are ever proposed and then not executed, while 19\%
+are never proposed at all. Picking better among the agent's proposals, the idea behind best-of-$n$ selection and
+verifiers, cannot reach them. The orders are lost earlier, while the agent generates what to do. Four findings follow,
+on two agents from different model families (Qwen3.8-27B and Gemma 4 31B).
 
-That moved the question from \emph{who decides} to \emph{why the agent never proposes what it needs}. Three findings
-answer it.
+\paragraph{Agents plan late and anchor on their own orders} (\S\ref{sec:why}). Asking the agent to write its full
+plan before its first order recovers orders it would otherwise miss for good; reminding it of the task does not. At
+its finish, asking what is still missing works better when its own orders and notes are removed from view.
 
-\paragraph{1. The agent knows the orders it misses} (\S\ref{sec:know}). The required orders a run never proposes are
-mostly proposed in other logged runs of the same task (91\% coverage over five runs against 75\% in one). Asked with nothing
-but the task text, the same LLM names 84\% of the orders its run left open. This is a knowing--doing gap, not a
-knowledge gap.
+\paragraph{A reviewer that reads the agent inherits its blind spot} (\S\ref{sec:inherit}). Six System One decision
+models, which score options in one forward pass, and the reasoning LLM itself rank the orders the agent missed
+\emph{below chance} when they read its trajectory, and above chance when they read only the task. The anchor is the
+agent's orders, not its notes or the chart. One fabricated order shifts the judgment, and telling the reviewer that
+orders may be missing does not help. A reviewer scores each candidate by how much it resembles what the agent already
+did.
 
-\paragraph{2. It plans late and anchors on its own orders} (\S\ref{sec:why}). At its first order step, asking the agent
-to write out its full plan before ordering recovers orders it would otherwise miss for good; repeating the task does
-not.
-At its finish, asking what is still missing recovers more when the agent's own orders and notes are removed from its
-context. Both hold on two agents from different model families, Qwen3.8-27B and Gemma 4 31B (anchoring
-pre-registered on both, planning on Gemma), and the effects are larger on the weaker agent.
+\paragraph{Fresh eyes recover the orders} (\S\ref{sec:fresh}). A judge that reads only the task ranks a broad pool of
+candidate orders before the run, and the agent sees the top eight when it first tries to finish. The pass rate of the
+required-order checkpoints still failing at that point rises from 38\% to 53\% for Qwen and from 29\% to 58\% for
+Gemma, more than with a random checklist from the same pool, and the orders it adds beyond the rubric are mostly
+indicated or reasonable care.
 
-\paragraph{3. Any checker that reads the agent's work inherits its blind spot} (\S\ref{sec:inherit}). The obvious
-remedy for omissions is a second model that reviews the agent's work. Six System One models and the thinking LLM
-itself, reading the agent's trajectory, rank the orders the agent missed below the unneeded ones. Given the task text
-alone, all of them rank the missed orders above. For every System One model we tested, the anchor is the agent's
-orders, not its notes or the chart it retrieved. One fabricated order shifts the judgment causally. Telling the checker that the agent may have missed
-something does not help. The checker scores an order by how much it resembles what the agent already did.
+\paragraph{One pass is enough} (\S\ref{sec:onepass}). The checker needs neither a special model nor reasoning. The
+agent LLM without thinking ranks the checklist about as well as a System One model, and every slower way of asking
+it, stating a probability, voting over samples or thinking for up to 8k tokens, ranks no better at up to a hundred
+times the cost (Figure~\ref{fig:frontier}). What carries the fix is what the checker reads.
 
-\paragraph{The fix: fresh eyes} (\S\ref{sec:fresh}). The three findings point to one design. Give the checker the task,
-not the agent's work; let a one-pass judge rank a broad pool of candidate orders; leave the decision to the agent.
-At the agent's finish, an eight-item checklist ranked by a
-System One model from the task text alone raises the pass rate of the still-open required-order checkpoints from 38\%
-to 53\% for Qwen and from 29\% to 58\% for Gemma. It beats a random checklist from the same pool, holds with a second
-System One ranker, and does as well as restarting the agent from a fresh context. The agent LLM ranking the same pool
-in one pass without thinking does about as well, a committee of all six System One models does no better than one, and
-asking the LLM to state a probability, vote or think is worse or far costlier (all pre-registered). What carries the
-fix is what the checker reads, not which model reads it or how long it thinks. The orders the checklist adds beyond
-the rubric are, by blinded LLM judges, mostly indicated or reasonable, and none is rated potentially harmful.
-
-\paragraph{How we tested.} Whole agent runs vary a lot. Two runs of the same agent differ on 28 of 100 tasks, and an
-early online gain of ours did not survive independent replication. We therefore pre-registered every confirmatory
-test, with its prediction and bar, before its data existed (Appendix~\ref{app:prereg}). We also measure online
-interventions by \emph{branching}: every arm replays the same logged run up to the agent's first finish and differs
-only from there, so that run-to-run noise cancels.
+\medskip
+We measure each intervention by \emph{branching}: every arm replays the same logged run up to the agent's first
+finish and differs only from there, so that run-to-run noise, large in long agent runs, cancels. Every confirmatory
+test was fixed in a dated log before its data existed. Appendix~\ref{app:path} tells the path that led here,
+including the tests that did not hold.
 
 \section{Setting}\label{sec:setup}
 
@@ -190,49 +175,295 @@ checkpoints (670 in total) of four types (data retrieval, clinical reasoning, ac
 each graded by code or by an LLM judge. We use the released harness unchanged: a fresh server per task, the MiniAgent
 loop with parallel tool calls and at most 100 steps, and the task's own graders. Our focus is the 92
 \emph{required-order checkpoints} in 54 tasks: code-graded checks that a specific laboratory test, imaging study,
-referral, procedure or medication was placed in the record. Some checkpoints require several orders, 118 in all. We match an order to such a checkpoint with the grader's
-own name and code patterns. An order that matches none we call \emph{outside the rubric}.
+referral, procedure or medication was placed in the record. Some checkpoints require several orders, 118 in all. We
+match an order to such a checkpoint with the grader's own name and code patterns. An order that matches none we call
+\emph{outside the rubric}.
 
-\paragraph{Agents.} The main agent LLM is Qwen3.8-27B \citep{qwen38} with thinking on, in bf16 with 128k context. The
-second agent is Gemma 4 31B-it, a different model family, with thinking on and FP8 weights. FP8 is the precision at
-which one 128k context fits beside the judge on our GPUs. As an agent it is much weaker on this benchmark: it passes
-51\% of checkpoints against Qwen's 81\% and 8\% of tasks against 41\%, and it places no order in 56\% of its runs. Both
-run in the same harness, and the grader's judge is Qwen with thinking off for every arm.
+\paragraph{Agents.} The main agent is Qwen3.8-27B \citep{qwen38} with thinking on, in bf16 with 128k context. The
+second is Gemma 4 31B-it, a different model family, with thinking on and FP8 weights, the precision at which one 128k
+context fits beside the judge on our GPUs. It is a much weaker agent on this benchmark: it passes 51\% of checkpoints
+against Qwen's 81\% and 8\% of tasks against 41\%, and places no order in 56\% of its runs. Both run in the same
+harness, and the grader's judge is Qwen with thinking off for every arm.
 
-\paragraph{System One models.} Six open decision models take a state, a typed question and named options and return a
-probability per option in one forward pass: Clef-27B \citep{clef2026} (post-trained from the same Qwen backbone),
-pplx-decider-v1.2 (pplx12), d3, linne-oak-1.0, amos-1-large and decider-31b, each served with its authors' code at a
-pinned revision (Appendix~\ref{app:interface}). Everything runs locally on one node; no record leaves it
-(\S\ref{sec:ethics}).
+\paragraph{Judges.} \emph{System One} decision models, named after the fast mode of human judgment
+\citep{kahneman2011thinking}, take a state, a typed question and named options and return a probability per option in
+one forward pass \citep{typesafe2026jev,clef2026}. We use six open ones of the agents' own scale (26--31B parameters):
+Clef-27B \citep{clef2026}, pplx-decider-v1.2 (pplx12), d3, linne-oak-1.0, amos-1-large and decider-31b, each served
+with its authors' code at a pinned revision (Appendix~\ref{app:interface}). The LLM answers the same request either
+with thinking on or in one pass, with P(Yes) read from its first-token probabilities. Everything runs locally on one
+node; no record leaves it (\S\ref{sec:ethics}).
 
 \paragraph{Branching from a shared prefix.} For an intervention at the agent's finish we take each logged run whose
 first \textsc{finish} leaves a required-order checkpoint \emph{open} (still failing): 51 cases for Qwen and 65 for
-Gemma. Every arm replays
-that run's turns against a fresh environment up to the \textsc{finish} and branches there. The \emph{none} arm keeps
-the logged finish; replaying it reproduces 99.7\% (Qwen) and 99.6\% (Gemma) of the logged checkpoint outcomes. The
-other arms run 3--5 times each. The primary outcome is the pass rate of the checkpoints that were open at the
-branch. We also report orders placed after the branch, those outside the rubric, and forbidden ones (none occurred).
-Differences are paired over cases with 95\% bootstrap intervals.
+Gemma. Every arm replays that run's turns against a fresh environment up to the \textsc{finish} and branches there.
+The \emph{none} arm keeps the logged finish; replaying it reproduces 99.7\% (Qwen) and 99.6\% (Gemma) of the logged
+checkpoint outcomes. The other arms run 3--5 times each. The primary outcome is the pass rate of the checkpoints that
+were open at the branch. Forbidden orders, which the rubric also lists, occurred in no arm. Differences are paired
+over cases with 95\% bootstrap intervals.
 
-\section{The decision seat is not where orders are lost}\label{sec:seat}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig7_why.pdf}
+\caption{\textbf{Why the agent misses orders.} (a) Qwen3.8-27B knows the orders it misses: share of required orders
+placed and proposed in a single run (mean over five logged runs), proposed in any of the five (54 tasks, 590 order
+$\times$ run pairs), and the share of the
+orders its run left open that Qwen names from the task text alone (26 tasks, 36 orders). (b) It plans late: at the
+first order step, replayed with $K{=}5$ samples, the share of the orders the run finally missed that the agent places,
+as logged, after a reminder of the task, and after being asked to write its full plan first (Qwen 48 cases, Gemma 18). (c) It anchors on its own orders: at its first finish, the share of open required-order
+checkpoints that pass when the agent finishes as logged, when it is asked for the missing orders with its full
+context, and when it is asked with its own decision turns removed (Qwen 51 cases $\times$ 5 runs, Gemma 65 cases
+$\times$ 3 runs).}
+\label{fig:why}
+\end{figure*}
 
-Our starting point was to let a System One model make the agent's decisions (Appendix~\ref{app:seat} gives the full
-study). In \sel{}, the LLM proposes five complete next turns and the System One model picks one. In \tool{}, the System
-One model picks the kind of action and the LLM writes the call. Choosing among proposals, Clef keeps the LLM's level
-(80.2\% of checkpoints against 81.3\%; task success $-$4 points, $p=0.52$). Choosing the action itself, it breaks the
-agent (7\% of tasks pass), because it acts after little retrieval and rewrites the note again and again. All six
-System One models share a \emph{commitment bias}: on a fixed exam of 1,460 logged decisions they pick ordering turns
-1.3--1.6$\times$ and finishing turns 1.3--1.4$\times$ as often as the LLM does.
+\section{The agent knows the orders it misses}\label{sec:know}
 
-Neither seat improves on the LLM, and Table~\ref{tab:ceiling} shows why. Of the 118 required orders in 54 tasks, the
-LLM places 69\%. Only 11\% are proposed at some step and never executed, which is all a selector could ever recover.
-19\% are never proposed by any of the five samples at any step. Even the step-level omissions are mostly a matter of
-timing: 79\% of the required orders the LLM's sample skips at an order step are placed later in the same run. The
-pre-registered tests agree. The best decider's early gain on required orders failed replication on unseen tasks, and
-a decider consulted only at order steps adds orders, mostly outside the rubric, without adding required ones. A
-rollout test of the selector alone (Appendix~\ref{app:frontier}) agrees: no judge beats the agent's own pick
-reliably, and the agent LLM's own first-token choice beats the System One average. The errors that matter happen
-before the decision, at generation. The rest of the paper asks why the agent never proposes orders it needs.
+If the agent lacked the knowledge, no amount of re-reading would help. It does not lack it. We pooled the orders
+proposed by any sample in five logged runs of each task: the LLM's own run and four runs in which a System One model
+took part in its decisions (Appendix~\ref{app:path}). On average a single run proposes 75\% of the required orders and
+places 68\%; the five runs together propose 91\% (Figure~\ref{fig:why}a). Of the required orders a run never
+proposes, 62\% are proposed in another run of the same task. A second test asks directly. Qwen, without thinking and
+given nothing but the task text, lists the orders that could be indicated, eight samples per task. Its list covers
+84\% [71, 95] of the required orders that the agent's own run left open at its finish. The model that failed to place
+these orders while working in the chart names them readily from the request alone.
+
+The orders are lost at generation, not at choice. The agent samples five candidate turns at every step; following
+each of the 118 required orders along its trajectories, it places 69\%, only 11\% are proposed at some step and never
+executed, and 19\% are never proposed by any sample at any step. A selector, however good, can recover at most the
+11\%. Putting System One models in the agent's decision seat to choose among its proposals indeed kept the agent's
+level without raising it (Appendix~\ref{app:path}). What fails is the step from knowing to doing.
+
+\section{Why it misses them: it plans late, and it anchors on its own orders}\label{sec:why}
+
+\paragraph{Acting before the plan is written.} One explanation is drift: over a long trajectory of record lookups the
+agent loses track of the task. Another is that it starts ordering before it has enumerated what the task needs, and
+what it never enumerates it never orders. Drift predicts that a reminder helps; late planning predicts that a plan
+does. We replayed the agent's first order step with five samples under three conditions: as logged, with the task
+instruction repeated, and with a request to write the full assessment and plan, listing every order the task
+requires, before placing any (Figure~\ref{fig:why}b). For Qwen a reminder moves orders earlier but not into the final
+record; for Gemma it does neither. Planning first does both. For Qwen, the share of the run's finally missed orders
+placed at that step rises from 11\% to 18\% (+7 points [2, 13]), against +2 [$-$2, +5] for the reminder. For Gemma it
+rises from 10\% to 28\% (+18 [4, 32]) and beats the reminder by +11 [2, 23]. Forgetting the task affects when orders
+are placed; the orders lost for good are those the agent commits past before its plan exists.
+
+\paragraph{Anchoring on its own orders.} At the agent's first finish we asked for the missing orders in two ways
+(Figure~\ref{fig:why}c). Both arms ask the same question, ``place every order that this task requires and that has
+not been placed yet''. One asks it with the agent's full context. The other asks it with every decision turn removed:
+no orders, messages or notes, only the task and the chart the agent retrieved. Asking at all helps: open required
+checkpoints rise from 38\% to 46\% for Qwen (+8.0 [2.6, 15.1]) and from 29\% to 47\% for Gemma (+17.8 [10.6, 25.7]),
+so the agent can still produce the orders. Asking without its own decisions in view helps more: +7.1 [1.0, 13.7]
+points over the full context for Qwen and +8.9 [3.2, 15.3] for Gemma, with no loss over all checkpoints. The agent's
+record of what it has done suppresses orders that it can still generate. Both effects are larger for the weaker
+agent.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig6_anchor.pdf}
+\caption{\textbf{A checker that reads the agent inherits its blind spot.} AUROC of each System One model for telling
+the required orders the agent missed from unneeded candidate orders (21 tasks with a missed required order), by what
+the checker reads: the agent's trajectory at its finish; the same with a debiasing instruction (*three models); without
+the agent's notes; without its orders; the retrieved chart with no decisions; the task text alone. Black line: mean
+over the models shown in the row.}
+\label{fig:anchor}
+\end{figure}
+
+\section{A reviewer that reads the agent inherits its blind spot}\label{sec:inherit}
+
+The standard remedy for an agent's omissions is review: a second model reads the agent's work and flags what is
+missing, as in self-refinement and LLM-as-judge pipelines \citep{madaan2023selfrefine,zheng2023judge}. A System One
+model is an attractive reviewer here. It scores a candidate order for a patient in one forward pass, so it can screen
+dozens of candidates where an LLM would deliberate over a few. We tested this at the agent's first finish. The
+candidates are every order proposed in the task's five runs that the agent has not placed (about 44 per task). Each
+checker scores each candidate with the question ``is this order indicated for this patient as part of completing the
+task?''. The measure is how well it separates the required orders the agent missed from the unneeded ones (AUROC, per
+task).
+
+\paragraph{Reading the trajectory, every checker ranks the missed orders below chance.} With the agent's trajectory
+as input, all six System One models score 0.37--0.43 (Figure~\ref{fig:anchor}). Given only the task text, the same
+models score 0.57--0.73, a paired gain of +0.17 to +0.34 with every interval excluding 0. The reasoning LLM is no
+exception: Qwen with thinking goes from 0.46 to 0.62 on the same questions (+0.17 [0.07, 0.27]). The anchoring is what
+happens to any judge that reads the agent's actions, not a quirk of small decision models. The trajectory hurts even
+on the orders the agent did place (0.65--0.72 with it, 0.74--0.86 without).
+
+\paragraph{The anchor is the agent's orders.} Removing only the agent's decision turns (orders, messages, notes) and
+keeping the full chart it retrieved brings the checker back to about its task-only level (0.62--0.67; +0.21 to +0.25
+over the trajectory). The chart does not mislead the checker; the agent's decisions do. Among the decisions, the
+orders carry 57--83\% of the recovery and the notes none ($-$0.07 to +0.04). A causal test confirms the direction:
+inserting one fabricated step in which the agent places the candidate order raises the checker's P(Yes) by +0.07 to
++0.10, for required and unneeded orders alike.
+
+\paragraph{The mechanism is plan conformity.} With the trajectory, a checker's score tracks how closely the candidate
+resembles the agent's placed orders (within-task Spearman 0.28--0.38 for System One models, 0.47 for Qwen; 0.05 with
+the task text). The missed orders resemble the agent's placed orders less than unneeded candidates do (name overlap
+0.26 against 0.34), so similarity alone ranks them below chance (AUROC 0.41). A checker that reads the agent's work
+grades candidates by their conformity to that work, so it inherits exactly the agent's omissions.
+
+\paragraph{An instruction does not fix it; the input must change.} Adding ``the agent may have missed orders; judge
+each one independently'' recovers 1--6\% of the gap for System One models and 8\% for Qwen. The models read the
+sentence, since their P(Yes) rises across the board, but the ranking does not change.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig8_loop.pdf}
+\caption{\textbf{Fresh eyes in the loop.} (a) At each agent's first finish, from the same replayed prefix: the share of
+open required-order checkpoints that pass when the agent finishes as logged; when it sees eight orders drawn at random
+from the task-prior pool; when it sees the eight ranked highest from the task text by pplx12 (both agents) or
+d3 (Qwen only), or by the agent LLM Qwen without thinking from the same request (both agents); and, for reference, the fresh-context restart of Figure~\ref{fig:why}c. Qwen: 51 cases $\times$ 5 runs
+(d3 and the LLM checklist: 3); Gemma: 65 cases $\times$ 3 runs. (b) What the orders outside the rubric are: each order rated alone by a blinded LLM judge (Gemma 4)
+that sees the task and the retrieved chart. Bars give the share of distinct orders per case by source; n is the number
+of orders rated.}
+\label{fig:loop}
+\end{figure*}
+
+\section{Fresh eyes: a checklist from the task}\label{sec:fresh}
+
+The findings fix the design. The checker reads the task, not the agent's work (\S\ref{sec:inherit}). Candidates come
+from a broad pool, because the agent knows the orders but does not reach them in one pass (\S\ref{sec:know}). The
+intervention comes when the agent's own plan is complete and it is about to stop (\S\ref{sec:why}). The agent keeps
+the decision.
+
+\paragraph{Design.} Before the run, the LLM without thinking reads the task text and lists candidate orders: eight
+samples of up to 15 each, merged by name, about 67 per task (the \emph{task-prior pool}). A System One model scores
+every candidate from the task text alone. At the agent's first finish, candidates already placed are dropped, and the
+top eight are shown with one instruction: ``Check each against the chart and the task. Place any that are indicated,
+and only those, then finish.'' (Appendix~\ref{app:prompts}). The ranking costs one forward pass per candidate and is
+computed before the run starts.
+
+\paragraph{It recovers the missed orders, for both agents.} From the same prefix, the checklist raises open
+required-order checkpoints from 38\% to 53\% for Qwen (\up{14.7} points [6.7, 24.1]) and from 29\% to 58\% for Gemma
+(\up{29.2} [20.0, 39.5]) (Figure~\ref{fig:loop}a). The ranking matters: it beats eight orders drawn at random from the
+same pool by +5.9 [0.6, 11.8] for Qwen and +13.6 [6.5, 21.7] for Gemma. A second System One ranker, d3, does as well
+(54\% for Qwen; +7.2 [1.1, 13.3] over the random list). The checklist matches restarting the agent with its own
+decisions removed (\S\ref{sec:why}; $-$0.4 and $-$2.6 points, both n.s.): two routes to the same fix, changing what is
+read before the agent stops. Over all checkpoints, not only the open ones, the pass rate rises by 4.7 points for Qwen
+and 7.8 for Gemma.
+
+\paragraph{The extra orders are reasonable care.} The checklist also adds about 1.5 orders per case that no rubric
+item names, fewer than the random list (2.0 and 2.3). PhysicianBench neither credits nor penalises such orders, so we
+asked what they are. A blinded LLM judge (Gemma 4) saw the task and the retrieved chart and rated each order alone,
+without its source, as indicated, reasonable, low value or potentially harmful (Figure~\ref{fig:loop}b). 81\% of the
+checklist's extra orders for the Qwen agent and 91\% for the Gemma agent are indicated or reasonable, at least the
+rate of the agents' own extra orders (78\%, 80\%) and above the random list's (67\%, 80\%). None was rated
+potentially harmful, against 2.9\% and 3.9\% of the agents' own. A second judge, Qwen, agrees in direction. What the
+rubric counts as excess is mostly care it does not list.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig9_frontier.pdf}
+\caption{\textbf{One pass is enough.} Each judge scores the task-prior pool from the task text alone. AUROC of the
+orders the agents left open at their first finish (133 cases in 42 tasks; the two thinking budgets on a seeded 15 of
+them) against GPU-seconds per judgment on one H100 with 8 concurrent requests. Coloured: System One models; crosses:
+the LLMs. Dashed: the frontier, off which a judge falls when a cheaper one ranks better (paired 95\% interval
+excluding 0). Appendix~\ref{app:frontier} gives every interval and the selector role.}
+\label{fig:frontier}
+\end{figure}
+
+\section{One pass is enough}\label{sec:onepass}
+
+\paragraph{No special model.} Does the checker need a System One model? We let the agent LLM, Qwen without thinking,
+rank the same pool from exactly the System One model's request, reading P(Yes) from its first-token probabilities.
+Its checklist works too: \up{11.1} points [4.3, 19.6] for the Qwen agent and \up{24.2} [15.5, 33.0] for Gemma over
+the agent's finish, within a few points of the System One list (+3.6 [$-$1.1, 8.0] and +5.0 [$-$2.6, 13.2] in
+pplx12's favour). Pooling models does not help either: a committee of all six System One models, their ranks
+averaged, does no better than one.
+
+\paragraph{No reasoning.} Figure~\ref{fig:frontier} places every judge by quality and cost: how well it ranks the
+orders the agents left open, against its GPU time per judgment. One-pass judgments, System One models and the LLM's
+first-token probability, form the frontier. Thinking with an 8k-token budget ranks no better than the LLM's one pass
+at 112 times the GPU time; with 2k tokens it mostly runs out of budget. A stated probability and a vote over five
+samples rank worse. The three best System One models (d3, amos, pplx12) rank above the LLM's one pass by 0.04--0.08 at
+1.6 times its cost, and System One probabilities are better calibrated (Brier 0.16--0.28 against 0.29--0.50); the six
+on average are level with it. What carries the fix is what the checker reads, not which model reads it or how long
+it thinks.
+
+\section{Related work}
+
+\paragraph{Self-correction and review.} Agents and LLMs are often asked to critique and revise their own output
+\citep{madaan2023selfrefine,shinn2023reflexion}, and reasoning errors are hard to self-correct without external
+signal \citep{huang2024cannot}. LLM judges favour their own generations \citep{panickssery2024selfpref}. We locate a
+specific failure of review inside an agent loop. A reviewer that reads the agent's work, whether it is the agent
+itself, another LLM or a System One model, scores candidates by their conformity to that work. Changing what the
+reviewer reads fixes it; instructions and reasoning do not.
+
+\paragraph{Anchoring and premature closure.} Anchoring on an initial estimate \citep{tversky1974heuristics} and
+premature closure are among the most cited cognitive errors in clinical diagnosis, and fresh perspectives and
+checklists are the classic remedies \citep{croskerry2003cognitive,haynes2009checklist}. We find the agent-level
+analogue: the agent anchors on the orders it has placed, and so does anything that reads them. Planning before
+acting \citep{wang2023planandsolve} also helps here, though it does not close the gap.
+
+\paragraph{Choosing among samples.} Self-consistency \citep{wang2023selfconsistency}, trained verifiers
+\citep{cobbe2021verifiers} and process reward models \citep{lightman2024verify} pick among sampled outputs. Our
+analysis of where required orders are lost shows why selection has little to gain when the missing content is never
+sampled.
+
+\paragraph{System One models and clinical agents.} JEV introduced the typed-question interface that System One models
+answer in one forward pass \citep{typesafe2026jev}; Clef is an open 27B model of this kind \citep{clef2026}. They
+approach frontier LLMs as judges \citep{li2026jevjudge}, and as selectors in general agents most of their wrong
+actions follow a correct reading of the state \citep{li2026reading}. PhysicianBench \citep{physicianbench2026} grades
+physician tasks in a live record system and has been run only with generative agents. We find that the useful place
+for a one-pass judge in a clinical agent is beside the agent, reading the task, not in its decision seat.
+
+\section{Discussion}
+
+\paragraph{Design rules.} Three rules follow, and none is specific to one model. \emph{Check the task, not the
+agent:} a reviewer, human or model, should read the request and the chart, not the agent's decisions, because the
+decisions pull its judgment toward conformity. \emph{Plan before acting, review before finishing:} the agent loses
+orders by committing before the plan exists and by stopping once its own orders look complete. \emph{Screen broadly
+in one pass:} a one-pass judge, a System One model or the LLM without thinking, scores dozens of candidates from the
+task in seconds, while the LLM generates the candidates and keeps the decision; reasoning adds cost, not accuracy.
+
+\paragraph{What System One models made possible.} Six independently trained one-pass judges, each asked the same
+question with and without the agent's work, let us run the input ablations of \S\ref{sec:inherit} over thousands of
+judgments and show that the anchor is not a quirk of one model. In deployment they are a ready-made checker that
+returns a calibrated probability per option. Their place is beside the agent, reading the task.
+
+\paragraph{The anchor is general.} The checker in \S\ref{sec:inherit} and the agent in \S\ref{sec:why} fail in the same
+way: both score what to do next by what has already been done. The agent's restart and the checker's input ablation
+are the same intervention, removing the agent's decisions from view, and they help both. We expect this to hold for
+agents that act in other record systems and other domains wherever omissions matter: software changes, audits,
+procurement.
+
+\section*{Limitations}
+
+We study one benchmark of outpatient consultations with two agent LLMs of similar scale; the second, in FP8, is much
+weaker, and all comparisons are within one agent. The rubric names one acceptable set of orders; our ratings of
+orders outside it come from two LLM judges with moderate agreement ($\kappa$ 0.48--0.49), not physicians. The grader's
+judge is the local Qwen model shared by every arm, so absolute scores are not comparable with the leaderboard.
+Online effects are measured from shared prefixes at the agent's first finish; an end-to-end deployment that combines
+planning first with the checklist remains to be run. Costs are measured on each model's own serving stack.
+Appendix~\ref{app:prereg} lists every pre-registered test, including those that failed.
+
+\section*{Ethics and data}\label{sec:ethics}
+
+PhysicianBench's records are real de-identified patients under a data use agreement. All models run locally, a socket
+guard blocks any non-local connection from agent and grader processes, and trajectories, notes, candidate orders and
+judge ratings stay on access-controlled storage outside version control. We report aggregates only. The checklist is
+a screening aid shown to an agent that keeps the decision. In deployment, a clinician would review every order.
+
+\bibliography{refs}
+
+\appendix
+
+\section{The path to fresh eyes}\label{app:path}
+
+The main text presents the result. This appendix records how we reached it, including what did not work;
+Appendix~\ref{app:prereg} lists every pre-registered test with its verdict.
+
+\paragraph{We began in the decision seat.} System One models read a state and options and return a probability for
+each in one forward pass, and choosing among options is what an agent does at every step. So we first put them in the
+agent's decision seat (Appendix~\ref{app:seat}). In \sel{} the LLM proposes five complete next turns and the System
+One model picks one; in \tool{} it picks the kind of action and the LLM writes the call. Choosing among proposals,
+Clef keeps the LLM's level (80.2\% of checkpoints against 81.3\%; task success $-$4 points, $p=0.52$). Choosing the
+action itself, it breaks the agent (7\% of tasks pass): it acts after little retrieval and rewrites the note again and
+again. All six models share a \emph{commitment bias}: on a fixed exam of 1,460 logged decisions they pick ordering
+turns 1.3--1.6$\times$ and finishing turns 1.3--1.4$\times$ as often as the LLM. pplx12's early gain on required orders
+(+13 points on its first 76 tasks) failed a pre-registered replication on the 24 it had not run ($-$18 [$-$36, $-$2]),
+and a decider consulted only at order steps added orders, mostly outside the rubric, without adding required ones.
+Table~\ref{tab:ceiling} shows why no selector could do much: the required orders are lost at generation. A last,
+pre-registered test of the selector role continued every option of 60 decisions to the agent's finish (539 graded
+runs; Appendix~\ref{app:frontier}). No judge beat the agent's own pick reliably, and the agent LLM's own first-token
+choice beat the System One average ($-$2.6 points [$-$6.3, $-$0.1]). That moved the question from \emph{who decides}
+to \emph{why the agent never proposes what it needs}.
 
 \begin{table}[t]
 \centering\small
@@ -249,269 +480,39 @@ loss is the orders it never proposes.}
 \label{tab:ceiling}
 \end{table}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig7_why.pdf}
-\caption{\textbf{Why the agent misses orders.} (a) Qwen3.8-27B knows the orders it misses: share of required orders
-placed and proposed in a single run (mean over five logged runs), proposed in any of the five (54 tasks, 590 order
-$\times$ run pairs), and the share of the
-orders its run left open that Qwen names from the task text alone (26 tasks, 36 orders). (b) It plans late: at the
-first order step, replayed with $K{=}5$ samples, the share of the orders the run finally missed that the agent places,
-as logged, after a reminder of the task, and after being asked to write its full plan first (Qwen 48 cases, Gemma 18;
-pre-registered for Gemma; for Qwen the pre-registered test covered all required orders at that step, +19 points). (c) It anchors on its own orders: at its first finish, the share of open required-order
-checkpoints that pass when the agent finishes as logged, when it is asked for the missing orders with its full
-context, and when it is asked with its own decision turns removed (Qwen 51 cases $\times$ 5 runs, Gemma 65 cases
-$\times$ 3 runs; pre-registered).}
-\label{fig:why}
-\end{figure*}
+\paragraph{Noise taught us to branch.} Two runs of the same agent differ on 28 of 100 tasks. Tested on independent
+runs, the task-prior checklist separated neither from a random checklist (+0.045 [$-$0.07, 0.19]) nor from an
+independent baseline run ($-$0.02, n.s.). Branching from a shared prefix, which cancels the run-to-run variation,
+measured its effect; every online result in the main text uses it.
 
-\section{The agent knows the orders it misses}\label{sec:know}
+\paragraph{Designs that did not work.} A richer chart did not help a trajectory-reading screener on the orders the
+agent never placed (AUROC 0.44). A checklist drawn from the orders proposed during the run and ranked by a System One model did
+not beat the same pool ranked by proposal frequency ($-$0.02 [$-$0.15, 0.11]); the pool, not the ranking, was too
+narrow. Showing the ranker the orders already placed, to avoid repeats, halved its top-3
+coverage of the open orders (0.31 to 0.15), and so did a factorized ranking with a separate repeat judge. This is how
+we first saw that the agent's orders anchor any judge, and why the final design shows the ranker the task alone and
+removes repeats afterwards. Offline, a nudge and a fresh question at the finish helped, but by less than the bars we
+had set (+0.08 and +0.07 against 0.15 and 0.10), and the misses an agent's own note mentions were mostly not false
+claims of completion (0.40).
 
-If the agent lacked the knowledge, no amount of re-reading would help. It does not lack it. We pooled the orders
-proposed by any sample in five logged runs of each task: the LLM's own run and four runs in which a System One model
-took part in its decisions (\S\ref{sec:seat}). On average a single run proposes 75\% of the required orders and
-places 68\%; the five runs together propose 91\% (Figure~\ref{fig:why}a). Of the required orders a run never proposes, 62\% are
-proposed in another run of the same task. A second test asks directly. Qwen, without thinking and given nothing but
-the task text, lists the orders that could be indicated, eight samples per task. Its list covers 84\% [71, 95] of the
-required orders that the agent's own run left open at its finish. The model that failed to place these orders while
-working in the chart names them readily from the request alone. What fails is the step from knowing to doing.
+\paragraph{Results short of their pre-registered bars.} One fabricated order raises the checker's P(Yes) by +0.07 to
++0.10: the predicted direction, short of the +0.15 we set. Removing the agent's decisions recovers Qwen as a checker
+by +0.12 [$-$0.005, 0.26], like the System One models' recovery in size but with an interval touching 0. The checklist
+adds more orders outside the rubric than the +1.0 per case we allowed (+1.47 for Qwen, +1.56 for Gemma), which is why
+we asked what they are (\S\ref{sec:fresh}). Rated as one list per case, where near-duplicate variants sit side by
+side, no checklist order is harmful, but the checklist's orders are no less appropriate than the agent's own for only
+one of the two agents; rated alone, as in the main text, they are for both. Two tests asked whether System One models
+beat the LLM: a committee of six against the LLM ranker (+1.9 points [$-$2.7, 6.4], no), and System One training
+against the same LLM read out in one pass, as checker and as selector (level on average and behind;
+Appendix~\ref{app:frontier}).
 
-\section{Why it misses them: it plans late, and it anchors on its own orders}\label{sec:why}
+\paragraph{Beyond orders.} The agents differ in their other failures, less alike than we predicted (one of three
+error types matched). Labelled by the local LLM, Qwen's failed clinical-reasoning and documentation checkpoints are
+most often \emph{wrong} content (wrong judgments in reasoning, 70\% of the wrong items; misstated facts in notes,
+62\%), while Gemma's are most often \emph{incomplete}. When Gemma's note mentions an order it never placed, 60\% of the
+time it is a recommendation it did not carry out (Qwen: 10\%). The error profile depends on the agent; the two
+mechanisms behind missed orders, and the remedies that follow from them, hold for both.
 
-\paragraph{Acting before the plan is written.} One explanation is drift: over a long trajectory of record lookups the
-agent loses track of the task. Another is that it starts ordering before it has enumerated what the task needs, and
-what it never enumerates it never orders. Drift predicts that a reminder helps; late planning predicts that a plan
-does. We replayed the agent's first order step with five samples under three
-conditions: as logged, with the task instruction repeated, and with a request to write the full assessment and plan,
-listing every order the task requires, before placing any (Figure~\ref{fig:why}b). For Qwen the reminder moves orders
-earlier (pre-registered, +11 points of all required orders at that step) but not into the final record; for Gemma it
-does neither significantly. Planning first does both. For Qwen, the share of the run's finally missed orders placed
-at that step rises from 11\% to 18\% (+7 points [2, 13]), against +2 [$-$2, +5] for the reminder. For Gemma, where
-we pre-registered this comparison on the finally missed orders, it rises from 10\% to 28\% (+18 [4, 32]) and beats the reminder by +11 [2, 23]. Forgetting
-the task affects when orders are placed; the orders lost for good are those the agent commits past before its plan
-exists.
-
-\paragraph{Anchoring on its own orders.} At the agent's first finish we asked for the missing orders in two ways
-(Figure~\ref{fig:why}c). Both arms ask the same question, ``place every order that this task requires and that has
-not been placed yet''. One asks it with the agent's full context. The other asks it with every decision turn removed:
-no orders, messages or notes, only the task and the chart the agent retrieved. Repeats of orders already placed are
-filtered out in both. Asking at all helps: open required checkpoints rise from 38\% to 46\% for Qwen (+8.0 [2.6, 15.1])
-and from 29\% to 47\% for Gemma (+17.8 [10.6, 25.7]), so the agent can still produce the orders. Asking without its
-own decisions in view helps more: +7.1 [1.0, 13.7] points over the full context for Qwen, and +8.9 [3.2, 15.3] for
-Gemma, and the pass rate over all checkpoints does not drop. The agent's record of what it has done suppresses orders that it can still
-generate. Both comparisons were pre-registered for both agents, and the effects are larger for the weaker one.
-
-\paragraph{Beyond orders.} The agents differ in their other failures. Labelled by the local LLM, Qwen's failed
-clinical-reasoning and documentation checkpoints are most often \emph{wrong} content (wrong judgments in reasoning,
-70\% of the wrong items; misstated facts in notes, 62\%), while Gemma's are most often \emph{incomplete}. When Gemma's note mentions an order it never
-placed, 60\% of the time it is a recommendation it did not carry out (Qwen: 10\%). The error profile depends on the
-agent. The two mechanisms behind missed orders, and the remedies that follow from them, hold for both.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig6_anchor.pdf}
-\caption{\textbf{A checker that reads the agent inherits its blind spot.} AUROC of each System One model for telling
-the required orders the agent missed from unneeded candidate orders (21 tasks with a missed required order), by what
-the checker reads: the agent's trajectory at its finish; the same with a debiasing instruction (*three models); without
-the agent's notes; without its orders; the retrieved chart with no decisions; the task text alone. Black line: mean
-over the models shown in the row.}
-\label{fig:anchor}
-\end{figure}
-
-\section{A checker that reads the agent inherits its blind spot}\label{sec:inherit}
-
-The standard remedy for an agent's omissions is review: a second model reads the agent's work and flags what is
-missing, as in self-refinement and LLM-as-judge pipelines \citep{madaan2023selfrefine,zheng2023judge}. A System One
-model is an attractive reviewer here. It scores a candidate order for a patient in one forward pass, so it can screen
-dozens of candidates where an LLM would deliberate over a few. We tested this offline at the agent's first finish. The
-candidates are every order proposed in the task's five runs that the agent has not placed (about 44 per task). Each
-checker scores each candidate with the question ``is this order indicated for this patient as part of completing the
-task?''. The measure is how well it separates the required orders the agent missed from the unneeded ones (AUROC, per
-task).
-
-\paragraph{Reading the trajectory, every checker ranks the missed orders below chance.} With the agent's trajectory
-as input, all six System One models score 0.37--0.43 (Figure~\ref{fig:anchor}). Given only the task text, the same
-models score 0.57--0.73, a paired gain of +0.17 to +0.34 with every interval excluding 0 (pre-registered). The LLM is
-no exception. In an exploratory control, Qwen with thinking goes from 0.46 to 0.62 on the same questions (+0.17
-[0.07, 0.27]). The anchoring is
-what happens to any judge that reads the agent's actions, not a quirk of small decision models. The trajectory hurts
-even on the orders the agent did place (0.65--0.72 with it, 0.74--0.86 without).
-
-\paragraph{The anchor is the agent's orders.} Removing only the agent's decision turns (orders, messages, notes) and
-keeping the full chart it retrieved brings the checker back to about its task-only level (0.62--0.67; +0.21 to
-+0.25 over the trajectory, five of five models; pre-registered). The chart does not mislead the checker; the agent's decisions do. Among the decisions, the orders carry
-57--83\% of the recovery and the notes none ($-$0.07 to +0.04). A causal test confirms the direction. Inserting one
-fabricated step in which the agent places the candidate order raises the checker's P(Yes) by +0.07 to +0.10, for
-required and unneeded orders alike.
-
-\paragraph{The mechanism is plan conformity.} With the trajectory, a checker's score tracks how closely the candidate
-resembles the agent's placed orders (within-task Spearman 0.28--0.38 for System One models, 0.47 for Qwen; 0.05 with
-the task text). The missed orders resemble the agent's placed orders less than unneeded candidates do (name overlap 0.26
-against 0.34), so similarity alone ranks them below chance (AUROC 0.41). A checker that reads the agent's work grades
-candidates by their conformity to that work, so it inherits exactly the agent's omissions.
-
-\paragraph{An instruction does not fix it; the input must change.} Adding ``the agent may have missed orders; judge
-each one independently'' recovers 1--6\% of the gap for System One models and 8\% for Qwen (pre-registered). The
-models read the sentence, since their P(Yes) rises across the board, but the ranking does not change.
-
-\paragraph{Fresh eyes need no reasoning.} In a pre-registered test (Appendix~\ref{app:frontier}), judges scored
-the task-prior pool of \S\ref{sec:fresh} (about 67 orders per task) from the task alone. We measured how well each
-ranks the orders the agents left open at their first finish (133 cases in 42 tasks, a wider set than
-Figure~\ref{fig:anchor}'s) and its GPU time per judgment. One-pass judgments form the cost--quality frontier: Qwen's
-first-token probability (AUROC 0.74, 0.06 GPU-s) and System One models of the agent's scale (0.71--0.82, 0.06--0.15
-GPU-s). d3, amos and pplx12 beat Qwen by 0.04--0.08 (intervals above 0) at 1.6$\times$ its cost; the six on average
-are level with it. A stated probability (0.64), a five-sample vote (0.70) and thinking with 2k or 8k tokens (0.58,
-0.73) all fall off the frontier, at up to 112$\times$ the cost. The System One probabilities are also better
-calibrated (Brier 0.16--0.28 against 0.29--0.50 for the LLM).
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig8_loop.pdf}
-\caption{\textbf{Fresh eyes in the loop.} (a) At each agent's first finish, from the same replayed prefix: the share of
-open required-order checkpoints that pass when the agent finishes as logged; when it sees eight orders drawn at random
-from the task-prior pool; when it sees the eight ranked highest from the task text by pplx12 (both agents) or
-d3 (Qwen only), or by the agent LLM Qwen without thinking from the same request (both agents); and, for reference, the fresh-context restart of Figure~\ref{fig:why}c. Qwen: 51 cases $\times$ 5 runs
-(d3 and the LLM checklist: 3); Gemma: 65 cases $\times$ 3 runs. All comparisons with \emph{agent finishes} and with the random list were
-pre-registered. (b) What the orders outside the rubric are: each order rated alone by a blinded LLM judge (Gemma 4)
-that sees the task and the retrieved chart. Bars give the share of distinct orders per case by source; n is the number
-of orders rated.}
-\label{fig:loop}
-\end{figure*}
-
-\section{Fresh eyes: a System One checklist from the task}\label{sec:fresh}
-
-The findings fix the design. The checker reads the task, not the agent's work (\S\ref{sec:inherit}). Candidates come
-from a broad pool, because the agent knows the orders but does not reach them in one pass (\S\ref{sec:know}). The
-intervention comes when the agent's own plan is complete and it is about to stop (\S\ref{sec:why}). The agent keeps
-the decision.
-
-\paragraph{Design.} Before the run, the LLM without thinking reads the task text and lists candidate orders: eight
-samples of up to 15 each, merged by name, about 67 per task. A System One model scores every candidate from the task
-text alone. At the agent's first finish, candidates already placed are dropped: by exact name for Gemma, and for Qwen also
-the variants that pplx12, reading only the placed orders, judges repeats of one. The top eight are shown with one instruction: ``Check each against the chart and the task. Place any that are
-indicated, and only those, then finish.'' (Appendix~\ref{app:prompts}). The System One cost is one forward pass per
-candidate, under a second each, and the ranking is computed before the run starts.
-
-\paragraph{It recovers the missed orders, for both agents.} From the same prefix, the checklist raises open
-required-order checkpoints from 38\% to 53\% for Qwen (\up{14.7} points [6.7, 24.1]) and from 29\% to 58\% for Gemma
-(\up{29.2} [20.0, 39.5]) (Figure~\ref{fig:loop}a). The ranking matters. A random eight from the same pool does less,
-and the System One list beats it by +5.9 [0.6, 11.8] for Qwen and +13.6 [6.5, 21.7] for Gemma. A different System One
-ranker, d3, does as well as pplx12 for Qwen (54\%; +16.0 [7.8, 25.2] over the agent's finish, +7.2 [1.1, 13.3] over
-the random list). All of these were pre-registered, and all hold.
-
-\paragraph{The input carries the fix.} Is a System One model needed at all? We
-let the agent LLM, Qwen without thinking, rank the same pool from exactly the System One model's request, scoring
-P(Yes) from its first-token probabilities (pre-registered). Its checklist also works: \up{11.1} points [4.3, 19.6]
-for the Qwen agent and \up{24.2} [15.5, 33.0] for Gemma over the agent's finish. Against pplx12 the difference is
-+3.6 [$-$1.1, 8.0] and +5.0 [$-$2.6, 13.2] points in pplx12's favour, both intervals including zero, so by the
-reading we fixed in advance the two are comparable rankers. Descriptively, both point estimates favour the System One
-ranker, d3 beats the LLM ranking for Qwen (+4.9 [0.3, 9.5]), and for the Qwen agent only the System One lists separate
-from the random list (LLM list +2.3 [$-$3.1, 8.0]). If one System One model is only level with the LLM, perhaps a
-committee is better: six independently trained models, each ranking the pool from the task, their percentile ranks
-averaged. It is not (pre-registered): over both agents' 116 cases the committee's checklist leads the LLM's by +1.9
-points [$-$2.7, 6.4] and trails pplx12's alone by 2.5 [$-$6.0, 0.8]. Across all five pairings of a System One ranker
-with the LLM ranker, the System One checklist leads by 0.3 to 5.0 points and adds fewer orders outside the rubric
-(0.2--0.3 per case), a consistent lean but not a demonstrated advantage. The lesson is the one of
-\S\ref{sec:inherit}: what helps is a checker that reads the task instead of the agent's work, and any one-pass judge
-we tried provides it. The checklist does as well as the fresh-context restart of \S\ref{sec:why} ($-$0.4 points for
-Qwen, $-$2.6 for Gemma, both n.s.): two routes to the same fix, changing what the agent reads before it stops. Over all checkpoints,
-not only the open ones, the pass rate rises by 4.7 points for Qwen and 7.8 for Gemma.
-
-\paragraph{The extra orders are reasonable care, not noise.} The checklist also adds about 1.5 orders per case that no
-rubric item names (+1.47 for Qwen, +1.56 for Gemma). The random list adds more (+2.0, +2.3). PhysicianBench neither
-credits nor penalises such orders, so we asked what they are. A blinded LLM judge saw the task and the retrieved
-chart and rated each order alone, without its source, as indicated, reasonable, low value or potentially harmful:
-Gemma 4 rated every order, Qwen a random sample of 150 per agent. (The pre-registered version rated each case's
-orders in one list, where near-duplicate variants sat side by side; it agrees on harm and is mixed on the rest,
-Appendix~\ref{app:prereg}.) By the Gemma judge (Figure~\ref{fig:loop}b), 81\% of the checklist's extra orders for the Qwen
-agent and 91\% for the Gemma agent are indicated or reasonable. That is at least the rate of the agents' own orders
-outside the rubric (78\%, 80\%), and well above the random list's (67\%, 80\%; difference in inappropriate share
-$-$0.14 [$-$0.22, $-$0.06] and $-$0.11 [$-$0.18, $-$0.05]). None was rated potentially harmful, against 2.9\% and
-3.9\% of the agents' own extra orders. The Qwen judge agrees in direction (inappropriate share,
-checklist against random list: $-$0.31 and $-$0.36, both intervals excluding 0; $\kappa$ 0.48--0.49 between judges). For the Qwen agent's cases both judges also rate a
-fifth of the \emph{required} orders low value, so those shares are best read side by side. What the rubric counts as
-excess is mostly care it does not list.
-
-\section{Related work}
-
-\paragraph{Self-correction and review.} Agents and LLMs are often asked to critique and revise their own output
-\citep{madaan2023selfrefine,shinn2023reflexion}, and reasoning errors are hard to self-correct without external
-signal \citep{huang2024cannot}. LLM judges favour their own generations \citep{panickssery2024selfpref}. We locate a
-specific failure of review inside an agent loop. A reviewer that reads the agent's work, whether it is the agent
-itself, another LLM or a System One model, scores candidates by their conformity to that work. Changing what the
-reviewer reads fixes it, and instructions do not.
-
-\paragraph{Anchoring and premature closure.} Anchoring on an initial estimate \citep{tversky1974heuristics} and
-premature closure are among the most cited cognitive errors in clinical diagnosis, and fresh perspectives and
-checklists are the classic remedies \citep{croskerry2003cognitive,haynes2009checklist}. We find the agent-level
-analogue: the agent anchors on the orders it has placed, and so does anything that reads them. Planning before
-acting \citep{wang2023planandsolve} also helps here, though it does not close the gap.
-
-\paragraph{Choosing among samples.} Self-consistency \citep{wang2023selfconsistency}, trained verifiers
-\citep{cobbe2021verifiers} and process reward models \citep{lightman2024verify} pick among sampled outputs. Our
-\sel{} applies this at every agent step with a System One model as the selector. Our ceiling analysis shows why
-selection has little to gain when the missing content is never sampled.
-
-\paragraph{System One models and clinical agents.} JEV introduced the typed-question interface that System One models
-answer in one forward pass \citep{typesafe2026jev}; Clef is an open 27B model of this kind \citep{clef2026}. They
-approach frontier LLMs as judges \citep{li2026jevjudge}, and as selectors in general agents most of their wrong
-actions follow a correct reading of the state \citep{li2026reading}. PhysicianBench \citep{physicianbench2026} grades
-physician tasks in a live record system and has been run only with generative agents. We find that the useful place
-for a System One model in a clinical agent is beside the agent as a fast, task-reading screener, not in its
-decision seat, and that there the agent LLM read out in one pass serves about as well.
-
-\section{Discussion}
-
-\paragraph{Design rules.} Three rules follow, and none is specific to one model. \emph{Check the task, not the agent:}
-a reviewer, human or model, should read the request and the chart, not the agent's decisions, because the decisions
-pull its judgment toward conformity. \emph{Plan before acting, review before finishing:} the agent loses orders by
-committing before the plan exists and by stopping once its own orders look complete. \emph{Use the one-pass model for
-breadth:} its value is in screening many candidates from the task in under a second each, while the LLM generates
-the candidates and keeps the decision. The LLM can rank them too, about as well, in one pass without thinking;
-what must not change is that the ranker reads the task, not the agent's work. Asking it to state a probability,
-vote or think does not help.
-
-\paragraph{What System One models add.} Two things, and one they do not. They are the instrument that found the
-blind spot: six independently trained one-pass judges, each asked the same question with and without the agent's
-work, let us run the input ablations of \S\ref{sec:inherit} over thousands of judgments and show that the anchor is
-not a quirk of one model. As checkers they are a ready-made one-pass judge: the best top the cost--quality
-frontier, and all return a calibrated probability per option without prompt engineering. What they do not add, at
-the agent's scale, is a reliable edge over the agent LLM read out in one pass: level as checkers on average, behind
-as selectors (Appendix~\ref{app:frontier}). The protocol, one pass over the task alone, matters more than the model.
-
-\paragraph{Why the decision seat failed.} A System One model in the decision seat can only choose among what the
-agent proposes, and the agent's costly misses are never proposed. Its commitment bias may make this worse: it ends
-episodes earlier, and with them the generation that could have surfaced the missing orders. The same models succeed
-once they are moved off the trajectory and onto the task.
-
-\paragraph{The anchor is general.} The checker in \S\ref{sec:inherit} and the agent in \S\ref{sec:why} fail in the same
-way: both score what to do next by what has already been done. The agent's restart and the checker's input ablation
-are the same intervention, removing the agent's decisions from view, and they help both. We expect this to hold for
-agents that act in other record systems and other domains wherever omissions matter: software changes, audits,
-procurement.
-
-\section*{Limitations}
-
-We study one benchmark of outpatient consultations with two agent LLMs; the second, in FP8, is much weaker, and
-all our tests compare arms within one agent. An LLM ranker without thinking does about as well as the System One
-ranker; our comparison has the power to rule out large differences, not small ones. Costs are measured on each
-model's own serving stack (vLLM with prefix caching for the LLM), and the selector test rests on 37 informative
-decisions. The rubric names one acceptable set of orders. Our judgments of
-orders outside it come from two LLM judges with moderate agreement, not physicians. The grader's judge is the local
-Qwen model shared by every arm, so absolute scores are not comparable with the leaderboard. Online effects are
-measured from shared prefixes at the agent's first finish. An end-to-end deployment that combines planning first with
-the checklist remains to be run.
-
-\section*{Ethics and data}\label{sec:ethics}
-
-PhysicianBench's records are real de-identified patients under a data use agreement. All models run locally, a socket
-guard blocks any non-local connection from agent and grader processes, and trajectories, notes, candidate orders and
-judge ratings stay on access-controlled storage outside version control. We report aggregates only. The checklist is
-a screening aid shown to an agent that keeps the decision. In deployment, a clinician would review every order.
-
-\bibliography{refs}
-
-\appendix
 
 \section{Decision interface}\label{app:interface}
 
@@ -709,7 +710,7 @@ harm bound on orders outside the rubric fails for every checklist; \S\ref{sec:fr
 \FloatBarrier
 \section{The decision seat in detail}\label{app:seat}
 
-This appendix gives the full study of System One models in the agent's decision seat summarised in \S\ref{sec:seat}.
+This appendix gives the full study of System One models in the agent's decision seat summarised in Appendix~\ref{app:path}.
 
 \begin{figure*}[t]
 \centering
